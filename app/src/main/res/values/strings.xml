@@ -17,7 +17,7 @@
 
 <resources>
 
-    <string name="app_name" translatable="false">Squircle CE</string>
+    <string name="app_name" translatable="false">Vcode</string>
 
     <string name="app_splash_loading">Loading…</string>
 

@@ -81,9 +81,9 @@
     <string name="explorer_task_service_channel_description">Mostra e controlla operazioni sui file</string>
     <string name="explorer_task_service_message">Sono in corso le operazioni in background</string>
     <string name="explorer_storage_permission_dialog_title">Accesso Memoria Archivio</string>
-    <string name="explorer_storage_permission_dialog_message">Per funzionare correttamente Squircle CE necessita del completo accesso ai tuoi file\n\nAttiva i permessi nella prossima schermata delle impostazioni di sistema</string>
+    <string name="explorer_storage_permission_dialog_message">Per funzionare correttamente Vcode necessita del completo accesso ai tuoi file\n\nAttiva i permessi nella prossima schermata delle impostazioni di sistema</string>
     <string name="explorer_notification_permission_dialog_title">Notifiche</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE necessita dell\'accesso alle notifiche per avviarsi in background\n\nAbilita i permessi nella prossima schermata delle impostazioni di sistema</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode necessita dell\'accesso alle notifiche per avviarsi in background\n\nAbilita i permessi nella prossima schermata delle impostazioni di sistema</string>
     <string name="explorer_workspace_add_dialog_title">Aggiungi Spazio di lavoro</string>
     <string name="explorer_workspace_delete_dialog_message">Sei sicuro di voler eliminare questo spazio di lavoro?</string>
     <string name="explorer_workspace_local_dialog_input_label">Inserisci percorso cartella</string>

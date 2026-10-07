@@ -81,9 +81,9 @@
     <string name="explorer_task_service_channel_description">Display and control file operations</string>
     <string name="explorer_task_service_message">Background operations in progress</string>
     <string name="explorer_storage_permission_dialog_title">Storage Access</string>
-    <string name="explorer_storage_permission_dialog_message">Squircle CE needs full access to your files to function properly\n\nPlease grant permission in the upcoming system settings</string>
+    <string name="explorer_storage_permission_dialog_message">Vcode needs full access to your files to function properly\n\nPlease grant permission in the upcoming system settings</string>
     <string name="explorer_notification_permission_dialog_title">Notifications</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE needs access to notifications to run in background\n\nPlease grant permission in the upcoming system settings</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode needs access to notifications to run in background\n\nPlease grant permission in the upcoming system settings</string>
     <string name="explorer_workspace_add_dialog_title">Add Workspace</string>
     <string name="explorer_workspace_delete_dialog_message">Are you sure you want to delete this workspace?</string>
     <string name="explorer_workspace_local_dialog_input_label">Enter directory path</string>

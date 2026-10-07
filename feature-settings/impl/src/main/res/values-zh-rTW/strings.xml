@@ -37,7 +37,7 @@
     <string name="settings_header_cloud_title">雲端 &amp; 伺服器</string>
     <string name="settings_header_cloud_subtitle">設定雲端存儲和伺服器。</string>
     <string name="settings_header_about_title">關於</string>
-    <string name="settings_header_about_subtitle">查看 Squircle CE 的有關資訊。</string>
+    <string name="settings_header_about_subtitle">查看 Vcode 的有關資訊。</string>
     <string name="settings_category_look_and_feel">外觀</string>
     <string name="settings_category_other">其它</string>
     <string name="settings_category_font">字體</string>
@@ -104,7 +104,7 @@
     <string name="settings_folders_on_top_title">資料夾置頂</string>
     <string name="settings_folders_on_top_subtitle">資料夾將優先顯示在檔案的前面。</string>
     <string name="settings_sort_mode_title">排序方式</string>
-    <string name="settings_about_subtitle">Squircle CE 是依據 Apache 2.0 許可協議發布的開源專案\n\n目前版本: %1$s (%2$d)</string>
+    <string name="settings_about_subtitle">Vcode (Squircle CE mod) 是依據 Apache 2.0 許可協議發布的開源專案\n\n目前版本: %1$s (%2$d)</string>
     <string name="settings_privacy_policy_title">查看「隱私權政策」</string>
     <string name="settings_translation_title">翻譯平台</string>
     <string name="settings_translation_subtitle">將這個應用程式翻譯至您的語言</string>

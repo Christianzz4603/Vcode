@@ -44,7 +44,7 @@
     <string name="settings_header_cloud_title">Cloud &amp; Servers</string>
     <string name="settings_header_cloud_subtitle">Configure cloud storage and servers</string>
     <string name="settings_header_about_title">À Propos</string>
-    <string name="settings_header_about_subtitle">Voir les informations sur Squircle CE</string>
+    <string name="settings_header_about_subtitle">Voir les informations sur Vcode</string>
 
     <string name="settings_category_look_and_feel">Apparence et Convivialité</string>
     <string name="settings_category_other">Autre</string>
@@ -65,7 +65,7 @@
     <string name="settings_fullscreen_title">Plein écran</string>
     <string name="settings_fullscreen_subtitle">Lancer l\'application en mode plein écran</string>
     <string name="settings_confirm_exit_title">Confirmer la sortie de l\'application</string>
-    <string name="settings_confirm_exit_subtitle">Si vous appuyez sur retour, Squircle CE demandera une confirmation pour quitter</string>
+    <string name="settings_confirm_exit_subtitle">Si vous appuyez sur retour, Vcode demandera une confirmation pour quitter</string>
 
     <string name="settings_font_size_title">Taille de la police de l\'éditeur</string>
     <string name="settings_font_size_subtitle">Spécifiez la taille de police par défaut de l\'éditeur</string>
@@ -117,7 +117,7 @@
     <string name="settings_folders_on_top_subtitle">Les dossiers seront affichés en haut</string>
     <string name="settings_sort_mode_title">Mode de Tri</string>
 
-    <string name="settings_about_subtitle">Squircle CE est un projet open source publié sous licence Apache 2.0\n\nVersion: %1$s (%2$d)</string>
+    <string name="settings_about_subtitle">Vcode (Squircle CE mod) est un projet open source publié sous licence Apache 2.0\n\nVersion: %1$s (%2$d)</string>
     <string name="settings_privacy_policy_title">Politique de Confidentialité</string>
     <string name="settings_translation_title">Translation Platform</string>
     <string name="settings_translation_subtitle">Translate this app to your language</string>

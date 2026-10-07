@@ -52,8 +52,8 @@
     <string name="explorer_notification_permission_dialog_title">通知</string>
     <string name="explorer_delete_dialog_message">確定要刪除該檔案嗎？</string>
     <string name="explorer_multidelete_dialog_message">確定要刪除所選的檔案嗎？</string>
-    <string name="explorer_storage_permission_dialog_message">作為檔案管理器，Squircle CE 需要訪問所有檔案才能正常運作。\n\n請點擊「繼續」後再授予所有檔案的管理權限。</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE 需要存取通知才能在背景執行。\n\n請在接下來的系統設定中允許存取</string>
+    <string name="explorer_storage_permission_dialog_message">作為檔案管理器，Vcode 需要訪問所有檔案才能正常運作。\n\n請點擊「繼續」後再授予所有檔案的管理權限。</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode 需要存取通知才能在背景執行。\n\n請在接下來的系統設定中允許存取</string>
     <string name="explorer_properties_dialog_name">檔案名稱：</string>
     <string name="explorer_properties_dialog_path">檔案路徑：</string>
     <string name="explorer_properties_dialog_date">最後修改：</string>

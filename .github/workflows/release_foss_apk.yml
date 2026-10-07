@@ -73,7 +73,7 @@ jobs:
             KEY_PASSWORD=android
             keytool -genkeypair -keystore app/keystore.jks \
               -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" -keypass "$KEY_PASSWORD" \
-              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Modded Squircle CE"
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Vcode"
           fi
           {
             echo "KEYSTORE_PATH=keystore.jks"
@@ -107,7 +107,7 @@ jobs:
             # Rolling release: replace the previous one so the tag points at this commit
             gh release delete "$TAG" --cleanup-tag --yes || true
             gh release create "$TAG" "$APK_NAME" \
-              --title "Modded Squircle CE - latest FOSS build" \
+              --title "Vcode - latest FOSS build" \
               --notes "Automatic build of commit ${GITHUB_SHA::7}: $SUBJECT" \
               --target "$GITHUB_SHA" \
               $FLAGS
@@ -115,7 +115,7 @@ jobs:
             gh release upload "$TAG" "$APK_NAME" --clobber
           else
             gh release create "$TAG" "$APK_NAME" \
-              --title "Modded Squircle CE $TAG (FOSS)" \
+              --title "Vcode $TAG (FOSS)" \
               --generate-notes \
               --target "$GITHUB_SHA" \
               $FLAGS

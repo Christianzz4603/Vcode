@@ -61,8 +61,8 @@
     <string name="explorer_notification_permission_dialog_title">Ilmoitukset</string>
     <string name="explorer_delete_dialog_message">Haluatko varmasti poistaa tiedoston?</string>
     <string name="explorer_multidelete_dialog_message">Haluatko varmasti poistaa valitut tiedostot?</string>
-    <string name="explorer_storage_permission_dialog_message">Squircle CE tarvitsee käyttöoikeuden kaikkiin tiedostoihisi toimiakseen kunnolla\n\nMyönnä lupa järjestelmäasetusten avautuessa</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE tarvitsee oikeuden näyttää ilmoituksia toimiakseen taustalla\n\nMyönnä lupa järjestelmäasetusten avautuessa</string>
+    <string name="explorer_storage_permission_dialog_message">Vcode tarvitsee käyttöoikeuden kaikkiin tiedostoihisi toimiakseen kunnolla\n\nMyönnä lupa järjestelmäasetusten avautuessa</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode tarvitsee oikeuden näyttää ilmoituksia toimiakseen taustalla\n\nMyönnä lupa järjestelmäasetusten avautuessa</string>
     <string name="explorer_properties_dialog_name">Tiedoston nimi:</string>
     <string name="explorer_properties_dialog_path">Tiedoston polku:</string>
     <string name="explorer_properties_dialog_date">Muokattu viimeksi:</string>

@@ -48,7 +48,7 @@
 
     <string name="explorer_delete_dialog_message">Êtes-vous sûr de vouloir supprimer ce fichier?</string>
     <string name="explorer_multidelete_dialog_message">Êtes-vous sûr de vouloir supprimer les fichiers sélectionnés?</string>
-    <string name="explorer_storage_permission_dialog_message">Pour fonctionner correctement en tant que gestionnaire de fichiers, Squircle CE nécessite l\'accès à tous les fichiers\n\nVeuillez accorder l\'autorisation sur cet appareil après avoir cliqué sur « Continuer »</string>
+    <string name="explorer_storage_permission_dialog_message">Pour fonctionner correctement en tant que gestionnaire de fichiers, Vcode nécessite l\'accès à tous les fichiers\n\nVeuillez accorder l\'autorisation sur cet appareil après avoir cliqué sur « Continuer »</string>
 
     <string name="explorer_properties_dialog_date_format">dd/MM/yyyy EEE HH:mm</string>
 

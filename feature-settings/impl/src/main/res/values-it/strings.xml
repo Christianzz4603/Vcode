@@ -32,7 +32,7 @@
     <string name="settings_header_cloud_subtitle">Configura i server e gli archivio cloud</string>
     <string name="settings_header_git_subtitle">Configura il sistema di controllo versione</string>
     <string name="settings_header_about_title">Informazioni</string>
-    <string name="settings_header_about_subtitle">Vedi informazioni su Squircle CE</string>
+    <string name="settings_header_about_subtitle">Vedi informazioni su Vcode</string>
     <string name="settings_category_look_and_feel">Aspetto e Funzionamento</string>
     <string name="settings_color_scheme_title">Schema Colore</string>
     <string name="settings_color_scheme_subtitle">Configura lo schema colore della sintassi evidenziata</string>
@@ -40,7 +40,7 @@
     <string name="settings_fullscreen_subtitle">Lancia l\'applicazione in modalità schermo intero</string>
     <string name="settings_category_other">Altro</string>
     <string name="settings_confirm_exit_title">Conferma di uscita dall\'app</string>
-    <string name="settings_confirm_exit_subtitle">Se premi indietro, Squircle CE ti chiederà una conferma per uscire</string>
+    <string name="settings_confirm_exit_subtitle">Se premi indietro, Vcode ti chiederà una conferma per uscire</string>
     <string name="settings_category_font">Font</string>
     <string name="settings_font_size_title">Modifica dimensione font</string>
     <string name="settings_font_size_subtitle">Specifica le dimensioni predefinite del font dell\'editor</string>
@@ -139,7 +139,7 @@
     <string name="settings_recursive_submodules_title">Sottomoduli ricorrenti</string>
     <string name="settings_recursive_submodules_subtitle">Preleva i sottomoduli con le loro dipendenze ricorrenti</string>
     <string name="settings_category_about">Informazioni</string>
-    <string name="settings_about_subtitle">Squircle CE è un progetto open source pubblicato sotto la licenza Apache 2.0\n\nVersione: %1$s (%2$d)</string>
+    <string name="settings_about_subtitle">Vcode (Squircle CE mod) è un progetto open source pubblicato sotto la licenza Apache 2.0\n\nVersione: %1$s (%2$d)</string>
     <string name="settings_privacy_policy_title">Policy Privacy</string>
     <string name="settings_category_contribute">Contribuisci</string>
     <string name="settings_translation_title">Piattaforma di Traduzione</string>

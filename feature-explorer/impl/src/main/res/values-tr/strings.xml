@@ -52,8 +52,8 @@
     <string name="explorer_notification_permission_dialog_title">Bildirimler</string>
     <string name="explorer_delete_dialog_message">Bu dosyayı silmek istediğinizden emin misiniz?</string>
     <string name="explorer_multidelete_dialog_message">Seçili dosyaları silmek istediğinizden emin misiniz?</string>
-    <string name="explorer_storage_permission_dialog_message">Squircle CE\'nin düzgün çalışması için dosyalarınıza tam erişime ihtiyacı vardır\n\nLütfen sistem ayarlarında izin verin</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE\'nin arka planda çalışabilmesi için bildirimlere erişmesi gerekiyor\n\nLütfen sistem ayarlarında izin verin</string>
+    <string name="explorer_storage_permission_dialog_message">Vcode\'nin düzgün çalışması için dosyalarınıza tam erişime ihtiyacı vardır\n\nLütfen sistem ayarlarında izin verin</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode\'nin arka planda çalışabilmesi için bildirimlere erişmesi gerekiyor\n\nLütfen sistem ayarlarında izin verin</string>
     <string name="explorer_properties_dialog_name">Dosya adı:</string>
     <string name="explorer_properties_dialog_path">Dosya Yolu:</string>
     <string name="explorer_properties_dialog_date">Son Düzenleme:</string>

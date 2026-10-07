@@ -32,7 +32,7 @@
     <string name="settings_header_cloud_subtitle">配置云存储和服务器。</string>
     <string name="settings_header_git_subtitle">配置版本控制系统</string>
     <string name="settings_header_about_title">关于</string>
-    <string name="settings_header_about_subtitle">查看 Squircle CE 的有关信息。</string>
+    <string name="settings_header_about_subtitle">查看 Vcode 的有关信息。</string>
     <string name="settings_category_look_and_feel">外观</string>
     <string name="settings_color_scheme_title">配色方案</string>
     <string name="settings_color_scheme_subtitle">配置语法高亮显示颜色方案。</string>
@@ -139,7 +139,7 @@
     <string name="settings_recursive_submodules_title">递归子模块</string>
     <string name="settings_recursive_submodules_subtitle">递归获取子模块</string>
     <string name="settings_category_about">关于</string>
-    <string name="settings_about_subtitle">Squircle CE 是依据 Apache 2.0 许可协议发布的开源项目\n\n当前版本: %1$s (%2$d)</string>
+    <string name="settings_about_subtitle">Vcode (Squircle CE mod) 是依据 Apache 2.0 许可协议发布的开源项目\n\n当前版本: %1$s (%2$d)</string>
     <string name="settings_privacy_policy_title">查看“隐私政策”</string>
     <string name="settings_category_contribute">贡献</string>
     <string name="settings_translation_title">翻译平台</string>

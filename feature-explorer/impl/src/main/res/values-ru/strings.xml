@@ -81,9 +81,9 @@
     <string name="explorer_task_service_channel_description">Отображение и управление файловыми операциями</string>
     <string name="explorer_task_service_message">Выполняются фоновые операции</string>
     <string name="explorer_storage_permission_dialog_title">Доступ к хранилищу</string>
-    <string name="explorer_storage_permission_dialog_message">Squircle CE требуется доступ ко всем файлам для корректной работы\n\nПожалуйста, предоставьте разрешение в настройках системы</string>
+    <string name="explorer_storage_permission_dialog_message">Vcode требуется доступ ко всем файлам для корректной работы\n\nПожалуйста, предоставьте разрешение в настройках системы</string>
     <string name="explorer_notification_permission_dialog_title">Уведомления</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE требуется доступ к уведомлениям для работы в фоне\n\nПожалуйста, предоставьте разрешение в настройках системы</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode требуется доступ к уведомлениям для работы в фоне\n\nПожалуйста, предоставьте разрешение в настройках системы</string>
     <string name="explorer_workspace_add_dialog_title">Добавить пространство</string>
     <string name="explorer_workspace_delete_dialog_message">Вы уверены что хотите удалить это пространство?</string>
     <string name="explorer_workspace_local_dialog_input_label">Введите путь к папке</string>

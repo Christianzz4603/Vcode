@@ -32,7 +32,7 @@
     <string name="settings_header_cloud_subtitle">Configure cloud storage and servers</string>
     <string name="settings_header_git_subtitle">Configure version control system</string>
     <string name="settings_header_about_title">About</string>
-    <string name="settings_header_about_subtitle">View information about Squircle CE</string>
+    <string name="settings_header_about_subtitle">View information about Vcode</string>
     <string name="settings_category_look_and_feel">Look And Feel</string>
     <string name="settings_color_scheme_title">Color Scheme</string>
     <string name="settings_color_scheme_subtitle">Configure the syntax highlighting color scheme</string>
@@ -40,7 +40,7 @@
     <string name="settings_fullscreen_subtitle">Launch the application in full screen mode</string>
     <string name="settings_category_other">Other</string>
     <string name="settings_confirm_exit_title">Confirm exit from the app</string>
-    <string name="settings_confirm_exit_subtitle">If you press back, Squircle CE ask for confirmation to exit</string>
+    <string name="settings_confirm_exit_subtitle">If you press back, Vcode ask for confirmation to exit</string>
     <string name="settings_category_font">Font</string>
     <string name="settings_font_size_title">Editor font size</string>
     <string name="settings_font_size_subtitle">Specify the default font size of editor</string>
@@ -143,7 +143,7 @@
     <string name="settings_recursive_submodules_title">Recursive submodules</string>
     <string name="settings_recursive_submodules_subtitle">Fetch submodules and their dependencies recursively</string>
     <string name="settings_category_about">About</string>
-    <string name="settings_about_subtitle">Squircle CE is an open source project published under the Apache 2.0 license\n\nVersion: %1$s (%2$d)</string>
+    <string name="settings_about_subtitle">Vcode is a modified version of Squircle CE, an open source project published under the Apache 2.0 license\n\nVersion: %1$s (%2$d)</string>
     <string name="settings_privacy_policy_title">Privacy Policy</string>
     <string name="settings_category_contribute">Contribute</string>
     <string name="settings_translation_title">Translation Platform</string>

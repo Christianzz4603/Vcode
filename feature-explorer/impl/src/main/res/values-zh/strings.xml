@@ -81,9 +81,9 @@
     <string name="explorer_task_service_channel_description">显示并控制文件操作</string>
     <string name="explorer_task_service_message">后台操作正在进行</string>
     <string name="explorer_storage_permission_dialog_title">外部存储权限</string>
-    <string name="explorer_storage_permission_dialog_message">作为文件管理器，Squircle CE 需要访问所有文件才能正常运行。\n\n请点击“继续”后在授予所有文件的管理权限。</string>
+    <string name="explorer_storage_permission_dialog_message">作为文件管理器，Vcode 需要访问所有文件才能正常运行。\n\n请点击“继续”后在授予所有文件的管理权限。</string>
     <string name="explorer_notification_permission_dialog_title">通知</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE 需要通知权限以保证后台运行\n\n请在下一个系统设置界面中选择允许通知</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode 需要通知权限以保证后台运行\n\n请在下一个系统设置界面中选择允许通知</string>
     <string name="explorer_workspace_add_dialog_title">添加工作区</string>
     <string name="explorer_workspace_delete_dialog_message">您确定要删除该工作区吗？</string>
     <string name="explorer_workspace_local_dialog_input_label">输入目录路径</string>

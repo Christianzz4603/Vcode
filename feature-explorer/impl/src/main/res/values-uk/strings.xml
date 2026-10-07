@@ -52,8 +52,8 @@
     <string name="explorer_notification_permission_dialog_title">Сповіщення</string>
     <string name="explorer_delete_dialog_message">Ви впевнені, що хочете видалити цей файл?</string>
     <string name="explorer_multidelete_dialog_message">Ви впевнені, що бажаєте видалити вибрані файли?</string>
-    <string name="explorer_storage_permission_dialog_message">Squircle CE потрібен доступ до управління файлами для коректної роботи\n\nБудь ласка, надайте дозвіл у налаштуваннях системи</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE потрібен доступ до сповіщень для роботи у фоновому режимі\n\nБудь ласка, надайте дозвіл у налаштуваннях системи</string>
+    <string name="explorer_storage_permission_dialog_message">Vcode потрібен доступ до управління файлами для коректної роботи\n\nБудь ласка, надайте дозвіл у налаштуваннях системи</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode потрібен доступ до сповіщень для роботи у фоновому режимі\n\nБудь ласка, надайте дозвіл у налаштуваннях системи</string>
     <string name="explorer_properties_dialog_name">Ім\'я файлу:</string>
     <string name="explorer_properties_dialog_path">Шлях до файлу:</string>
     <string name="explorer_properties_dialog_date">Остання зміна:</string>

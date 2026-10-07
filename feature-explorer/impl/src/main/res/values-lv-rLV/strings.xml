@@ -80,9 +80,9 @@
     <string name="explorer_task_service_channel_description">Skatīt un pārvaldīt datnes darbības</string>
     <string name="explorer_task_service_message">Notiek fona darbības</string>
     <string name="explorer_storage_permission_dialog_title">Piekļuve krātuvei</string>
-    <string name="explorer_storage_permission_dialog_message">Squircle CE ir nepieciešama pilna piekļuve jūsu datnēm, lai tā darbotos pareizi\n\nLūdzu, piešķiriet atbilstošo atļauju sistēmas iestatījumos</string>
+    <string name="explorer_storage_permission_dialog_message">Vcode ir nepieciešama pilna piekļuve jūsu datnēm, lai tā darbotos pareizi\n\nLūdzu, piešķiriet atbilstošo atļauju sistēmas iestatījumos</string>
     <string name="explorer_notification_permission_dialog_title">Paziņojumi</string>
-    <string name="explorer_notification_permission_dialog_message">Squircle CE nepieciešama piekļuve paziņojumiem, lai darbotos fonā\n\nLūdzu, piešķiriet atbilstošo atļauju sistēmas iestatījumos</string>
+    <string name="explorer_notification_permission_dialog_message">Vcode nepieciešama piekļuve paziņojumiem, lai darbotos fonā\n\nLūdzu, piešķiriet atbilstošo atļauju sistēmas iestatījumos</string>
     <string name="explorer_workspace_add_dialog_title">Pievienot darbvidi</string>
     <string name="explorer_workspace_delete_dialog_message">Vai tiešām vēlaties dzēst šo darbvidi?</string>
     <string name="explorer_workspace_local_dialog_input_label">Ievadiet mapes ceļu</string>

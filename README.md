@@ -1,8 +1,10 @@
-# Squircle CE
+# Vcode
 
 <img src="https://media.githubusercontent.com/media/massivemadness/Squircle-CE/refs/heads/master/.github/images/repository-icon.png" alt="Squircle CE" width="120" align="left">
 
-<b>Squircle CE</b> is a fast and free multi-language code editor for Android.
+<b>Vcode</b> is a modified version of <a href="https://github.com/massivemadness/Squircle-CE">Squircle CE</a>, a fast and free multi-language code editor for Android.
+
+Vcode is based on Squircle CE by Blacksquircle and is distributed under the same Apache 2.0 license.
 
 This repository contains the complete source code and the build instructions for the project.  
 You can contribute by reporting issues, suggesting features, or submitting pull requests.
