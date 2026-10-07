@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  APK_NAME: Modded-Squircel-CE-foss.apk
+  APK_NAME: Vcode-foss.apk
 
 jobs:
   release:

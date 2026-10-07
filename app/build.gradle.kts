@@ -28,7 +28,7 @@ android {
     namespace = "com.blacksquircle.ui"
 
     defaultConfig {
-        applicationId = "com.blacksquircle.ui"
+        applicationId = "com.vcode.studio"
         versionCode = 10028
         versionName = "2025.1.3"
     }

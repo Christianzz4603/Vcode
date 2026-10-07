@@ -18,7 +18,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <queries>
-        <package android:name="com.blacksquircle.ui" />
+        <package android:name="com.vcode.studio" />
     </queries>
 
 </manifest>
