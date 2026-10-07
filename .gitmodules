@@ -1,0 +1,4 @@
+[submodule "sora-editor"]
+	path = sora-editor
+	url = https://github.com/massivemadness/sora-editor.git
+	shallow = true

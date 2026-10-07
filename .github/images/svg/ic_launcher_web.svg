@@ -1,0 +1,38 @@
+<!--
+  - Copyright Squircle CE contributors.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_189_2348)">
+        <path d="M512 0H0V512H512V0Z" fill="black" />
+        <path
+            d="M101.046 267.245L217.261 357.169V394.637L101.046 304.713V267.245ZM294.737 357.169L410.952 267.245V304.713L294.737 394.637V357.169ZM85 237.269C85 248.975 91.132 259.572 101.046 267.245V304.713C91.132 297.04 85 286.444 85 274.737V237.269ZM426.999 237.269V274.737C426.999 286.444 420.866 297.04 410.952 304.713V267.245C420.866 259.572 426.999 248.975 426.999 237.269ZM217.261 357.169C238.656 373.724 273.343 373.724 294.737 357.169V394.637C273.343 411.192 238.656 411.192 217.261 394.637V357.169ZM217.261 117.369C238.656 100.815 273.343 100.815 294.737 117.369L410.952 207.294C432.349 223.849 432.349 250.689 410.952 267.245L294.737 357.169C273.343 373.724 238.656 373.724 217.261 357.169L101.046 267.245C79.6515 250.689 79.6515 223.849 101.046 207.294L217.261 117.369Z"
+            fill="#D9D9D9" />
+        <path
+            d="M217.261 117.369C238.656 100.815 273.343 100.815 294.737 117.369L410.952 207.294C432.349 223.849 432.349 250.689 410.952 267.245L294.737 357.169C273.343 373.724 238.656 373.724 217.261 357.169L101.046 267.245C79.6514 250.689 79.6514 223.849 101.046 207.294L217.261 117.369Z"
+            fill="white" />
+        <path
+            d="M145.284 237.269L189.569 203.005L213.35 221.404L192.845 237.269L256.106 286.213L276.611 270.349L300.273 288.657L255.988 322.922L145.284 237.269Z"
+            fill="black" />
+        <path
+            d="M300.33 251.994L323.997 270.304L366.693 237.269L255.988 151.616L213.292 184.65L237.072 203.05L256.106 188.324L319.364 237.269L300.33 251.994Z"
+            fill="black" />
+    </g>
+    <defs>
+        <clipPath id="clip0_189_2348">
+            <rect width="512" height="512" fill="white" />
+        </clipPath>
+    </defs>
+</svg>

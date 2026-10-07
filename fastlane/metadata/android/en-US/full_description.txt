@@ -1,0 +1,39 @@
+<b>Squircle CE</b> is a fast, lightweight code editor and file manager with support for over 30 programming languages, remote file access via SFTP/FTP(S) and Git VCS integration. Whether you're a student, hobbyist, or professional developer, Squircle CE lets you write, manage, and version your source code anywhere, anytime — right on your phone or tablet.
+
+Here are some of the features that help you code more efficiently:
+
+<b>• Multi-language Support</b>
+Code in 30+ languages: Java, Kotlin, Python, C/C++, HTML, JavaScript, TypeScript, PHP, Rust, Go, and more.
+
+<b>• Syntax Highlighting</b>
+Clean and colorful syntax highlighting helps you understand your code at a glance.
+
+<b>• Code Completion</b>
+Speed up coding with smart suggestions for variables, functions, and keywords based on your file content.
+
+<b>• Git Integration</b>
+Version control your code directly in the editor. Commit, push, pull, and manage branches with ease.
+
+<b>• File Manager</b>
+Manage files locally or remotely with SFTP/FTP(S) support - you don't need any other file managing app.
+
+<b>• Cross-session Editing</b>
+Never lose your work — all changes are saved automatically, so you can pick up right where you left off.
+
+<b>• Unlimited Undo/Redo</b>
+Correct mistakes easily with unlimited undo and redo, even after restarting the app.
+
+<b>• Bracket Matching</b>
+Quickly understand code structure with automatic highlighting of matching brackets (), [], and {}.
+
+<b>• Code Style</b>
+Write cleaner code with automatic indentation and smart closing of brackets, braces, and quotes.
+
+<b>• Advanced Editing Tools</b>
+Easily select, delete, or duplicate lines with convenient editing options.
+
+<b>• Color Schemes</b>
+Choose from a variety of themes that match your preferred coding environment.
+
+<b>• Open Source</b>
+Explore and contribute: <u>https://github.com/massivemadness/Squircle-CE</u>

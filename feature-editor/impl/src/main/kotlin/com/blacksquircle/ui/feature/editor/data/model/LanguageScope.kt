@@ -1,0 +1,70 @@
+/*
+ * Copyright Squircle CE contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.blacksquircle.ui.feature.editor.data.model
+
+internal object LanguageScope {
+    const val BAT = "source.batchfile"
+    const val C = "source.c"
+    const val CLOJURE = "source.clojure"
+    const val CPP = "source.cpp"
+    const val CSHARP = "source.cs"
+    const val CSS = "source.css"
+    const val DART = "source.dart"
+    const val DOCKER = "source.dockerfile"
+    const val FORTRAN = "source.fortran"
+    const val FSHARP = "source.fsharp"
+    const val GO = "source.go"
+    const val GROOVY = "source.groovy"
+    const val HTML = "text.html.basic"
+    const val INI = "source.ini"
+    const val JAVA = "source.java"
+    const val JAVASCRIPT = "source.js"
+    const val JSON = "source.json"
+    const val JULIA = "source.julia"
+    const val KOTLIN = "source.kotlin"
+    const val LATEX = "text.tex"
+    const val LISP = "source.lisp"
+    const val LUA = "source.lua"
+    const val MAKE = "source.makefile"
+    const val MARKDOWN = "text.html.markdown"
+    const val PERL = "source.perl"
+    const val PHP = "source.php"
+    const val PYTHON = "source.python"
+    const val RUBY = "source.ruby"
+    const val RUST = "source.rust"
+    const val SHELL = "source.shell"
+    const val SMALI = "source.smali"
+    const val SQL = "source.sql"
+    const val TEXT = "text.plain"
+    const val TOML = "source.toml"
+    const val TYPESCRIPT = "source.ts"
+    const val VISUALBASIC = "source.vb"
+    const val XML = "text.xml"
+    const val YAML = "source.yaml"
+    const val ZIG = "source.zig"
+    const val VUE = "source.vue"
+    const val SWIFT = "source.swift"
+    const val R = "source.r"
+    const val POWERSHELL = "source.powershell"
+    const val OBJC = "source.objc"
+    const val LESS = "source.css.less"
+    const val SCSS = "source.css.scss"
+    const val COFFEESCRIPT = "source.coffee"
+    const val PUG = "text.pug"
+    const val DIFF = "source.diff"
+    const val HANDLEBARS = "text.html.handlebars"
+}

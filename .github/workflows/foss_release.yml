@@ -1,0 +1,56 @@
+name: Publish Release (F-Droid)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Setup Keystore and local.properties
+        run: |
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > app/keystore.jks
+          echo "KEYSTORE_PATH=keystore.jks" > local.properties
+          echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> local.properties
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> local.properties
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> local.properties
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew :app:assembleFossRelease --no-configuration-cache
+
+      - name: Upload APK (FOSS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FOSS App (Release)
+          path: ./app/build/outputs/apk/foss/release/app-foss-release.apk
+
+      - name: Delete Keystore
+        run: rm app/keystore.jks
