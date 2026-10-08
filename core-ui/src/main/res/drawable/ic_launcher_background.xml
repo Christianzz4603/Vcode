@@ -15,14 +15,26 @@
   -->
 
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="200dp"
     android:height="200dp"
     android:viewportWidth="200"
     android:viewportHeight="200">
-    <group>
-        <clip-path android:pathData="M0,0h200v200h-200z" />
-        <path
-            android:fillColor="#000000"
-            android:pathData="M200,0H0V200H200V0Z" />
-    </group>
+    <path android:pathData="M0,0h200v200h-200z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="100"
+                android:endY="200"
+                android:startX="100"
+                android:startY="0"
+                android:type="linear">
+                <item
+                    android:color="#FF141F35"
+                    android:offset="0" />
+                <item
+                    android:color="#FF0B1428"
+                    android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
 </vector>
