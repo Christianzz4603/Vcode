@@ -1,5 +1,5 @@
 plugins {
-    id("com.blacksquircle.kotlin")
+    id("com.vcode.kotlin")
 }
 
 dependencies {

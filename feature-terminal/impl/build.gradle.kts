@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("com.blacksquircle.feature")
+    id("com.vcode.feature")
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -24,7 +24,7 @@ plugins {
 }
 
 android {
-    namespace = "com.blacksquircle.ui.feature.terminal"
+    namespace = "com.vcode.studio.feature.terminal"
 
     buildFeatures {
         compose = true

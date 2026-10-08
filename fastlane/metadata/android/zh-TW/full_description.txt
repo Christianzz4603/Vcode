@@ -1,4 +1,4 @@
-<b>Squircle CE</b> 目前支援以下程式語言: C, C++, C#, CSS, Fortran, Go, Groovy, HTML, Java, JavaScript, Json, Julia, Kotlin, LaTeX, Lisp, Lua, Markdown, PHP, Python, Ruby, Rust, Shell, Smali, SQL, Toml, TypeScript, Visual Basic, XML and YAML.
+<b>Vcode</b> 目前支援以下程式語言: C, C++, C#, CSS, Fortran, Go, Groovy, HTML, Java, JavaScript, Json, Julia, Kotlin, LaTeX, Lisp, Lua, Markdown, PHP, Python, Ruby, Rust, Shell, Smali, SQL, Toml, TypeScript, Visual Basic, XML and YAML.
 
 這裡有一個功能列表，可以幫助你提高工作效率。
 
@@ -21,7 +21,7 @@
 當你在編輯器中處理程式碼時，當你在分隔符（（）、[]和{}）處設置游標時，它可以幫助你快速理解程式碼結構。
 
 <b>程式碼風格</b>
-Squircle CE提供了一個更好的方式來編輯你的程式碼，編輯器將自動縮排，關閉開放的小括號、中括號和大括號
+Vcode提供了一個更好的方式來編輯你的程式碼，編輯器將自動縮排，關閉開放的小括號、中括號和大括號
 
 <b>選擇、刪除和複製</b>
 您可以使用「編輯」選單中的選項輕鬆地剪下或複製程式碼的一部分。
@@ -30,4 +30,4 @@ Squircle CE提供了一個更好的方式來編輯你的程式碼，編輯器將
 不同的顏色方案義了程式碼中的保護字和其他符號的語言法高亮：運算符、關鍵字、建議、字符串字符面義等。
 
 <b>開放原始碼</b>
-<b>•</b> <u>https://github.com/massivemadness/Squircle-CE</u>
+<b>•</b> <u>https://github.com/Christianzz4603/Vcode</u>

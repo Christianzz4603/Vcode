@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("com.blacksquircle.application")
+    id("com.vcode.application")
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.baselineprofile)
     alias(libs.plugins.kotlin.android)
@@ -25,7 +25,7 @@ plugins {
 }
 
 android {
-    namespace = "com.blacksquircle.ui"
+    namespace = "com.vcode.studio"
 
     defaultConfig {
         applicationId = "com.vcode.studio"

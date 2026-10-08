@@ -56,7 +56,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: com.blacksquircle.ui
+          packageName: com.vcode.studio
           track: production
           releaseFiles: ./app/build/outputs/bundle/gmsRelease/app-gms-release.aab
           mappingFile: ./app/build/outputs/mapping/gmsRelease/mapping.txt

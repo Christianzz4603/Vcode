@@ -15,13 +15,13 @@
  */
 
 plugins {
-    id("com.blacksquircle.feature")
+    id("com.vcode.feature")
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.blacksquircle.ui.redux"
+    namespace = "com.vcode.studio.redux"
 }
 
 dependencies {

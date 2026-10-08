@@ -17,13 +17,13 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
-    id("com.blacksquircle.test")
+    id("com.vcode.test")
     alias(libs.plugins.android.baselineprofile)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.blacksquircle.benchmark"
+    namespace = "com.vcode.benchmark"
     targetProjectPath = ":app"
 
     testOptions.managedDevices.allDevices {

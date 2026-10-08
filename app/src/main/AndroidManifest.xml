@@ -37,7 +37,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SplashTheme"
-        android:name=".SquircleApp"
+        android:name=".VcodeApp"
         android:requestLegacyExternalStorage="true">
 
         <activity
@@ -86,8 +86,8 @@
             android:foregroundServiceType="dataSync"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.blacksquircle.ui.ACTION_START_TASK" />
-                <action android:name="com.blacksquircle.ui.ACTION_CANCEL_TASK" />
+                <action android:name="com.vcode.studio.ACTION_START_TASK" />
+                <action android:name="com.vcode.studio.ACTION_CANCEL_TASK" />
             </intent-filter>
         </service>
 

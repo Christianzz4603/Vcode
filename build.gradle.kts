@@ -32,9 +32,9 @@ plugins {
 subprojects {
     afterEvaluate {
         val applyKover =
-            pluginManager.hasPlugin("com.blacksquircle.application") ||
-                pluginManager.hasPlugin("com.blacksquircle.feature") ||
-                pluginManager.hasPlugin("com.blacksquircle.kotlin")
+            pluginManager.hasPlugin("com.vcode.application") ||
+                pluginManager.hasPlugin("com.vcode.feature") ||
+                pluginManager.hasPlugin("com.vcode.kotlin")
         if (applyKover) {
             apply(plugin = "org.jetbrains.kotlinx.kover")
             kover {

@@ -1,1 +1,1 @@
-Squircle CE - 代码编辑器
+Vcode - 代码编辑器

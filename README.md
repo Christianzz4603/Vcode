@@ -1,65 +1,59 @@
 # Vcode
 
-<img src="https://media.githubusercontent.com/media/massivemadness/Squircle-CE/refs/heads/master/.github/images/repository-icon.png" alt="Squircle CE" width="120" align="left">
-
-<b>Vcode</b> is a modified version of <a href="https://github.com/massivemadness/Squircle-CE">Squircle CE</a>, a fast and free multi-language code editor for Android.
+**Vcode** is a modified version of [Squircle CE](https://github.com/massivemadness/Squircle-CE) - a fast and free multi-language code editor and file manager for Android.
 
 Vcode is based on Squircle CE by Blacksquircle and is distributed under the same Apache 2.0 license.
 
-This repository contains the complete source code and the build instructions for the project.  
-You can contribute by reporting issues, suggesting features, or submitting pull requests.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-![Android CI](https://github.com/massivemadness/Squircle-CE/workflows/Android%20CI/badge.svg) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+## What is different from Squircle CE
+
+* New name, icon and splash screen (application id `com.vcode.studio`)
+* 10 additional languages with syntax highlighting: Swift, R, PowerShell, Objective-C, Less, SCSS, CoffeeScript, Pug, Diff and Handlebars (49 languages in total)
+* Keyword suggestions while typing, loaded from simple JSON files in `feature-editor/impl/src/main/assets/keyword/`
+* A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
+
+## Download
+
+Get the latest `Vcode-foss.apk` from the [Releases](https://github.com/Christianzz4603/Vcode/releases) page.
 
 ## Build instructions
 
 ### Prerequisites
 
-* At least **1,11GB** of free disk space: **144,7MB** for source codes and around **965,3MB** for
-  files generated after building all variants
-* **4GB** of RAM
-* **macOS** or **Linux**-based operating system. **Windows** platform is supported by
+* JDK 17
+* About **1,1GB** of free disk space and **4GB** of RAM
+* **macOS** or **Linux**-based operating system. **Windows** is supported by
   using [Git Bash](https://gitforwindows.org/).
 
 ### Building
 
-1. `$ git clone --recursive --depth=1 --shallow-submodules https://github.com/massivemadness/Squircle-CE Squircle-CE`
-   — clone **Squircle CE** with submodules
-2. In case you forgot the `--recursive` flag, `cd` into `Squircle-CE` directory
+1. `$ git clone --recursive --depth=1 --shallow-submodules https://github.com/Christianzz4603/Vcode Vcode`
+2. In case you forgot the `--recursive` flag, `cd` into the `Vcode` directory
    and: `$ git submodule init && git submodule update --init --recursive --depth=1`
-3. Create `local.properties` file with the following properties:  
-   `KEYSTORE_PATH`: absolute path to the keystore file  
+3. Create a `local.properties` file with the following properties:  
+   `KEYSTORE_PATH`: path to the keystore file (relative to the `app` directory)  
    `KEYSTORE_PASSWORD`: password for the keystore  
    `KEY_ALIAS`: key alias that will be used to sign the app  
    `KEY_PASSWORD`: key password  
    **Warning**: keep this file safe and make sure nobody, except you, has access to it.
-4. `$ cd Squircle-CE`
-5. Now you can open the project using **[Android Studio](https://developer.android.com/studio/)** or
-   build manually from the command line: `./gradlew assembleRelease`.
+4. Open the project in **[Android Studio](https://developer.android.com/studio/)** or build from the
+   command line: `./gradlew :app:assembleFossRelease`
+
+The **Release FOSS APK** workflow does the same on GitHub: it runs on every push to `main`, signs the
+APK with the keystore secrets (`KEYSTORE_FILE`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`) if they
+are set, and publishes `Vcode-foss.apk` to the `foss-latest` release.
 
 #### Available flavors
 
-* `gms`: A flavor used for publishing the app
-  on [Google Play](https://play.google.com/store/apps/details?id=com.blacksquircle.ui)
-* `foss`: A flavor without closed-source libraries, used for publishing the app
-  on [F-Droid](https://f-droid.org/packages/com.blacksquircle.ui/)
-  and [GitHub](https://github.com/massivemadness/Squircle-CE/releases)
+* `foss`: a flavor without closed-source libraries
+* `gms`: a flavor with Google Play services (in-app updates)
 
-## Translations &middot; [![Crowdin](https://badges.crowdin.net/squircle-ce/localized.svg)](https://crowdin.com/project/squircle-ce)
+## Credits and license
 
-If you'd like to translate **Squircle CE** to a new language or make a translation correction,
-please register an account at [Crowdin](https://crowdin.com) and join the project here:
-
-* https://crowdin.com/project/squircle-ce
-
-If the language that you are interested in translating is not already listed, create a new account
-on Crowdin, join the project and contact the project owner.
-
-## Screenshots
-
-<img src="https://media.githubusercontent.com/media/massivemadness/Squircle-CE/refs/heads/master/.github/images/repository-screenshots.png">
-
-## License
+Vcode is built on [Squircle CE](https://github.com/massivemadness/Squircle-CE) by Blacksquircle and its
+contributors, and on the [sora-editor](https://github.com/Rosemoe/sora-editor) component library.
+See [NOTICE](NOTICE) for the list of modifications.
 
 ```
 Copyright Squircle CE contributors.

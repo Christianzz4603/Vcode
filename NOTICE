@@ -1,0 +1,20 @@
+Vcode
+Copyright 2026 Vcode contributors
+
+This product is a modified version of Squircle CE
+(https://github.com/massivemadness/Squircle-CE),
+Copyright Squircle CE contributors, licensed under the Apache License, Version 2.0.
+The original copyright notices in the source files have been retained.
+
+Modifications made in Vcode:
+ - Renamed the application to Vcode and changed the application id to com.vcode.studio
+ - Renamed the Kotlin/Java packages from com.blacksquircle to com.vcode and renamed
+   identifiers that carried the original product name
+ - New launcher icon and splash screen
+ - Added syntax highlighting for Swift, R, PowerShell, Objective-C, Less, SCSS,
+   CoffeeScript, Pug, Diff and Handlebars
+ - Added keyword suggestions for code completion
+ - Added a GitHub Actions workflow that builds and publishes the FOSS APK
+ - Pinned bouncycastle and jsch to older versions to keep the build working
+
+The full text of the license is available in the LICENSE file.

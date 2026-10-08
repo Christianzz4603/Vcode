@@ -15,13 +15,13 @@
  */
 
 plugins {
-    id("com.blacksquircle.feature")
+    id("com.vcode.feature")
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.blacksquircle.ui.filesystem.root"
+    namespace = "com.vcode.studio.filesystem.root"
 
     buildFeatures {
         buildConfig = true

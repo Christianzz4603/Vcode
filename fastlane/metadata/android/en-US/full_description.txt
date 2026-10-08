@@ -1,4 +1,4 @@
-<b>Squircle CE</b> is a fast, lightweight code editor and file manager with support for over 30 programming languages, remote file access via SFTP/FTP(S) and Git VCS integration. Whether you're a student, hobbyist, or professional developer, Squircle CE lets you write, manage, and version your source code anywhere, anytime — right on your phone or tablet.
+<b>Vcode</b> is a fast, lightweight code editor and file manager with support for over 30 programming languages, remote file access via SFTP/FTP(S) and Git VCS integration. Whether you're a student, hobbyist, or professional developer, Vcode lets you write, manage, and version your source code anywhere, anytime — right on your phone or tablet.
 
 Here are some of the features that help you code more efficiently:
 
@@ -36,4 +36,6 @@ Easily select, delete, or duplicate lines with convenient editing options.
 Choose from a variety of themes that match your preferred coding environment.
 
 <b>• Open Source</b>
-Explore and contribute: <u>https://github.com/massivemadness/Squircle-CE</u>
+Explore and contribute: <u>https://github.com/Christianzz4603/Vcode</u>
+
+<b>Vcode is a modified version of Squircle CE</b> (Apache 2.0).

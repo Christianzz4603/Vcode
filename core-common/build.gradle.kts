@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("com.blacksquircle.feature")
+    id("com.vcode.feature")
     alias(libs.plugins.android.library)
     alias(libs.plugins.android.room)
     alias(libs.plugins.kotlin.android)
@@ -25,7 +25,7 @@ plugins {
 }
 
 android {
-    namespace = "com.blacksquircle.ui.core"
+    namespace = "com.vcode.studio.core"
 
     room {
         schemaDirectory("$projectDir/schemas")

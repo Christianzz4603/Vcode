@@ -1,4 +1,4 @@
-<b>Squircle CE</b> on erittäin kevyt ja nopea koodieditori ja tiedostoselain. Tukee yli 30 ohjelmointikieltä, tiedostojen etäkäyttöä SFTP/FTP(S)-yhteyksillä sekä Git-versionhallintaa. Opiskelijalle, harrastajalle ja ammattidevaajalle — Squircle CE:llä kirjoitat, hallinnoit ja versioit lähdekoodiasi missä ja milloin tahansa, suoraan puhelimeltasi tai tabletiltasi.
+<b>Vcode</b> on erittäin kevyt ja nopea koodieditori ja tiedostoselain. Tukee yli 30 ohjelmointikieltä, tiedostojen etäkäyttöä SFTP/FTP(S)-yhteyksillä sekä Git-versionhallintaa. Opiskelijalle, harrastajalle ja ammattidevaajalle — Vcode:llä kirjoitat, hallinnoit ja versioit lähdekoodiasi missä ja milloin tahansa, suoraan puhelimeltasi tai tabletiltasi.
 
 Tässä joitakin tuottavuutta parantavista ominaisuuksista:
 
@@ -36,4 +36,4 @@ Valitse, poista tai monista rivejä helposti kätevien asetusten avulla.
 Valitse silmää miellyttävä teema valikoimasta ja luo viihtyisä ympäristö ohjelmoinnille.
 
 <b>• Avointa lähdekoodia</b>
-Tutustu ja osallistu: <u>https://github.com/massivemadness/Squircle-CE</u>
+Tutustu ja osallistu: <u>https://github.com/Christianzz4603/Vcode</u>

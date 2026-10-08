@@ -1,4 +1,4 @@
-<b>Squircle CE</b> şu anda aşağıdaki programlama dillerinde kodlamayı destekliyor: C, C++, C#, CSS, Fortran, Go, Groovy, HTML, Ini, Java, JavaScript, Json, Julia, Kotlin, LaTeX, Lisp, Lua, Markdown, PHP, Python, Ruby, Rust, Shell, Smali, SQL, Toml, TypeScript, Visual Basic, XML ve YAML.
+<b>Vcode</b> şu anda aşağıdaki programlama dillerinde kodlamayı destekliyor: C, C++, C#, CSS, Fortran, Go, Groovy, HTML, Ini, Java, JavaScript, Json, Julia, Kotlin, LaTeX, Lisp, Lua, Markdown, PHP, Python, Ruby, Rust, Shell, Smali, SQL, Toml, TypeScript, Visual Basic, XML ve YAML.
 
 İşte daha üretken bir şekilde çalışmanıza yardımcı olacak özelliklerin listesi:
 
@@ -21,7 +21,7 @@ Eğer bir hata yaptıysanız veya dün düzenlediğiniz kaynak koduna geri dönm
 Editörde kodla çalıştığınızda, imleci çiftine ayarladığınızda açılış veya kapanış ayracı ((), [] ve {}) vurgulanarak kod yapısını hızlı bir şekilde anlamanıza yardımcı olabilir
 
 <b>Kod Stili</b>
-Squircle CE kodunuzu yazmanız için daha iyi bir yol sağlar, düzenleyici satırları otomatik olarak girintiler, açık parantezleri, süslü parantezleri ve tırnak işaretlerini kapatır
+Vcode kodunuzu yazmanız için daha iyi bir yol sağlar, düzenleyici satırları otomatik olarak girintiler, açık parantezleri, süslü parantezleri ve tırnak işaretlerini kapatır
 
 <b>Satırı Seç, Sil ve Kopyala</b>
 «Düzenle» menüsündeki şık seçenekleri kullanarak kodun bir kısmını kolayca silebilir veya kopyalayabilirsiniz
@@ -30,4 +30,4 @@ Squircle CE kodunuzu yazmanız için daha iyi bir yol sağlar, düzenleyici sat�
 Farklı renk şemaları, kaynak kodunuzdaki ayrılmış sözcükler ve diğer semboller için sözdizimi vurgulamasını tanımlar: operatörler, anahtar kelimeler, öneriler, dize sabitleri vb
 
 <b>AÇIK KAYNAK KOD</b>
-<b>•</b> <u>https://github.com/massivemadness/Squircle-CE</u>
+<b>•</b> <u>https://github.com/Christianzz4603/Vcode</u>

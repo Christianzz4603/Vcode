@@ -39,29 +39,29 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        register("com.blacksquircle.application") {
-            id = "com.blacksquircle.application"
-            implementationClass = "com.blacksquircle.ui.ApplicationModulePlugin"
+        register("com.vcode.application") {
+            id = "com.vcode.application"
+            implementationClass = "com.vcode.studio.ApplicationModulePlugin"
         }
-        register("com.blacksquircle.test") {
-            id = "com.blacksquircle.test"
-            implementationClass = "com.blacksquircle.ui.TestModulePlugin"
+        register("com.vcode.test") {
+            id = "com.vcode.test"
+            implementationClass = "com.vcode.studio.TestModulePlugin"
         }
-        register("com.blacksquircle.feature") {
-            id = "com.blacksquircle.feature"
-            implementationClass = "com.blacksquircle.ui.FeatureModulePlugin"
+        register("com.vcode.feature") {
+            id = "com.vcode.feature"
+            implementationClass = "com.vcode.studio.FeatureModulePlugin"
         }
-        register("com.blacksquircle.kotlin") {
-            id = "com.blacksquircle.kotlin"
-            implementationClass = "com.blacksquircle.ui.KotlinModulePlugin"
+        register("com.vcode.kotlin") {
+            id = "com.vcode.kotlin"
+            implementationClass = "com.vcode.studio.KotlinModulePlugin"
         }
-        register("com.blacksquircle.publish") {
-            id = "com.blacksquircle.publish"
-            implementationClass = "com.blacksquircle.ui.PublishModulePlugin"
+        register("com.vcode.publish") {
+            id = "com.vcode.publish"
+            implementationClass = "com.vcode.studio.PublishModulePlugin"
         }
-        register("com.blacksquircle.lint") {
-            id = "com.blacksquircle.lint"
-            implementationClass = "com.blacksquircle.ui.LintConventionPlugin"
+        register("com.vcode.lint") {
+            id = "com.vcode.lint"
+            implementationClass = "com.vcode.studio.LintConventionPlugin"
         }
     }
 }

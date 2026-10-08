@@ -1,12 +1,12 @@
 plugins {
-    id("com.blacksquircle.feature")
+    id("com.vcode.feature")
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.ksp)
 }
 
 android {
-    namespace = "com.blacksquircle.ui.navigation"
+    namespace = "com.vcode.studio.navigation"
 }
 
 dependencies {

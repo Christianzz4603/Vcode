@@ -1,0 +1,349 @@
+/*
+ * Copyright Squircle CE contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.vcode.studio.feature.editor.ui
+
+import com.vcode.studio.core.provider.resources.StringProvider
+import com.vcode.studio.core.provider.typeface.TypefaceProvider
+import com.vcode.studio.core.settings.SettingsManager
+import com.vcode.studio.feature.editor.api.interactor.EditorInteractor
+import com.vcode.studio.feature.editor.api.navigation.CloseFileRoute
+import com.vcode.studio.feature.editor.createDocument
+import com.vcode.studio.feature.editor.domain.interactor.LanguageInteractor
+import com.vcode.studio.feature.editor.domain.repository.DocumentRepository
+import com.vcode.studio.feature.editor.ui.editor.EditorViewModel
+import com.vcode.studio.feature.editor.ui.editor.model.DocumentState
+import com.vcode.studio.feature.fonts.api.interactor.FontsInteractor
+import com.vcode.studio.feature.git.api.interactor.GitInteractor
+import com.vcode.studio.feature.shortcuts.api.interactor.ShortcutsInteractor
+import com.vcode.studio.feature.terminal.api.interactor.TerminalInteractor
+import com.vcode.studio.navigation.api.Navigator
+import com.vcode.studio.test.rule.MainDispatcherRule
+import com.vcode.studio.test.rule.TimberConsoleRule
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+class CloseFileTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @get:Rule
+    val timberConsoleRule = TimberConsoleRule()
+
+    private val stringProvider = mockk<StringProvider>(relaxed = true)
+    private val settingsManager = mockk<SettingsManager>(relaxed = true)
+    private val documentRepository = mockk<DocumentRepository>(relaxed = true)
+    private val editorInteractor = mockk<EditorInteractor>(relaxed = true)
+    private val fontsInteractor = mockk<FontsInteractor>(relaxed = true)
+    private val gitInteractor = mockk<GitInteractor>(relaxed = true)
+    private val shortcutsInteractor = mockk<ShortcutsInteractor>(relaxed = true)
+    private val terminalInteractor = mockk<TerminalInteractor>(relaxed = true)
+    private val languageInteractor = mockk<LanguageInteractor>(relaxed = true)
+    private val navigator = mockk<Navigator>(relaxed = true)
+
+    @Before
+    fun setup() {
+        mockkObject(TypefaceProvider)
+        every { TypefaceProvider.DEFAULT } returns mockk()
+    }
+
+    @Test
+    fun `When closing modified file Then open confirmation dialog`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0, modified = true),
+        )
+        val selected = documentList[0] // selected "first.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseFileClicked()
+
+        // Then
+        val route = CloseFileRoute(selected.uuid, selected.displayName)
+        verify(exactly = 1) { navigator.navigate(route) }
+    }
+
+    @Test
+    fun `When close confirmed Then close document`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0, modified = true),
+        )
+        val selected = documentList[0] // selected "first.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseFileClicked()
+        viewModel.onCloseModifiedClicked(selected.uuid)
+
+        // Then
+        assertEquals(emptyList<DocumentState>(), viewModel.viewState.value.documents)
+        assertEquals(-1, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing selected tab at the first position Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[0] // selected "first.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseFileClicked() // close selected
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "2", fileName = "second.txt", position = 0),
+            createDocument(uuid = "3", fileName = "third.txt", position = 1),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(0, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing selected tab at the last position Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[2] // selected "third.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseFileClicked() // close selected
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(1, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing selected tab in the middle Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[1] // selected "second.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseFileClicked() // close selected
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "3", fileName = "third.txt", position = 1),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(0, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing unselected tab at the first position Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[2] // selected "third.txt"
+        val unselected = documentList[0] // closing "first.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseClicked(unselected, fromUser = true)
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "2", fileName = "second.txt", position = 0),
+            createDocument(uuid = "3", fileName = "third.txt", position = 1),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(1, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing unselected tab at the last position Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[0] // selected "first.txt"
+        val unselected = documentList[2] // closing "third.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseClicked(unselected, fromUser = true)
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(0, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing all tabs but not selected Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[1] // selected "second.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseOthersClicked(selected)
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "2", fileName = "second.txt", position = 0),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(0, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing all tabs but not unselected Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[2] // selected "third.txt"
+        val unselected = documentList[1] // closing all except "second.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseOthersClicked(unselected)
+
+        // Then
+        val expectedDocuments = listOf(
+            createDocument(uuid = "2", fileName = "second.txt", position = 0),
+        )
+        val actualDocuments = viewModel.viewState.value.documents
+            .map(DocumentState::document)
+
+        assertEquals(expectedDocuments, actualDocuments)
+        assertEquals(0, viewModel.viewState.value.selectedDocument)
+    }
+
+    @Test
+    fun `When closing all tabs Then check documents list`() = runTest {
+        // Given
+        val documentList = listOf(
+            createDocument(uuid = "1", fileName = "first.txt", position = 0),
+            createDocument(uuid = "2", fileName = "second.txt", position = 1),
+            createDocument(uuid = "3", fileName = "third.txt", position = 2),
+        )
+        val selected = documentList[2] // selected "third.txt"
+
+        every { settingsManager.selectedUuid } returns selected.uuid
+        coEvery { documentRepository.loadDocuments() } returns documentList
+
+        // When
+        val viewModel = createViewModel()
+        viewModel.onCloseAllClicked()
+
+        // Then
+        assertEquals(emptyList<DocumentState>(), viewModel.viewState.value.documents)
+        assertEquals(-1, viewModel.viewState.value.selectedDocument)
+    }
+
+    private fun createViewModel(): EditorViewModel {
+        return EditorViewModel(
+            stringProvider = stringProvider,
+            settingsManager = settingsManager,
+            documentRepository = documentRepository,
+            editorInteractor = editorInteractor,
+            fontsInteractor = fontsInteractor,
+            gitInteractor = gitInteractor,
+            shortcutsInteractor = shortcutsInteractor,
+            terminalInteractor = terminalInteractor,
+            languageInteractor = languageInteractor,
+            navigator = navigator
+        )
+    }
+}

@@ -1,4 +1,4 @@
-<b>Squircle CE</b>è un editor di codice e file manager veloce e leggero che supporta oltre 30 linguaggi di programmazione, accesso remoto ai file tramite SFTP/FTP(S) e integrazione Git VCS. A prescindere che tu sia uno studente, un hobbysta o uno sviluppatore professionista, Squircle CE ti permette di scrivere, gestire e visionare il tuo codice sorgente ovunque e dovunque - anche su smartphone e tablet.
+<b>Vcode</b>è un editor di codice e file manager veloce e leggero che supporta oltre 30 linguaggi di programmazione, accesso remoto ai file tramite SFTP/FTP(S) e integrazione Git VCS. A prescindere che tu sia uno studente, un hobbysta o uno sviluppatore professionista, Vcode ti permette di scrivere, gestire e visionare il tuo codice sorgente ovunque e dovunque - anche su smartphone e tablet.
 
 Ecco alcune caratteristiche che aiuteranno a scrivere il tuo codice più efficientemente:
 
@@ -36,4 +36,4 @@ Seleziona, elimina o duplica con facilità righe di codice tramite opzioni di ed
 Scegli una varietà di temi che soddisfano il tuo ambiente di lavoro preferito.
 
 <b>• Apri Sorgente</b>
-Esplora e contribuisci: <u>https://github.com/massivemadness/Squircle-CE</u>
+Esplora e contribuisci: <u>https://github.com/Christianzz4603/Vcode</u>

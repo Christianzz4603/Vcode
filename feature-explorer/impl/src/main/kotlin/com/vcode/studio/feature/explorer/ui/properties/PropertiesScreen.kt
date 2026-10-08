@@ -1,0 +1,141 @@
+/*
+ * Copyright Squircle CE contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.vcode.studio.feature.explorer.ui.properties
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import com.vcode.studio.core.extensions.daggerViewModel
+import com.vcode.studio.ds.PreviewBackground
+import com.vcode.studio.ds.checkbox.CheckBox
+import com.vcode.studio.ds.dialog.AlertDialog
+import com.vcode.studio.ds.textfield.TextField
+import com.vcode.studio.feature.explorer.R
+import com.vcode.studio.feature.explorer.api.navigation.PropertiesRoute
+import com.vcode.studio.feature.explorer.data.utils.formatDate
+import com.vcode.studio.feature.explorer.data.utils.formatSize
+import com.vcode.studio.feature.explorer.internal.ExplorerComponent
+import com.vcode.studio.filesystem.base.model.Permission
+import com.vcode.studio.filesystem.base.utils.hasFlag
+import com.vcode.studio.filesystem.base.utils.plusFlag
+
+@Composable
+internal fun PropertiesScreen(
+    navArgs: PropertiesRoute,
+    viewModel: PropertiesViewModel = daggerViewModel { context ->
+        val component = ExplorerComponent.buildOrGet(context)
+        PropertiesViewModel.Factory().also(component::inject)
+    }
+) {
+    PropertiesScreen(
+        fileName = navArgs.fileName,
+        filePath = navArgs.filePath,
+        fileSize = navArgs.fileSize,
+        lastModified = navArgs.lastModified,
+        permission = navArgs.permission,
+        onCancelClicked = viewModel::onBackClicked,
+    )
+}
+
+@Composable
+private fun PropertiesScreen(
+    fileName: String,
+    filePath: String,
+    fileSize: Long,
+    lastModified: Long,
+    permission: Int,
+    onCancelClicked: () -> Unit = {}
+) {
+    AlertDialog(
+        title = stringResource(R.string.explorer_properties_dialog_title),
+        content = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                TextField(
+                    inputText = fileName,
+                    labelText = stringResource(R.string.explorer_properties_dialog_name),
+                    readOnly = true,
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                TextField(
+                    inputText = filePath,
+                    labelText = stringResource(R.string.explorer_properties_dialog_path),
+                    readOnly = true,
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                TextField(
+                    inputText = lastModified.formatDate(
+                        pattern = stringResource(R.string.explorer_properties_dialog_date_format)
+                    ),
+                    labelText = stringResource(R.string.explorer_properties_dialog_date),
+                    readOnly = true,
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                TextField(
+                    inputText = fileSize.formatSize(),
+                    labelText = stringResource(R.string.explorer_properties_dialog_size),
+                    readOnly = true,
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Row {
+                    CheckBox(
+                        title = stringResource(R.string.explorer_properties_dialog_read),
+                        checked = permission hasFlag Permission.OWNER_READ,
+                    )
+                    CheckBox(
+                        title = stringResource(R.string.explorer_properties_dialog_write),
+                        checked = permission hasFlag Permission.OWNER_WRITE,
+                    )
+                    CheckBox(
+                        title = stringResource(R.string.explorer_properties_dialog_exec),
+                        checked = permission hasFlag Permission.OWNER_EXECUTE,
+                    )
+                }
+            }
+        },
+        dismissButton = stringResource(android.R.string.cancel),
+        onDismissClicked = onCancelClicked,
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun PropertiesScreenPreview() {
+    PreviewBackground {
+        PropertiesScreen(
+            fileName = "untitled.txt",
+            filePath = "/storage/emulated/0/untitled.txt",
+            fileSize = 1024 * 1024,
+            lastModified = System.currentTimeMillis(),
+            permission = Permission.OWNER_READ plusFlag Permission.OWNER_WRITE,
+        )
+    }
+}

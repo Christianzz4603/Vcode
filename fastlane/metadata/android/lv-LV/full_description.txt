@@ -1,4 +1,4 @@
-<b>Squircle CE</b> — ātrs un viegls koda redaktors un datņu pārvaldnieks, kas atbalsta vairāk nekā 30 programmēšanas valodas, ar attālinātu datņu piekļuvi, izmantojot SFTP/FTP(S), un Git integrāciju. Neatkarīgi no tā, vai esat students, hobija līmeņa vai profesionāls izstrādātājs, Squircle CE ļauj jums rakstīt un rediģēt kodu jebkur un jebkurā laikā — tieši jūsu tālrunī vai planšetē.
+<b>Vcode</b> — ātrs un viegls koda redaktors un datņu pārvaldnieks, kas atbalsta vairāk nekā 30 programmēšanas valodas, ar attālinātu datņu piekļuvi, izmantojot SFTP/FTP(S), un Git integrāciju. Neatkarīgi no tā, vai esat students, hobija līmeņa vai profesionāls izstrādātājs, Vcode ļauj jums rakstīt un rediģēt kodu jebkur un jebkurā laikā — tieši jūsu tālrunī vai planšetē.
 
 Šeit ir uzskaitītas dažas funkcijas no visa plašā funkcionāla, kas palīdz kodēt daudz efektīvāk:
 
@@ -36,4 +36,4 @@ Viegli atlasīt, dzēst vai dublēt rindas, izmantojot ērtos rediģēšanas rī
 Iespēja atlasīt kādu no dažādiem krāsu motīviem, kas atbilst jūsu programmēšanas aurai.
 
 <b>• Atvērts pirmkods</b>
-Izpētiet un sniedziet savu artavu: <u>https://github.com/massivemadness/Squircle-CE</u>
+Izpētiet un sniedziet savu artavu: <u>https://github.com/Christianzz4603/Vcode</u>

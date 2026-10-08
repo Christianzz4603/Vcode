@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "Squircle-CE"
+rootProject.name = "Vcode"
 
 pluginManagement {
     includeBuild("build-logic")
