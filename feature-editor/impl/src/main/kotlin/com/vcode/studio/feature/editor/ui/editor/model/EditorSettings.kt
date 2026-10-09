@@ -42,5 +42,8 @@ internal data class EditorSettings(
     val autoClosePairs: Boolean = true,
     val useSpacesInsteadOfTabs: Boolean = true,
     val tabWidth: Int = 4,
+    val cursorStyle: String = "normal",
+    val smoothCaret: Boolean = false,
+    val fontLigatures: Boolean = true,
     val keybindings: List<Keybinding> = emptyList(),
 )

@@ -164,6 +164,34 @@ internal class EditorHeaderViewModel @Inject constructor(
         }
     }
 
+    fun onCursorStyleChanged(cursorStyle: String) {
+        viewModelScope.launch {
+            settingsManager.cursorStyle = cursorStyle
+            _viewState.value = updateViewState()
+        }
+    }
+
+    fun onSmoothCaretChanged(smoothCaret: Boolean) {
+        viewModelScope.launch {
+            settingsManager.smoothCaret = smoothCaret
+            _viewState.value = updateViewState()
+        }
+    }
+
+    fun onFontLigaturesChanged(fontLigatures: Boolean) {
+        viewModelScope.launch {
+            settingsManager.fontLigatures = fontLigatures
+            _viewState.value = updateViewState()
+        }
+    }
+
+    fun onAutoSaveDelayChanged(autoSaveDelay: String) {
+        viewModelScope.launch {
+            settingsManager.autoSaveDelay = autoSaveDelay.toLongOrNull() ?: 0L
+            _viewState.value = updateViewState()
+        }
+    }
+
     private fun updateViewState(): EditorHeaderViewState {
         return EditorHeaderViewState(
             fontSize = settingsManager.fontSize,
@@ -181,6 +209,10 @@ internal class EditorHeaderViewModel @Inject constructor(
             extendedKeyboard = settingsManager.extendedKeyboard,
             keyboardPreset = settingsManager.keyboardPreset,
             softKeyboard = settingsManager.softKeyboard,
+            cursorStyle = settingsManager.cursorStyle,
+            smoothCaret = settingsManager.smoothCaret,
+            fontLigatures = settingsManager.fontLigatures,
+            autoSaveDelay = settingsManager.autoSaveDelay.toString(),
         )
     }
 

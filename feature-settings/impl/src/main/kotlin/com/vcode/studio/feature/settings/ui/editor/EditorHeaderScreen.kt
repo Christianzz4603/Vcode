@@ -36,6 +36,7 @@ import com.vcode.studio.core.extensions.showToast
 import com.vcode.studio.core.mvi.ViewEvent
 import com.vcode.studio.ds.PreviewBackground
 import com.vcode.studio.ds.divider.HorizontalDivider
+import com.vcode.studio.ds.preference.ListPreference
 import com.vcode.studio.ds.preference.Preference
 import com.vcode.studio.ds.preference.PreferenceGroup
 import com.vcode.studio.ds.preference.SliderPreference
@@ -75,6 +76,10 @@ internal fun EditorHeaderScreen(
         onKeyboardPresetChanged = viewModel::onKeyboardPresetChanged,
         onResetKeyboardClicked = viewModel::onResetKeyboardClicked,
         onSoftKeyboardChanged = viewModel::onSoftKeyboardChanged,
+        onCursorStyleChanged = viewModel::onCursorStyleChanged,
+        onSmoothCaretChanged = viewModel::onSmoothCaretChanged,
+        onFontLigaturesChanged = viewModel::onFontLigaturesChanged,
+        onAutoSaveDelayChanged = viewModel::onAutoSaveDelayChanged,
     )
 
     val context = LocalContext.current
@@ -108,6 +113,10 @@ private fun EditorHeaderScreen(
     onKeyboardPresetChanged: (String) -> Unit = {},
     onResetKeyboardClicked: () -> Unit = {},
     onSoftKeyboardChanged: (Boolean) -> Unit = {},
+    onCursorStyleChanged: (String) -> Unit = {},
+    onSmoothCaretChanged: (Boolean) -> Unit = {},
+    onFontLigaturesChanged: (Boolean) -> Unit = {},
+    onAutoSaveDelayChanged: (String) -> Unit = {},
 ) {
     ScaffoldSuite(
         topBar = {
@@ -208,6 +217,31 @@ private fun EditorHeaderScreen(
                 checked = viewState.readOnly,
                 onCheckedChange = onReadOnlyChanged,
             )
+            ListPreference(
+                title = stringResource(R.string.settings_cursor_style_title),
+                subtitle = stringResource(R.string.settings_cursor_style_subtitle),
+                entries = arrayOf(
+                    stringResource(R.string.settings_cursor_style_thin),
+                    stringResource(R.string.settings_cursor_style_normal),
+                    stringResource(R.string.settings_cursor_style_thick),
+                ),
+                entryValues = arrayOf("thin", "normal", "thick"),
+                entryNameAsSubtitle = true,
+                selectedValue = viewState.cursorStyle,
+                onValueSelected = onCursorStyleChanged,
+            )
+            SwitchPreference(
+                title = stringResource(R.string.settings_smooth_caret_title),
+                subtitle = stringResource(R.string.settings_smooth_caret_subtitle),
+                checked = viewState.smoothCaret,
+                onCheckedChange = onSmoothCaretChanged,
+            )
+            SwitchPreference(
+                title = stringResource(R.string.settings_font_ligatures_title),
+                subtitle = stringResource(R.string.settings_font_ligatures_subtitle),
+                checked = viewState.fontLigatures,
+                onCheckedChange = onFontLigaturesChanged,
+            )
             HorizontalDivider()
             PreferenceGroup(
                 title = stringResource(R.string.settings_category_tabs)
@@ -217,6 +251,21 @@ private fun EditorHeaderScreen(
                 subtitle = stringResource(R.string.settings_auto_save_files_subtitle),
                 checked = viewState.autoSaveFiles,
                 onCheckedChange = onAutoSaveFilesChanged,
+            )
+            ListPreference(
+                title = stringResource(R.string.settings_auto_save_delay_title),
+                subtitle = stringResource(R.string.settings_auto_save_delay_subtitle),
+                enabled = viewState.autoSaveFiles,
+                entries = arrayOf(
+                    stringResource(R.string.settings_auto_save_delay_exit),
+                    stringResource(R.string.settings_auto_save_delay_1s),
+                    stringResource(R.string.settings_auto_save_delay_3s),
+                    stringResource(R.string.settings_auto_save_delay_10s),
+                ),
+                entryValues = arrayOf("0", "1000", "3000", "10000"),
+                entryNameAsSubtitle = true,
+                selectedValue = viewState.autoSaveDelay,
+                onValueSelected = onAutoSaveDelayChanged,
             )
             HorizontalDivider()
             PreferenceGroup(

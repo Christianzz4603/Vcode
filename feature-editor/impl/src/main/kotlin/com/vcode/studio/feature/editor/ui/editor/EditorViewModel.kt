@@ -65,6 +65,7 @@ import com.vcode.studio.navigation.api.Navigator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -102,6 +103,7 @@ internal class EditorViewModel @Inject constructor(
     private var selectedPosition = -1
     private var settings = EditorSettings()
     private var currentJob: Job? = null
+    private var autoSaveJob: Job? = null
 
     init {
         loadDocuments()
@@ -247,6 +249,46 @@ internal class EditorViewModel @Inject constructor(
         onCloseClicked(document, fromUser = true)
     }
 
+    private fun scheduleAutoSave() {
+        autoSaveJob?.cancel()
+        val delayMs = settingsManager.autoSaveDelay
+        if (!settingsManager.autoSaveFiles || delayMs <= 0L) {
+            return
+        }
+        autoSaveJob = viewModelScope.launch {
+            try {
+                delay(delayMs)
+                if (selectedPosition !in documents.indices) {
+                    return@launch
+                }
+
+                val state = documents[selectedPosition]
+                val content = state.content ?: return@launch
+                if (!state.document.modified) {
+                    return@launch
+                }
+
+                val updatedDocument = state.document.copy(
+                    modified = false,
+                    scrollX = content.scrollX,
+                    scrollY = content.scrollY,
+                    selectionStart = content.selectionStart,
+                    selectionEnd = content.selectionEnd,
+                )
+                documents = documents.mapSelected { it.copy(document = updatedDocument) }
+                _viewState.update {
+                    it.copy(documents = documents)
+                }
+                documentRepository.saveDocument(updatedDocument, content)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Timber.e(e, e.message)
+                _viewEvent.send(ViewEvent.Toast(e.message.orEmpty()))
+            }
+        }
+    }
+
     fun onContentChanged() {
         viewModelScope.launch {
             try {
@@ -257,6 +299,8 @@ internal class EditorViewModel @Inject constructor(
                 val documentState = documents[selectedPosition]
                 val content = documentState.content ?: return@launch
                 val document = documentState.document
+
+                scheduleAutoSave()
 
                 val canUndo = content.canUndo()
                 val canRedo = content.canRedo()
@@ -1423,6 +1467,9 @@ internal class EditorViewModel @Inject constructor(
         autoClosePairs = settingsManager.autoClosePairs,
         useSpacesInsteadOfTabs = settingsManager.useSpacesInsteadOfTabs,
         tabWidth = settingsManager.tabWidth,
+        cursorStyle = settingsManager.cursorStyle,
+        smoothCaret = settingsManager.smoothCaret,
+        fontLigatures = settingsManager.fontLigatures,
         keybindings = shortcutsInteractor.loadShortcuts(),
     )
 

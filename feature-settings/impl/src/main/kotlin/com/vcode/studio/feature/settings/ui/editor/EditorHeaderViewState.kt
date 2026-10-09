@@ -36,4 +36,8 @@ internal data class EditorHeaderViewState(
     val extendedKeyboard: Boolean,
     val keyboardPreset: String,
     val softKeyboard: Boolean,
+    val cursorStyle: String = "normal",
+    val smoothCaret: Boolean = false,
+    val fontLigatures: Boolean = true,
+    val autoSaveDelay: String = "0",
 ) : ViewState

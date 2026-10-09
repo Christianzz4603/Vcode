@@ -175,4 +175,19 @@
 
     <string name="settings_website_title" translatable="false">Website</string>
     <string name="settings_website_subtitle" translatable="false">vcode-site.pages.dev</string>
+    <string name="settings_cursor_style_title" translatable="false">Cursor style</string>
+    <string name="settings_cursor_style_subtitle" translatable="false">Width of the text cursor</string>
+    <string name="settings_cursor_style_thin" translatable="false">Thin</string>
+    <string name="settings_cursor_style_normal" translatable="false">Normal</string>
+    <string name="settings_cursor_style_thick" translatable="false">Thick</string>
+    <string name="settings_smooth_caret_title" translatable="false">Smooth cursor animation</string>
+    <string name="settings_smooth_caret_subtitle" translatable="false">Animate the cursor when it moves</string>
+    <string name="settings_font_ligatures_title" translatable="false">Font ligatures</string>
+    <string name="settings_font_ligatures_subtitle" translatable="false">Join characters such as => and != when the font supports it</string>
+    <string name="settings_auto_save_delay_title" translatable="false">Auto save delay</string>
+    <string name="settings_auto_save_delay_subtitle" translatable="false">When files are saved automatically</string>
+    <string name="settings_auto_save_delay_exit" translatable="false">When switching tabs or leaving</string>
+    <string name="settings_auto_save_delay_1s" translatable="false">After 1 second</string>
+    <string name="settings_auto_save_delay_3s" translatable="false">After 3 seconds</string>
+    <string name="settings_auto_save_delay_10s" translatable="false">After 10 seconds</string>
 </resources>

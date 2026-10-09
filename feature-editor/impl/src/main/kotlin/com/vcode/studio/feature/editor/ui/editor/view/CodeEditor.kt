@@ -88,6 +88,15 @@ internal class CodeEditor @JvmOverloads constructor(
         }
     }
 
+    fun setCursorStyle(style: String) {
+        val widthDp = when (style) {
+            "thin" -> THIN_CURSOR_WIDTH
+            "thick" -> THICK_CURSOR_WIDTH
+            else -> CURSOR_WIDTH
+        }
+        setCursorWidth(widthDp * dpUnit)
+    }
+
     fun setShowInvisibleChars(whether: Boolean) {
         nonPrintablePaintingFlags = if (whether) {
             FLAG_DRAW_WHITESPACE_LEADING or
@@ -105,5 +114,7 @@ internal class CodeEditor @JvmOverloads constructor(
         private const val DIVIDER_MARGIN_LEFT = 2
         private const val DIVIDER_MARGIN_RIGHT = 4
         private const val CURSOR_WIDTH = 2
+        private const val THIN_CURSOR_WIDTH = 1
+        private const val THICK_CURSOR_WIDTH = 4
     }
 }

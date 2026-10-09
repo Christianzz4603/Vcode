@@ -97,6 +97,9 @@ internal fun CodeEditor(
             editor.typefaceLineNumber = settings.fontType
             editor.isDisableSoftKbdIfHardKbdAvailable = !settings.softKeyboard
             editor.setShowInvisibleChars(settings.showInvisibleChars)
+            editor.setCursorStyle(settings.cursorStyle)
+            editor.isCursorAnimationEnabled = settings.smoothCaret
+            editor.isLigatureEnabled = settings.fontLigatures
 
             val editorLanguage = editor.createFromRegistry(
                 language = language,

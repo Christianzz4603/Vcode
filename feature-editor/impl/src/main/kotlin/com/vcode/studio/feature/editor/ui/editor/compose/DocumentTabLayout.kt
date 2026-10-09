@@ -64,6 +64,7 @@ internal fun DocumentTabLayout(
                 DocumentTab(
                     name = state.document.displayName,
                     modified = state.document.modified,
+                    language = state.document.language,
                     selected = i == selectedIndex,
                     onDocumentClicked = { onDocumentClicked(state) },
                     onCloseClicked = { onCloseClicked(state) },

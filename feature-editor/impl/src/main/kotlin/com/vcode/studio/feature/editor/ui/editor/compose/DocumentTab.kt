@@ -16,9 +16,15 @@
 
 package com.vcode.studio.feature.editor.ui.editor.compose
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -26,16 +32,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.vcode.studio.ds.PreviewBackground
+import com.vcode.studio.ds.VcodeTheme
 import com.vcode.studio.ds.button.IconButton
 import com.vcode.studio.ds.button.IconButtonSizeDefaults
 import com.vcode.studio.ds.button.IconButtonStyleDefaults
 import com.vcode.studio.ds.tabs.TabItem
 import com.vcode.studio.feature.editor.R
+import com.vcode.studio.feature.editor.data.provider.FileIconProviderImpl
 import com.vcode.studio.feature.editor.ui.editor.compose.menu.CloseMenu
 import com.vcode.studio.ds.R as UiR
 
@@ -45,6 +57,7 @@ internal fun DocumentTab(
     modified: Boolean,
     selected: Boolean,
     modifier: Modifier = Modifier,
+    language: String = "",
     onDocumentClicked: () -> Unit = {},
     onCloseClicked: () -> Unit = {},
     onCloseOthersClicked: () -> Unit = {},
@@ -53,9 +66,10 @@ internal fun DocumentTab(
     var menuExpanded by rememberSaveable {
         mutableStateOf(false)
     }
+    val closeDescription = stringResource(R.string.editor_menu_file_close)
 
     TabItem(
-        title = if (modified) "• $name" else name,
+        title = name,
         selected = selected,
         onClick = {
             if (selected) {
@@ -65,15 +79,47 @@ internal fun DocumentTab(
             }
         },
         paddingValues = PaddingValues(start = 12.dp),
-        trailingContent = {
-            IconButton(
-                iconResId = UiR.drawable.ic_close,
-                iconButtonStyle = IconButtonStyleDefaults.Secondary,
-                onClick = onCloseClicked,
-                contentDescription = stringResource(R.string.editor_menu_file_close),
-                iconButtonSize = IconButtonSizeDefaults.XXS,
-                modifier = Modifier.padding(horizontal = 8.dp)
+        leadingContent = {
+            val iconResId = FileIconProviderImpl.iconForLanguage(language)
+                .takeIf { it != -1 } ?: UiR.drawable.ic_file_document
+            Icon(
+                painter = painterResource(iconResId),
+                contentDescription = null,
+                tint = VcodeTheme.colors.colorTextAndIconSecondary,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(16.dp),
             )
+        },
+        trailingContent = {
+            if (modified) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .size(24.dp)
+                        .semantics { contentDescription = closeDescription }
+                        .clickable(onClick = onCloseClicked),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = VcodeTheme.colors.colorPrimary,
+                                shape = CircleShape,
+                            ),
+                    )
+                }
+            } else {
+                IconButton(
+                    iconResId = UiR.drawable.ic_close,
+                    iconButtonStyle = IconButtonStyleDefaults.Secondary,
+                    onClick = onCloseClicked,
+                    contentDescription = closeDescription,
+                    iconButtonSize = IconButtonSizeDefaults.XXS,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
         },
         anchor = {
             CloseMenu(
