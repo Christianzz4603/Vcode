@@ -30,8 +30,22 @@ internal object ThemeMapper {
         return ThemeModel(
             uuid = assetsTheme.themeId,
             name = assetsTheme.themeName,
-            author = "Squircle CE",
+            author = when (assetsTheme) {
+                AssetsTheme.THEME_VCODE_DARK,
+                AssetsTheme.THEME_DARK_PLUS,
+                AssetsTheme.THEME_LIGHT_PLUS,
+                AssetsTheme.THEME_ONE_DARK,
+                AssetsTheme.THEME_GITHUB_DARK,
+                AssetsTheme.THEME_DRACULA -> "Vcode"
+                else -> "Squircle CE"
+            },
             colors = when (assetsTheme) {
+                AssetsTheme.THEME_VCODE_DARK -> EditorTheme.VCODE_DARK
+                AssetsTheme.THEME_DARK_PLUS -> EditorTheme.DARK_PLUS
+                AssetsTheme.THEME_LIGHT_PLUS -> EditorTheme.LIGHT_PLUS
+                AssetsTheme.THEME_ONE_DARK -> EditorTheme.ONE_DARK
+                AssetsTheme.THEME_GITHUB_DARK -> EditorTheme.GITHUB_DARK
+                AssetsTheme.THEME_DRACULA -> EditorTheme.DRACULA
                 AssetsTheme.THEME_DARCULA -> EditorTheme.DARCULA
                 AssetsTheme.THEME_ECLIPSE -> EditorTheme.ECLIPSE
                 AssetsTheme.THEME_MONOKAI -> EditorTheme.MONOKAI

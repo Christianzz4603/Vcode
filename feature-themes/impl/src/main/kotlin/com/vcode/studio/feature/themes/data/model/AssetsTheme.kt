@@ -21,6 +21,36 @@ internal enum class AssetsTheme(
     val themeName: String,
     val themeUri: String,
 ) {
+    THEME_VCODE_DARK(
+        themeId = "vcode_dark",
+        themeName = "Vcode Dark",
+        themeUri = "file:///android_asset/themes/vcode_dark.json",
+    ),
+    THEME_DARK_PLUS(
+        themeId = "dark_plus",
+        themeName = "Dark+",
+        themeUri = "file:///android_asset/themes/dark_plus.json",
+    ),
+    THEME_LIGHT_PLUS(
+        themeId = "light_plus",
+        themeName = "Light+",
+        themeUri = "file:///android_asset/themes/light_plus.json",
+    ),
+    THEME_ONE_DARK(
+        themeId = "one_dark",
+        themeName = "One Dark",
+        themeUri = "file:///android_asset/themes/one_dark.json",
+    ),
+    THEME_GITHUB_DARK(
+        themeId = "github_dark",
+        themeName = "GitHub Dark",
+        themeUri = "file:///android_asset/themes/github_dark.json",
+    ),
+    THEME_DRACULA(
+        themeId = "dracula",
+        themeName = "Dracula",
+        themeUri = "file:///android_asset/themes/dracula.json",
+    ),
     THEME_DARCULA(
         themeId = "darcula",
         themeName = "Darcula",

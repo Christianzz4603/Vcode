@@ -128,4 +128,76 @@ internal object EditorTheme {
         stringColor = Color.parseColor("#2602F5"),
         commentColor = Color.parseColor("#4F7E61"),
     )
+
+    val VCODE_DARK = ColorModel(
+        textColor = Color.parseColor("#D6E4FF"),
+        backgroundColor = Color.parseColor("#0B1428"),
+        numberColor = Color.parseColor("#FFB86C"),
+        operatorColor = Color.parseColor("#7FB3FF"),
+        keywordColor = Color.parseColor("#3EC6FD"),
+        variableColor = Color.parseColor("#D6E4FF"),
+        functionColor = Color.parseColor("#FFD479"),
+        stringColor = Color.parseColor("#7EE0A3"),
+        commentColor = Color.parseColor("#5F7399"),
+    )
+
+    val DARK_PLUS = ColorModel(
+        textColor = Color.parseColor("#D4D4D4"),
+        backgroundColor = Color.parseColor("#1E1E1E"),
+        numberColor = Color.parseColor("#B5CEA8"),
+        operatorColor = Color.parseColor("#D4D4D4"),
+        keywordColor = Color.parseColor("#C586C0"),
+        variableColor = Color.parseColor("#9CDCFE"),
+        functionColor = Color.parseColor("#DCDCAA"),
+        stringColor = Color.parseColor("#CE9178"),
+        commentColor = Color.parseColor("#6A9955"),
+    )
+
+    val LIGHT_PLUS = ColorModel(
+        textColor = Color.parseColor("#000000"),
+        backgroundColor = Color.parseColor("#FFFFFF"),
+        numberColor = Color.parseColor("#098658"),
+        operatorColor = Color.parseColor("#000000"),
+        keywordColor = Color.parseColor("#AF00DB"),
+        variableColor = Color.parseColor("#001080"),
+        functionColor = Color.parseColor("#795E26"),
+        stringColor = Color.parseColor("#A31515"),
+        commentColor = Color.parseColor("#008000"),
+    )
+
+    val ONE_DARK = ColorModel(
+        textColor = Color.parseColor("#ABB2BF"),
+        backgroundColor = Color.parseColor("#282C34"),
+        numberColor = Color.parseColor("#D19A66"),
+        operatorColor = Color.parseColor("#56B6C2"),
+        keywordColor = Color.parseColor("#C678DD"),
+        variableColor = Color.parseColor("#E06C75"),
+        functionColor = Color.parseColor("#61AFEF"),
+        stringColor = Color.parseColor("#98C379"),
+        commentColor = Color.parseColor("#5C6370"),
+    )
+
+    val GITHUB_DARK = ColorModel(
+        textColor = Color.parseColor("#C9D1D9"),
+        backgroundColor = Color.parseColor("#0D1117"),
+        numberColor = Color.parseColor("#79C0FF"),
+        operatorColor = Color.parseColor("#FF7B72"),
+        keywordColor = Color.parseColor("#FF7B72"),
+        variableColor = Color.parseColor("#FFA657"),
+        functionColor = Color.parseColor("#D2A8FF"),
+        stringColor = Color.parseColor("#A5D6FF"),
+        commentColor = Color.parseColor("#8B949E"),
+    )
+
+    val DRACULA = ColorModel(
+        textColor = Color.parseColor("#F8F8F2"),
+        backgroundColor = Color.parseColor("#282A36"),
+        numberColor = Color.parseColor("#BD93F9"),
+        operatorColor = Color.parseColor("#FF79C6"),
+        keywordColor = Color.parseColor("#FF79C6"),
+        variableColor = Color.parseColor("#F8F8F2"),
+        functionColor = Color.parseColor("#50FA7B"),
+        stringColor = Color.parseColor("#F1FA8C"),
+        commentColor = Color.parseColor("#6272A4"),
+    )
 }

@@ -51,6 +51,10 @@ class SettingsManager(private val context: Context) {
         // Tabs
         const val KEY_SELECTED_DOCUMENT_ID = "selected_document_id"
         const val KEY_AUTO_SAVE_FILES = "auto_save_files"
+        const val KEY_AUTO_SAVE_DELAY = "auto_save_delay"
+        const val KEY_CURSOR_STYLE = "cursor_style"
+        const val KEY_SMOOTH_CARET = "smooth_caret"
+        const val KEY_FONT_LIGATURES = "font_ligatures"
 
         // Keyboard
         const val KEY_USE_EXTENDED_KEYBOARD = "use_extended_keyboard"
@@ -103,7 +107,7 @@ class SettingsManager(private val context: Context) {
             .also { _sharedPreferences = it }
 
     var editorTheme: String
-        get() = sharedPreferences.getString(KEY_EDITOR_THEME, "darcula") ?: "darcula"
+        get() = sharedPreferences.getString(KEY_EDITOR_THEME, "vcode_dark") ?: "vcode_dark"
         set(value) = sharedPreferences.edit().putString(KEY_EDITOR_THEME, value).apply()
     var fullScreenMode: Boolean
         get() = sharedPreferences.getBoolean(KEY_FULLSCREEN_MODE, false)
@@ -157,6 +161,18 @@ class SettingsManager(private val context: Context) {
     var autoSaveFiles: Boolean
         get() = sharedPreferences.getBoolean(KEY_AUTO_SAVE_FILES, false)
         set(value) = sharedPreferences.edit().putBoolean(KEY_AUTO_SAVE_FILES, value).apply()
+    var autoSaveDelay: Long
+        get() = (sharedPreferences.getString(KEY_AUTO_SAVE_DELAY, "0") ?: "0").toLongOrNull() ?: 0L
+        set(value) = sharedPreferences.edit().putString(KEY_AUTO_SAVE_DELAY, value.toString()).apply()
+    var cursorStyle: String
+        get() = sharedPreferences.getString(KEY_CURSOR_STYLE, "normal") ?: "normal"
+        set(value) = sharedPreferences.edit().putString(KEY_CURSOR_STYLE, value).apply()
+    var smoothCaret: Boolean
+        get() = sharedPreferences.getBoolean(KEY_SMOOTH_CARET, false)
+        set(value) = sharedPreferences.edit().putBoolean(KEY_SMOOTH_CARET, value).apply()
+    var fontLigatures: Boolean
+        get() = sharedPreferences.getBoolean(KEY_FONT_LIGATURES, true)
+        set(value) = sharedPreferences.edit().putBoolean(KEY_FONT_LIGATURES, value).apply()
 
     var extendedKeyboard: Boolean
         get() = sharedPreferences.getBoolean(KEY_USE_EXTENDED_KEYBOARD, true)
