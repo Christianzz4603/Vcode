@@ -13,6 +13,9 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 * New name, icon and splash screen (application id `com.vcode.studio`)
 * 10 additional languages with syntax highlighting: Swift, R, PowerShell, Objective-C, Less, SCSS, CoffeeScript, Pug, Diff and Handlebars (49 languages in total)
 * Keyword suggestions while typing, loaded from simple JSON files in `feature-editor/impl/src/main/assets/keyword/`
+* 6 new VS Code-style themes: Vcode Dark (the new default), Dark+, Light+, One Dark, GitHub Dark and Dracula (15 themes in total)
+* VS Code-style tabs with a language icon and a dot for unsaved changes
+* New editor settings: cursor style, smooth cursor animation, font ligatures and an auto save delay
 * A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
 
 ## Download
