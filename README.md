@@ -6,6 +6,8 @@ Vcode is based on Squircle CE by Blacksquircle and is distributed under the same
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
+
 ## What is different from Squircle CE
 
 * New name, icon and splash screen (application id `com.vcode.studio`)
@@ -15,7 +17,7 @@ Vcode is based on Squircle CE by Blacksquircle and is distributed under the same
 
 ## Download
 
-Get the latest `Vcode-foss.apk` from the [Releases](https://github.com/Christianzz4603/Vcode/releases) page.
+Get the latest `Vcode-foss.apk` from the [website](https://vcode-site.pages.dev) or the [Releases](https://github.com/Christianzz4603/Vcode/releases) page.
 
 ## Build instructions
 

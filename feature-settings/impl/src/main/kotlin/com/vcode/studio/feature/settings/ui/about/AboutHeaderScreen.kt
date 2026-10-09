@@ -50,6 +50,7 @@ import com.vcode.studio.ds.R as UiR
 
 private const val PRIVACY_POLICY_URL =
     "https://github.com/Christianzz4603/Vcode/blob/main/PRIVACY-POLICY.md"
+private const val WEBSITE_URL = "https://vcode-site.pages.dev"
 private const val TRANSLATION_PLATFORM_URL = "https://crowdin.com/project/squircle-ce"
 private const val CONTRIBUTE_PROJECT_URL = "https://github.com/Christianzz4603/Vcode"
 
@@ -66,6 +67,12 @@ internal fun AboutHeaderScreen(
         onPrivacyClicked = {
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = PRIVACY_POLICY_URL.toUri()
+            }
+            context.startActivity(intent)
+        },
+        onWebsiteClicked = {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = WEBSITE_URL.toUri()
             }
             context.startActivity(intent)
         },
@@ -88,6 +95,7 @@ internal fun AboutHeaderScreen(
 private fun AboutHeaderScreen(
     onBackClicked: () -> Unit = {},
     onPrivacyClicked: () -> Unit = {},
+    onWebsiteClicked: () -> Unit = {},
     onTranslationClicked: () -> Unit = {},
     onContributeClicked: () -> Unit = {},
 ) {
@@ -127,6 +135,11 @@ private fun AboutHeaderScreen(
             Preference(
                 title = stringResource(R.string.settings_privacy_policy_title),
                 onClick = onPrivacyClicked,
+            )
+            Preference(
+                title = stringResource(R.string.settings_website_title),
+                subtitle = stringResource(R.string.settings_website_subtitle),
+                onClick = onWebsiteClicked,
             )
             HorizontalDivider()
             PreferenceGroup(

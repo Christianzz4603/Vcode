@@ -173,4 +173,6 @@
     <string name="settings_contribute_title">Contribute to development</string>
     <string name="settings_contribute_subtitle">You can create an issue on GitHub or translate this app to your native language.\n\nThank you!</string>
 
+    <string name="settings_website_title" translatable="false">Website</string>
+    <string name="settings_website_subtitle" translatable="false">vcode-site.pages.dev</string>
 </resources>
