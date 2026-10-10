@@ -17,6 +17,7 @@
 package com.vcode.studio.feature.editor.data.model
 
 import android.content.Context
+import com.vcode.studio.core.plugins.PluginManager
 import org.json.JSONArray
 import java.util.concurrent.ConcurrentHashMap
 
@@ -78,6 +79,15 @@ internal object LanguageKeywords {
     private val cache = ConcurrentHashMap<String, Array<String>>()
 
     fun forScope(context: Context, scope: String): Array<String>? {
+        val base = baseKeywords(context, scope)
+        val extra = PluginManager.keywords(scope)
+        if (extra.isEmpty()) {
+            return base
+        }
+        return ((base?.toList() ?: emptyList()) + extra).distinct().toTypedArray()
+    }
+
+    private fun baseKeywords(context: Context, scope: String): Array<String>? {
         val name = files[scope] ?: return null
         cache[name]?.let { return it }
         return try {

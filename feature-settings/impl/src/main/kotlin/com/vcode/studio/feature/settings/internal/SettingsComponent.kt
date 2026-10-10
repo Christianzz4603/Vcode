@@ -26,6 +26,7 @@ import com.vcode.studio.feature.settings.ui.editor.EditorHeaderViewModel
 import com.vcode.studio.feature.settings.ui.files.FilesHeaderViewModel
 import com.vcode.studio.feature.settings.ui.git.GitHeaderViewModel
 import com.vcode.studio.feature.settings.ui.header.HeaderListViewModel
+import com.vcode.studio.feature.settings.ui.plugins.PluginsHeaderViewModel
 import com.vcode.studio.feature.settings.ui.terminal.TerminalHeaderViewModel
 import com.vcode.studio.feature.terminal.api.internal.TerminalApi
 import com.vcode.studio.feature.terminal.api.internal.provideTerminalApi
@@ -51,6 +52,7 @@ internal interface SettingsComponent {
     fun inject(factory: TerminalHeaderViewModel.Factory)
     fun inject(factory: GitHeaderViewModel.Factory)
     fun inject(factory: AboutHeaderViewModel.Factory)
+    fun inject(factory: PluginsHeaderViewModel.Factory)
 
     @Component.Factory
     interface Factory {

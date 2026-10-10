@@ -190,4 +190,15 @@
     <string name="settings_auto_save_delay_1s" translatable="false">After 1 second</string>
     <string name="settings_auto_save_delay_3s" translatable="false">After 3 seconds</string>
     <string name="settings_auto_save_delay_10s" translatable="false">After 10 seconds</string>
+    <string name="settings_header_plugins_title" translatable="false">Plugins</string>
+    <string name="settings_header_plugins_subtitle" translatable="false">Install themes, keywords and file types</string>
+    <string name="settings_plugins_category_manage" translatable="false">Manage</string>
+    <string name="settings_plugins_category_installed" translatable="false">Installed plugins</string>
+    <string name="settings_plugins_install_title" translatable="false">Install plugin</string>
+    <string name="settings_plugins_install_subtitle" translatable="false">Pick a plugin file (.zip or .json)</string>
+    <string name="settings_plugins_guide_title" translatable="false">Plugin guide</string>
+    <string name="settings_plugins_guide_subtitle" translatable="false">How to create your own plugins</string>
+    <string name="settings_plugins_empty_title" translatable="false">No plugins installed</string>
+    <string name="settings_plugins_empty_subtitle" translatable="false">Install a plugin file to add themes, keywords or file types</string>
+    <string name="settings_plugins_remove_title" translatable="false">Remove %1$s</string>
 </resources>

@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":feature-terminal:api"))
     implementation(project(":feature-themes:api"))
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.google.dagger)
     ksp(libs.google.dagger.compiler)
 

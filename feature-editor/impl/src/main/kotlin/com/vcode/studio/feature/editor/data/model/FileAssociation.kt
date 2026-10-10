@@ -16,6 +16,8 @@
 
 package com.vcode.studio.feature.editor.data.model
 
+import com.vcode.studio.core.plugins.PluginManager
+
 internal object FileAssociation {
 
     private val associations = HashMap<String, String>(280)
@@ -327,6 +329,6 @@ internal object FileAssociation {
     }
 
     fun guessLanguage(extension: String): String? {
-        return associations[extension]
+        return PluginManager.extensionScope(extension) ?: associations[extension]
     }
 }

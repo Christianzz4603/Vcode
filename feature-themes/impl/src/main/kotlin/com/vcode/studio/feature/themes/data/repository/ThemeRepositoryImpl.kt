@@ -16,9 +16,12 @@
 
 package com.vcode.studio.feature.themes.data.repository
 
+import android.content.Context
+import com.vcode.studio.core.files.Directories
 import com.vcode.studio.core.provider.coroutine.DispatcherProvider
 import com.vcode.studio.core.settings.SettingsManager
 import com.vcode.studio.feature.themes.api.interactor.ThemeInteractor
+import com.vcode.studio.feature.themes.data.mapper.ExternalThemeParser
 import com.vcode.studio.feature.themes.data.mapper.ThemeMapper
 import com.vcode.studio.feature.themes.data.model.AssetsTheme
 import com.vcode.studio.feature.themes.domain.model.ThemeModel
@@ -26,6 +29,7 @@ import com.vcode.studio.feature.themes.domain.repository.ThemeRepository
 import kotlinx.coroutines.withContext
 
 internal class ThemeRepositoryImpl(
+    private val context: Context,
     private val dispatcherProvider: DispatcherProvider,
     private val settingsManager: SettingsManager,
     private val themeInteractor: ThemeInteractor,
@@ -33,10 +37,20 @@ internal class ThemeRepositoryImpl(
 
     override suspend fun loadThemes(query: String): List<ThemeModel> {
         return withContext(dispatcherProvider.io()) {
-            AssetsTheme.entries
+            val builtIn = AssetsTheme.entries
                 .filter { it.name.contains(query, ignoreCase = true) }
                 .map(ThemeMapper::toModel)
+            builtIn + loadPluginThemes(query)
         }
+    }
+
+    private fun loadPluginThemes(query: String): List<ThemeModel> {
+        val files = Directories.themesDir(context).listFiles { file ->
+            file.isFile && file.name.startsWith("plugin_") && file.name.endsWith(".json")
+        }.orEmpty().sortedBy { it.name }
+        return files
+            .mapNotNull { file -> runCatching { ExternalThemeParser.toModel(file) }.getOrNull() }
+            .filter { it.name.contains(query, ignoreCase = true) }
     }
 
     override suspend fun removeTheme(themeModel: ThemeModel) {

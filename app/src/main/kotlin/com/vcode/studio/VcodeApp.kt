@@ -20,6 +20,7 @@ import android.app.Application
 import com.vcode.studio.core.internal.CoreApi
 import com.vcode.studio.core.internal.CoreApiProvider
 import com.vcode.studio.core.logger.AndroidTree
+import com.vcode.studio.core.plugins.PluginManager
 import com.vcode.studio.feature.editor.api.internal.EditorApi
 import com.vcode.studio.feature.editor.api.internal.EditorApiProvider
 import com.vcode.studio.feature.explorer.api.internal.ExplorerApi
@@ -59,6 +60,7 @@ internal class VcodeApp : Application(),
     override fun onCreate() {
         super.onCreate()
         AppComponent.buildOrGet(this)
+        PluginManager.init(this)
         Timber.plant(AndroidTree())
     }
 

@@ -16,6 +16,7 @@
 
 package com.vcode.studio.feature.themes.internal
 
+import android.content.Context
 import com.vcode.studio.core.provider.coroutine.DispatcherProvider
 import com.vcode.studio.core.settings.SettingsManager
 import com.vcode.studio.feature.themes.api.interactor.ThemeInteractor
@@ -30,11 +31,13 @@ internal object ThemesModule {
     @Provides
     @ThemesScope
     fun provideThemeRepository(
+        context: Context,
         dispatcherProvider: DispatcherProvider,
         themeInteractor: ThemeInteractor,
         settingsManager: SettingsManager,
     ): ThemeRepository {
         return ThemeRepositoryImpl(
+            context = context,
             dispatcherProvider = dispatcherProvider,
             themeInteractor = themeInteractor,
             settingsManager = settingsManager,

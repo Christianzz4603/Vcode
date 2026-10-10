@@ -40,6 +40,7 @@ import com.vcode.studio.feature.settings.api.navigation.CodeStyleHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.EditorHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.FilesHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.GitHeaderRoute
+import com.vcode.studio.feature.settings.api.navigation.PluginsHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.TerminalHeaderRoute
 import com.vcode.studio.feature.settings.internal.SettingsComponent
 import com.vcode.studio.feature.shortcuts.api.navigation.ShortcutsRoute
@@ -120,6 +121,11 @@ private fun HeaderListScreen(
                 title = stringResource(R.string.settings_header_git_title),
                 subtitle = stringResource(R.string.settings_header_git_subtitle),
                 onClick = { onHeaderClicked(GitHeaderRoute) },
+            )
+            PreferenceHeader(
+                title = stringResource(R.string.settings_header_plugins_title),
+                subtitle = stringResource(R.string.settings_header_plugins_subtitle),
+                onClick = { onHeaderClicked(PluginsHeaderRoute) },
             )
             PreferenceHeader(
                 title = stringResource(R.string.settings_header_about_title),
