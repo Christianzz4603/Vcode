@@ -1,0 +1,20 @@
+{
+  "id": "example.neon-pack",
+  "name": "Neon Pack",
+  "version": "1.0.0",
+  "author": "Example Author",
+  "description": "A neon theme and a few web keywords",
+  "themes": [
+    "themes/neon.json"
+  ],
+  "keywords": {
+    "javascript": [
+      "requestAnimationFrame",
+      "IntersectionObserver",
+      "structuredClone"
+    ]
+  },
+  "extensions": {
+    ".mjs": "javascript"
+  }
+}

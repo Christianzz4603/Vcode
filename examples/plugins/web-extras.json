@@ -1,0 +1,29 @@
+{
+  "id": "example.web-extras",
+  "name": "Web Extras",
+  "version": "1.0.0",
+  "author": "Example Author",
+  "description": "Extra file types and browser keywords",
+  "keywords": {
+    "javascript": [
+      "document",
+      "window",
+      "addEventListener",
+      "querySelector",
+      "localStorage",
+      "fetch",
+      "console"
+    ],
+    "css": [
+      "grid-template-columns",
+      "backdrop-filter",
+      "aspect-ratio"
+    ]
+  },
+  "extensions": {
+    ".mjs": "javascript",
+    ".cjs": "javascript",
+    ".mdx": "markdown",
+    ".htm": "html"
+  }
+}

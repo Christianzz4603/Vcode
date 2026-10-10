@@ -16,11 +16,16 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 * 6 new VS Code-style themes: Vcode Dark (the new default), Dark+, Light+, One Dark, GitHub Dark and Dracula (15 themes in total)
 * VS Code-style tabs with a language icon and a dot for unsaved changes
 * New editor settings: cursor style, smooth cursor animation, font ligatures and an auto save delay
+* Plugin system: install `.zip` or `.json` plugins to add themes, keyword suggestions and file types (Settings > Plugins)
 * A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
 
 ## Download
 
 Get the latest `Vcode-foss.apk` from the [website](https://vcode-site.pages.dev) or the [Releases](https://github.com/Christianzz4603/Vcode/releases) page.
+
+## Plugins
+
+Vcode can load data-only plugins (themes, keyword lists and file types) from **Settings > Plugins**. See the [plugin guide](docs/PLUGINS.md) and the [examples](examples/plugins).
 
 ## Build instructions
 
