@@ -1,0 +1,972 @@
+{
+ "tags": false,
+ "globals": [
+  [
+   "println",
+   "println(message)  Prints a line",
+   "f"
+  ],
+  [
+   "print",
+   "print(message)  Prints text",
+   "f"
+  ],
+  [
+   "listOf",
+   "listOf(...)  Read-only list",
+   "f"
+  ],
+  [
+   "mutableListOf",
+   "mutableListOf(...)  Mutable list",
+   "f"
+  ],
+  [
+   "mapOf",
+   "mapOf(a to b)  Read-only map",
+   "f"
+  ],
+  [
+   "mutableMapOf",
+   "mutableMapOf(a to b)  Mutable map",
+   "f"
+  ],
+  [
+   "setOf",
+   "setOf(...)  Read-only set",
+   "f"
+  ],
+  [
+   "mutableSetOf",
+   "mutableSetOf(...)  Mutable set",
+   "f"
+  ],
+  [
+   "arrayOf",
+   "arrayOf(...)  Array",
+   "f"
+  ],
+  [
+   "emptyList",
+   "emptyList()",
+   "f"
+  ],
+  [
+   "emptyMap",
+   "emptyMap()",
+   "f"
+  ],
+  [
+   "require",
+   "require(condition) { message }",
+   "f"
+  ],
+  [
+   "check",
+   "check(condition) { message }",
+   "f"
+  ],
+  [
+   "error",
+   "error(message)  Throws IllegalStateException",
+   "f"
+  ],
+  [
+   "TODO",
+   "TODO(reason)  Marks unfinished code",
+   "f"
+  ],
+  [
+   "lazy",
+   "lazy { }  Lazy value",
+   "f"
+  ],
+  [
+   "run",
+   "run { }",
+   "f"
+  ],
+  [
+   "with",
+   "with(receiver) { }",
+   "f"
+  ],
+  [
+   "repeat",
+   "repeat(times) { }",
+   "f"
+  ],
+  [
+   "buildString",
+   "buildString { }",
+   "f"
+  ],
+  [
+   "buildList",
+   "buildList { }",
+   "f"
+  ],
+  [
+   "maxOf",
+   "maxOf(a, b)",
+   "f"
+  ],
+  [
+   "minOf",
+   "minOf(a, b)",
+   "f"
+  ],
+  [
+   "readLine",
+   "readLine()  Reads a line",
+   "f"
+  ],
+  [
+   "String",
+   "String",
+   "c"
+  ],
+  [
+   "Int",
+   "Int",
+   "c"
+  ],
+  [
+   "Long",
+   "Long",
+   "c"
+  ],
+  [
+   "Double",
+   "Double",
+   "c"
+  ],
+  [
+   "Float",
+   "Float",
+   "c"
+  ],
+  [
+   "Boolean",
+   "Boolean",
+   "c"
+  ],
+  [
+   "Char",
+   "Char",
+   "c"
+  ],
+  [
+   "List",
+   "List<T>",
+   "c"
+  ],
+  [
+   "MutableList",
+   "MutableList<T>",
+   "c"
+  ],
+  [
+   "Map",
+   "Map<K, V>",
+   "c"
+  ],
+  [
+   "MutableMap",
+   "MutableMap<K, V>",
+   "c"
+  ],
+  [
+   "Set",
+   "Set<T>",
+   "c"
+  ],
+  [
+   "Array",
+   "Array<T>",
+   "c"
+  ],
+  [
+   "Pair",
+   "Pair<A, B>",
+   "c"
+  ],
+  [
+   "Triple",
+   "Triple<A, B, C>",
+   "c"
+  ],
+  [
+   "Unit",
+   "Unit",
+   "c"
+  ],
+  [
+   "Any",
+   "Any",
+   "c"
+  ],
+  [
+   "Nothing",
+   "Nothing",
+   "c"
+  ],
+  [
+   "Result",
+   "Result<T>",
+   "c"
+  ],
+  [
+   "Regex",
+   "Regex",
+   "c"
+  ],
+  [
+   "StringBuilder",
+   "StringBuilder",
+   "c"
+  ],
+  [
+   "Exception",
+   "Exception",
+   "c"
+  ],
+  [
+   "IllegalArgumentException",
+   "IllegalArgumentException",
+   "c"
+  ],
+  [
+   "IllegalStateException",
+   "IllegalStateException",
+   "c"
+  ],
+  [
+   "Thread",
+   "Thread",
+   "c"
+  ],
+  [
+   "Log",
+   "android.util.Log  Logging",
+   "c"
+  ],
+  [
+   "Toast",
+   "android.widget.Toast  Short messages",
+   "c"
+  ],
+  [
+   "Intent",
+   "android.content.Intent",
+   "c"
+  ],
+  [
+   "Context",
+   "android.content.Context",
+   "c"
+  ],
+  [
+   "Bundle",
+   "android.os.Bundle",
+   "c"
+  ],
+  [
+   "View",
+   "android.view.View",
+   "c"
+  ],
+  [
+   "Activity",
+   "android.app.Activity",
+   "c"
+  ],
+  [
+   "AppCompatActivity",
+   "androidx.appcompat.app.AppCompatActivity",
+   "c"
+  ],
+  [
+   "Fragment",
+   "androidx.fragment.app.Fragment",
+   "c"
+  ],
+  [
+   "ViewModel",
+   "androidx.lifecycle.ViewModel",
+   "c"
+  ],
+  [
+   "LiveData",
+   "androidx.lifecycle.LiveData",
+   "c"
+  ],
+  [
+   "MutableLiveData",
+   "androidx.lifecycle.MutableLiveData",
+   "c"
+  ],
+  [
+   "StateFlow",
+   "kotlinx.coroutines.flow.StateFlow",
+   "c"
+  ],
+  [
+   "MutableStateFlow",
+   "kotlinx.coroutines.flow.MutableStateFlow",
+   "c"
+  ],
+  [
+   "Handler",
+   "android.os.Handler",
+   "c"
+  ],
+  [
+   "Looper",
+   "android.os.Looper",
+   "c"
+  ],
+  [
+   "SharedPreferences",
+   "android.content.SharedPreferences",
+   "c"
+  ],
+  [
+   "Uri",
+   "android.net.Uri",
+   "c"
+  ],
+  [
+   "File",
+   "java.io.File",
+   "c"
+  ],
+  [
+   "Build",
+   "android.os.Build",
+   "c"
+  ],
+  [
+   "Color",
+   "android.graphics.Color",
+   "c"
+  ],
+  [
+   "TextView",
+   "android.widget.TextView",
+   "c"
+  ],
+  [
+   "Button",
+   "android.widget.Button",
+   "c"
+  ],
+  [
+   "EditText",
+   "android.widget.EditText",
+   "c"
+  ],
+  [
+   "RecyclerView",
+   "androidx.recyclerview.widget.RecyclerView",
+   "c"
+  ],
+  [
+   "ContextCompat",
+   "androidx.core.content.ContextCompat",
+   "c"
+  ],
+  [
+   "PackageManager",
+   "android.content.pm.PackageManager",
+   "c"
+  ],
+  [
+   "NotificationCompat",
+   "androidx.core.app.NotificationCompat",
+   "c"
+  ]
+ ],
+ "members": {
+  "Log": [
+   [
+    "d",
+    "d(tag, message)  Debug",
+    "m"
+   ],
+   [
+    "e",
+    "e(tag, message)  Error",
+    "m"
+   ],
+   [
+    "i",
+    "i(tag, message)  Info",
+    "m"
+   ],
+   [
+    "w",
+    "w(tag, message)  Warning",
+    "m"
+   ],
+   [
+    "v",
+    "v(tag, message)  Verbose",
+    "m"
+   ],
+   [
+    "wtf",
+    "wtf(tag, message)",
+    "m"
+   ]
+  ],
+  "Toast": [
+   [
+    "makeText",
+    "makeText(context, text, duration)",
+    "m"
+   ],
+   [
+    "LENGTH_SHORT",
+    "LENGTH_SHORT",
+    "n"
+   ],
+   [
+    "LENGTH_LONG",
+    "LENGTH_LONG",
+    "n"
+   ]
+  ],
+  "Intent": [
+   [
+    "putExtra",
+    "putExtra(name, value)",
+    "m"
+   ],
+   [
+    "setAction",
+    "setAction(action)",
+    "m"
+   ],
+   [
+    "setData",
+    "setData(uri)",
+    "m"
+   ],
+   [
+    "setType",
+    "setType(type)",
+    "m"
+   ],
+   [
+    "addFlags",
+    "addFlags(flags)",
+    "m"
+   ],
+   [
+    "createChooser",
+    "createChooser(intent, title)",
+    "m"
+   ],
+   [
+    "ACTION_VIEW",
+    "ACTION_VIEW",
+    "n"
+   ],
+   [
+    "ACTION_SEND",
+    "ACTION_SEND",
+    "n"
+   ],
+   [
+    "ACTION_MAIN",
+    "ACTION_MAIN",
+    "n"
+   ],
+   [
+    "EXTRA_TEXT",
+    "EXTRA_TEXT",
+    "n"
+   ],
+   [
+    "FLAG_ACTIVITY_NEW_TASK",
+    "FLAG_ACTIVITY_NEW_TASK",
+    "n"
+   ]
+  ],
+  "Build": [
+   [
+    "VERSION",
+    "VERSION",
+    "p"
+   ],
+   [
+    "MODEL",
+    "MODEL",
+    "p"
+   ],
+   [
+    "MANUFACTURER",
+    "MANUFACTURER",
+    "p"
+   ]
+  ],
+  "VERSION": [
+   [
+    "SDK_INT",
+    "SDK_INT  Android API level",
+    "p"
+   ]
+  ],
+  "Color": [
+   [
+    "parseColor",
+    "parseColor(text)",
+    "m"
+   ],
+   [
+    "rgb",
+    "rgb(r, g, b)",
+    "m"
+   ],
+   [
+    "argb",
+    "argb(a, r, g, b)",
+    "m"
+   ],
+   [
+    "RED",
+    "RED",
+    "n"
+   ],
+   [
+    "GREEN",
+    "GREEN",
+    "n"
+   ],
+   [
+    "BLUE",
+    "BLUE",
+    "n"
+   ],
+   [
+    "BLACK",
+    "BLACK",
+    "n"
+   ],
+   [
+    "WHITE",
+    "WHITE",
+    "n"
+   ],
+   [
+    "TRANSPARENT",
+    "TRANSPARENT",
+    "n"
+   ]
+  ],
+  "Uri": [
+   [
+    "parse",
+    "parse(text)",
+    "m"
+   ],
+   [
+    "fromFile",
+    "fromFile(file)",
+    "m"
+   ]
+  ],
+  "Looper": [
+   [
+    "getMainLooper",
+    "getMainLooper()",
+    "m"
+   ]
+  ],
+  "*": [
+   [
+    "map",
+    "map { }",
+    "m"
+   ],
+   [
+    "filter",
+    "filter { }",
+    "m"
+   ],
+   [
+    "forEach",
+    "forEach { }",
+    "m"
+   ],
+   [
+    "first",
+    "first()",
+    "m"
+   ],
+   [
+    "last",
+    "last()",
+    "m"
+   ],
+   [
+    "firstOrNull",
+    "firstOrNull()",
+    "m"
+   ],
+   [
+    "lastOrNull",
+    "lastOrNull()",
+    "m"
+   ],
+   [
+    "find",
+    "find { }",
+    "m"
+   ],
+   [
+    "any",
+    "any { }",
+    "m"
+   ],
+   [
+    "all",
+    "all { }",
+    "m"
+   ],
+   [
+    "none",
+    "none { }",
+    "m"
+   ],
+   [
+    "count",
+    "count()",
+    "m"
+   ],
+   [
+    "sum",
+    "sum()",
+    "m"
+   ],
+   [
+    "sumOf",
+    "sumOf { }",
+    "m"
+   ],
+   [
+    "sorted",
+    "sorted()",
+    "m"
+   ],
+   [
+    "sortedBy",
+    "sortedBy { }",
+    "m"
+   ],
+   [
+    "sortedByDescending",
+    "sortedByDescending { }",
+    "m"
+   ],
+   [
+    "groupBy",
+    "groupBy { }",
+    "m"
+   ],
+   [
+    "associate",
+    "associate { }",
+    "m"
+   ],
+   [
+    "associateBy",
+    "associateBy { }",
+    "m"
+   ],
+   [
+    "joinToString",
+    "joinToString(separator)",
+    "m"
+   ],
+   [
+    "take",
+    "take(n)",
+    "m"
+   ],
+   [
+    "drop",
+    "drop(n)",
+    "m"
+   ],
+   [
+    "distinct",
+    "distinct()",
+    "m"
+   ],
+   [
+    "reversed",
+    "reversed()",
+    "m"
+   ],
+   [
+    "zip",
+    "zip(other)",
+    "m"
+   ],
+   [
+    "flatMap",
+    "flatMap { }",
+    "m"
+   ],
+   [
+    "mapNotNull",
+    "mapNotNull { }",
+    "m"
+   ],
+   [
+    "toList",
+    "toList()",
+    "m"
+   ],
+   [
+    "toMutableList",
+    "toMutableList()",
+    "m"
+   ],
+   [
+    "toSet",
+    "toSet()",
+    "m"
+   ],
+   [
+    "toMap",
+    "toMap()",
+    "m"
+   ],
+   [
+    "isEmpty",
+    "isEmpty()",
+    "m"
+   ],
+   [
+    "isNotEmpty",
+    "isNotEmpty()",
+    "m"
+   ],
+   [
+    "trim",
+    "trim()",
+    "m"
+   ],
+   [
+    "split",
+    "split(delimiter)",
+    "m"
+   ],
+   [
+    "replace",
+    "replace(old, new)",
+    "m"
+   ],
+   [
+    "substring",
+    "substring(start, end)",
+    "m"
+   ],
+   [
+    "contains",
+    "contains(element)",
+    "m"
+   ],
+   [
+    "startsWith",
+    "startsWith(prefix)",
+    "m"
+   ],
+   [
+    "endsWith",
+    "endsWith(suffix)",
+    "m"
+   ],
+   [
+    "lowercase",
+    "lowercase()",
+    "m"
+   ],
+   [
+    "uppercase",
+    "uppercase()",
+    "m"
+   ],
+   [
+    "toInt",
+    "toInt()",
+    "m"
+   ],
+   [
+    "toLong",
+    "toLong()",
+    "m"
+   ],
+   [
+    "toDouble",
+    "toDouble()",
+    "m"
+   ],
+   [
+    "toString",
+    "toString()",
+    "m"
+   ],
+   [
+    "let",
+    "let { }",
+    "m"
+   ],
+   [
+    "apply",
+    "apply { }",
+    "m"
+   ],
+   [
+    "also",
+    "also { }",
+    "m"
+   ],
+   [
+    "run",
+    "run { }",
+    "m"
+   ],
+   [
+    "takeIf",
+    "takeIf { }",
+    "m"
+   ],
+   [
+    "launch",
+    "launch { }  Starts a coroutine",
+    "m"
+   ],
+   [
+    "collect",
+    "collect { }  Collects a flow",
+    "m"
+   ],
+   [
+    "size",
+    "size",
+    "p"
+   ],
+   [
+    "length",
+    "length",
+    "p"
+   ],
+   [
+    "indices",
+    "indices",
+    "p"
+   ],
+   [
+    "value",
+    "value",
+    "p"
+   ]
+  ]
+ },
+ "snippets": [
+  [
+   "fun",
+   "function",
+   "fun ${1:name}(${2:params}): ${3:Unit} {\n    $0\n}"
+  ],
+  [
+   "main",
+   "main function",
+   "fun main() {\n    $0\n}"
+  ],
+  [
+   "class",
+   "class",
+   "class ${1:Name}(${2:params}) {\n    $0\n}"
+  ],
+  [
+   "data",
+   "data class",
+   "data class ${1:Name}(\n    val ${2:id}: ${3:Int},\n)"
+  ],
+  [
+   "if",
+   "if",
+   "if (${1:condition}) {\n    $0\n}"
+  ],
+  [
+   "ifelse",
+   "if / else",
+   "if (${1:condition}) {\n    $2\n} else {\n    $0\n}"
+  ],
+  [
+   "for",
+   "for loop",
+   "for (${1:i} in ${2:0 until 10}) {\n    $0\n}"
+  ],
+  [
+   "when",
+   "when",
+   "when (${1:value}) {\n    ${2:x} -> $0\n    else -> {}\n}"
+  ],
+  [
+   "try",
+   "try / catch",
+   "try {\n    $1\n} catch (e: ${2:Exception}) {\n    $0\n}"
+  ],
+  [
+   "log",
+   "Log.d",
+   "Log.d(\"${1:TAG}\", \"$0\")"
+  ],
+  [
+   "toast",
+   "Toast",
+   "Toast.makeText(${1:this}, \"$2\", Toast.LENGTH_SHORT).show()"
+  ],
+  [
+   "oncreate",
+   "onCreate",
+   "override fun onCreate(savedInstanceState: Bundle?) {\n    super.onCreate(savedInstanceState)\n    $0\n}"
+  ],
+  [
+   "intent",
+   "start an Activity",
+   "startActivity(Intent(${1:this}, ${2:MainActivity}::class.java))"
+  ],
+  [
+   "interface",
+   "interface",
+   "interface ${1:Name} {\n    $0\n}"
+  ],
+  [
+   "object",
+   "object",
+   "object ${1:Name} {\n    $0\n}"
+  ],
+  [
+   "sealed",
+   "sealed class",
+   "sealed class ${1:Name} {\n    $0\n}"
+  ],
+  [
+   "companion",
+   "companion object",
+   "companion object {\n    $0\n}"
+  ],
+  [
+   "lazy",
+   "lazy property",
+   "val ${1:name} by lazy {\n    $0\n}"
+  ]
+ ]
+}

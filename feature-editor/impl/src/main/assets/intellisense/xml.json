@@ -1,0 +1,419 @@
+{
+ "tags": true,
+ "globals": [
+  [
+   "android:layout_width",
+   "android:layout_width  attribute",
+   "p",
+   "android:layout_width=\"${1:match_parent}\""
+  ],
+  [
+   "android:layout_height",
+   "android:layout_height  attribute",
+   "p",
+   "android:layout_height=\"${1:wrap_content}\""
+  ],
+  [
+   "android:layout_weight",
+   "android:layout_weight  attribute",
+   "p",
+   "android:layout_weight=\"${1:1}\""
+  ],
+  [
+   "android:layout_margin",
+   "android:layout_margin  attribute",
+   "p",
+   "android:layout_margin=\"${1:8dp}\""
+  ],
+  [
+   "android:layout_marginTop",
+   "android:layout_marginTop  attribute",
+   "p",
+   "android:layout_marginTop=\"${1:8dp}\""
+  ],
+  [
+   "android:layout_marginBottom",
+   "android:layout_marginBottom  attribute",
+   "p",
+   "android:layout_marginBottom=\"${1:8dp}\""
+  ],
+  [
+   "android:layout_marginStart",
+   "android:layout_marginStart  attribute",
+   "p",
+   "android:layout_marginStart=\"${1:8dp}\""
+  ],
+  [
+   "android:layout_marginEnd",
+   "android:layout_marginEnd  attribute",
+   "p",
+   "android:layout_marginEnd=\"${1:8dp}\""
+  ],
+  [
+   "android:padding",
+   "android:padding  attribute",
+   "p",
+   "android:padding=\"${1:8dp}\""
+  ],
+  [
+   "android:id",
+   "android:id  attribute",
+   "p",
+   "android:id=\"${1:@+id/name}\""
+  ],
+  [
+   "android:text",
+   "android:text  attribute",
+   "p",
+   "android:text=\"${1:@string/name}\""
+  ],
+  [
+   "android:textSize",
+   "android:textSize  attribute",
+   "p",
+   "android:textSize=\"${1:16sp}\""
+  ],
+  [
+   "android:textColor",
+   "android:textColor  attribute",
+   "p",
+   "android:textColor=\"${1:@color/name}\""
+  ],
+  [
+   "android:textStyle",
+   "android:textStyle  attribute",
+   "p",
+   "android:textStyle=\"${1:bold}\""
+  ],
+  [
+   "android:background",
+   "android:background  attribute",
+   "p",
+   "android:background=\"${1:@color/name}\""
+  ],
+  [
+   "android:gravity",
+   "android:gravity  attribute",
+   "p",
+   "android:gravity=\"${1:center}\""
+  ],
+  [
+   "android:layout_gravity",
+   "android:layout_gravity  attribute",
+   "p",
+   "android:layout_gravity=\"${1:center}\""
+  ],
+  [
+   "android:orientation",
+   "android:orientation  attribute",
+   "p",
+   "android:orientation=\"${1:vertical}\""
+  ],
+  [
+   "android:visibility",
+   "android:visibility  attribute",
+   "p",
+   "android:visibility=\"${1:visible}\""
+  ],
+  [
+   "android:src",
+   "android:src  attribute",
+   "p",
+   "android:src=\"${1:@drawable/name}\""
+  ],
+  [
+   "android:scaleType",
+   "android:scaleType  attribute",
+   "p",
+   "android:scaleType=\"${1:centerCrop}\""
+  ],
+  [
+   "android:hint",
+   "android:hint  attribute",
+   "p",
+   "android:hint=\"${1:@string/name}\""
+  ],
+  [
+   "android:inputType",
+   "android:inputType  attribute",
+   "p",
+   "android:inputType=\"${1:text}\""
+  ],
+  [
+   "android:onClick",
+   "android:onClick  attribute",
+   "p",
+   "android:onClick=\"${1:onClick}\""
+  ],
+  [
+   "android:contentDescription",
+   "android:contentDescription  attribute",
+   "p",
+   "android:contentDescription=\"${1:@string/name}\""
+  ],
+  [
+   "android:enabled",
+   "android:enabled  attribute",
+   "p",
+   "android:enabled=\"${1:true}\""
+  ],
+  [
+   "android:clickable",
+   "android:clickable  attribute",
+   "p",
+   "android:clickable=\"${1:true}\""
+  ],
+  [
+   "android:alpha",
+   "android:alpha  attribute",
+   "p",
+   "android:alpha=\"${1:1.0}\""
+  ],
+  [
+   "android:elevation",
+   "android:elevation  attribute",
+   "p",
+   "android:elevation=\"${1:4dp}\""
+  ],
+  [
+   "android:maxLines",
+   "android:maxLines  attribute",
+   "p",
+   "android:maxLines=\"${1:1}\""
+  ],
+  [
+   "android:ellipsize",
+   "android:ellipsize  attribute",
+   "p",
+   "android:ellipsize=\"${1:end}\""
+  ],
+  [
+   "android:fontFamily",
+   "android:fontFamily  attribute",
+   "p",
+   "android:fontFamily=\"${1:sans-serif}\""
+  ],
+  [
+   "android:name",
+   "android:name  attribute",
+   "p",
+   "android:name=\"${1:.MainActivity}\""
+  ],
+  [
+   "android:label",
+   "android:label  attribute",
+   "p",
+   "android:label=\"${1:@string/app_name}\""
+  ],
+  [
+   "android:icon",
+   "android:icon  attribute",
+   "p",
+   "android:icon=\"${1:@mipmap/ic_launcher}\""
+  ],
+  [
+   "android:exported",
+   "android:exported  attribute",
+   "p",
+   "android:exported=\"${1:false}\""
+  ],
+  [
+   "android:theme",
+   "android:theme  attribute",
+   "p",
+   "android:theme=\"${1:@style/AppTheme}\""
+  ],
+  [
+   "android:permission",
+   "android:permission  attribute",
+   "p",
+   "android:permission=\"${1:android.permission.NAME}\""
+  ],
+  [
+   "android:launchMode",
+   "android:launchMode  attribute",
+   "p",
+   "android:launchMode=\"${1:singleTop}\""
+  ],
+  [
+   "android:versionCode",
+   "android:versionCode  attribute",
+   "p",
+   "android:versionCode=\"${1:1}\""
+  ],
+  [
+   "android:versionName",
+   "android:versionName  attribute",
+   "p",
+   "android:versionName=\"${1:1.0}\""
+  ],
+  [
+   "app:layout_constraintTop_toTopOf",
+   "app:layout_constraintTop_toTopOf  attribute",
+   "p",
+   "app:layout_constraintTop_toTopOf=\"${1:parent}\""
+  ],
+  [
+   "app:layout_constraintBottom_toBottomOf",
+   "app:layout_constraintBottom_toBottomOf  attribute",
+   "p",
+   "app:layout_constraintBottom_toBottomOf=\"${1:parent}\""
+  ],
+  [
+   "app:layout_constraintStart_toStartOf",
+   "app:layout_constraintStart_toStartOf  attribute",
+   "p",
+   "app:layout_constraintStart_toStartOf=\"${1:parent}\""
+  ],
+  [
+   "app:layout_constraintEnd_toEndOf",
+   "app:layout_constraintEnd_toEndOf  attribute",
+   "p",
+   "app:layout_constraintEnd_toEndOf=\"${1:parent}\""
+  ],
+  [
+   "tools:text",
+   "tools:text  attribute",
+   "p",
+   "tools:text=\"${1:Preview text}\""
+  ]
+ ],
+ "members": {},
+ "snippets": [
+  [
+   "LinearLayout",
+   "<LinearLayout>",
+   "<LinearLayout\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:match_parent}\"\n    android:orientation=\"${3:vertical}\">\n    $0\n</LinearLayout>"
+  ],
+  [
+   "RelativeLayout",
+   "<RelativeLayout>",
+   "<RelativeLayout\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\">\n    $0\n</RelativeLayout>"
+  ],
+  [
+   "FrameLayout",
+   "<FrameLayout>",
+   "<FrameLayout\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\">\n    $0\n</FrameLayout>"
+  ],
+  [
+   "ScrollView",
+   "<ScrollView>",
+   "<ScrollView\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\">\n    $0\n</ScrollView>"
+  ],
+  [
+   "ConstraintLayout",
+   "<androidx.constraintlayout.widget.ConstraintLayout>",
+   "<androidx.constraintlayout.widget.ConstraintLayout\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\">\n    $0\n</androidx.constraintlayout.widget.ConstraintLayout>"
+  ],
+  [
+   "TextView",
+   "<TextView>",
+   "<TextView\n    android:layout_width=\"${1:wrap_content}\"\n    android:layout_height=\"${2:wrap_content}\"\n    android:text=\"${3:Text}\" />"
+  ],
+  [
+   "Button",
+   "<Button>",
+   "<Button\n    android:layout_width=\"${1:wrap_content}\"\n    android:layout_height=\"${2:wrap_content}\"\n    android:text=\"${3:Button}\" />"
+  ],
+  [
+   "EditText",
+   "<EditText>",
+   "<EditText\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\"\n    android:hint=\"${3:Hint}\"\n    android:inputType=\"${4:text}\" />"
+  ],
+  [
+   "ImageView",
+   "<ImageView>",
+   "<ImageView\n    android:layout_width=\"${1:wrap_content}\"\n    android:layout_height=\"${2:wrap_content}\"\n    android:src=\"${3:@drawable/ic_launcher}\"\n    android:contentDescription=\"${4:description}\" />"
+  ],
+  [
+   "RecyclerView",
+   "<androidx.recyclerview.widget.RecyclerView>",
+   "<androidx.recyclerview.widget.RecyclerView\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\" />"
+  ],
+  [
+   "CardView",
+   "<com.google.android.material.card.MaterialCardView>",
+   "<com.google.android.material.card.MaterialCardView\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\">\n    $0\n</com.google.android.material.card.MaterialCardView>"
+  ],
+  [
+   "CheckBox",
+   "<CheckBox>",
+   "<CheckBox\n    android:layout_width=\"${1:wrap_content}\"\n    android:layout_height=\"${2:wrap_content}\"\n    android:text=\"${3:Option}\" />"
+  ],
+  [
+   "ProgressBar",
+   "<ProgressBar>",
+   "<ProgressBar\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\" />"
+  ],
+  [
+   "View",
+   "<View>",
+   "<View\n    android:layout_width=\"${1:match_parent}\"\n    android:layout_height=\"${2:wrap_content}\" />"
+  ],
+  [
+   "xmlns",
+   "xmlns:android",
+   "xmlns:android=\"http://schemas.android.com/apk/res/android\""
+  ],
+  [
+   "uses-permission",
+   "<uses-permission>",
+   "<uses-permission android:name=\"android.permission.${1:INTERNET}\" />"
+  ],
+  [
+   "activity",
+   "<activity>",
+   "<activity\n    android:name=\"${1:.MainActivity}\"\n    android:exported=\"${2:false}\" />"
+  ],
+  [
+   "service",
+   "<service>",
+   "<service\n    android:name=\"${1:.MyService}\"\n    android:exported=\"${2:false}\" />"
+  ],
+  [
+   "receiver",
+   "<receiver>",
+   "<receiver\n    android:name=\"${1:.MyReceiver}\"\n    android:exported=\"${2:false}\" />"
+  ],
+  [
+   "intent-filter",
+   "<intent-filter>",
+   "<intent-filter>\n    <action android:name=\"${1:android.intent.action.VIEW}\" />\n    <category android:name=\"${2:android.intent.category.DEFAULT}\" />\n    $0\n</intent-filter>"
+  ],
+  [
+   "meta-data",
+   "<meta-data>",
+   "<meta-data\n    android:name=\"$1\"\n    android:value=\"$2\" />"
+  ],
+  [
+   "uses-feature",
+   "<uses-feature>",
+   "<uses-feature android:name=\"${1:android.hardware.camera}\" android:required=\"${2:false}\" />"
+  ],
+  [
+   "string",
+   "<string>",
+   "<string name=\"${1:name}\">${2:value}</string>"
+  ],
+  [
+   "color",
+   "<color>",
+   "<color name=\"${1:name}\">${2:#FF000000}</color>"
+  ],
+  [
+   "dimen",
+   "<dimen>",
+   "<dimen name=\"${1:name}\">${2:16dp}</dimen>"
+  ],
+  [
+   "style",
+   "<style>",
+   "<style name=\"${1:Name}\" parent=\"${2:Theme.Material3.DayNight}\">\n    <item name=\"$3\">$4</item>\n</style>"
+  ],
+  [
+   "item",
+   "<item>",
+   "<item name=\"${1:name}\">${2:value}</item>"
+  ]
+ ]
+}

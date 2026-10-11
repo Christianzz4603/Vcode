@@ -1,0 +1,203 @@
+{
+ "tags": false,
+ "globals": [
+  [
+   "echo",
+   "echo  Print text",
+   "f"
+  ],
+  [
+   "cd",
+   "cd  Change directory",
+   "f"
+  ],
+  [
+   "ls",
+   "ls  List files",
+   "f"
+  ],
+  [
+   "cat",
+   "cat  Print files",
+   "f"
+  ],
+  [
+   "grep",
+   "grep  Search text",
+   "f"
+  ],
+  [
+   "sed",
+   "sed  Stream editor",
+   "f"
+  ],
+  [
+   "awk",
+   "awk  Text processing",
+   "f"
+  ],
+  [
+   "find",
+   "find  Search files",
+   "f"
+  ],
+  [
+   "chmod",
+   "chmod  Change permissions",
+   "f"
+  ],
+  [
+   "mkdir",
+   "mkdir  Create directory",
+   "f"
+  ],
+  [
+   "rm",
+   "rm  Remove files",
+   "f"
+  ],
+  [
+   "cp",
+   "cp  Copy files",
+   "f"
+  ],
+  [
+   "mv",
+   "mv  Move files",
+   "f"
+  ],
+  [
+   "curl",
+   "curl  Transfer data",
+   "f"
+  ],
+  [
+   "wget",
+   "wget  Download files",
+   "f"
+  ],
+  [
+   "export",
+   "export  Set environment variable",
+   "f"
+  ],
+  [
+   "source",
+   "source  Run a script in this shell",
+   "f"
+  ],
+  [
+   "exit",
+   "exit  Leave the shell",
+   "f"
+  ],
+  [
+   "read",
+   "read  Read input",
+   "f"
+  ],
+  [
+   "test",
+   "test  Evaluate a condition",
+   "f"
+  ],
+  [
+   "pwd",
+   "pwd  Print working directory",
+   "f"
+  ],
+  [
+   "head",
+   "head",
+   "f"
+  ],
+  [
+   "tail",
+   "tail",
+   "f"
+  ],
+  [
+   "sort",
+   "sort",
+   "f"
+  ],
+  [
+   "uniq",
+   "uniq",
+   "f"
+  ],
+  [
+   "wc",
+   "wc  Count lines and words",
+   "f"
+  ],
+  [
+   "tr",
+   "tr",
+   "f"
+  ],
+  [
+   "xargs",
+   "xargs",
+   "f"
+  ],
+  [
+   "touch",
+   "touch  Create a file",
+   "f"
+  ],
+  [
+   "kill",
+   "kill",
+   "f"
+  ],
+  [
+   "ps",
+   "ps  List processes",
+   "f"
+  ],
+  [
+   "date",
+   "date",
+   "f"
+  ]
+ ],
+ "members": {},
+ "snippets": [
+  [
+   "if",
+   "if",
+   "if ${1:condition}; then\n    $0\nfi"
+  ],
+  [
+   "ifelse",
+   "if / else",
+   "if ${1:condition}; then\n    $2\nelse\n    $0\nfi"
+  ],
+  [
+   "for",
+   "for loop",
+   "for ${1:item} in ${2:list}; do\n    $0\ndone"
+  ],
+  [
+   "while",
+   "while loop",
+   "while ${1:condition}; do\n    $0\ndone"
+  ],
+  [
+   "case",
+   "case",
+   "case ${1:\"$var\"} in\n    ${2:pattern})\n        $0\n        ;;\nesac"
+  ],
+  [
+   "function",
+   "function",
+   "${1:name}() {\n    $0\n}"
+  ],
+  [
+   "shebang",
+   "shebang",
+   "#!/system/bin/sh\n$0"
+  ]
+ ]
+}

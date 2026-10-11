@@ -1,0 +1,343 @@
+{
+ "tags": true,
+ "globals": [
+  [
+   "class",
+   "class  attribute",
+   "p",
+   "class=\"${1}\""
+  ],
+  [
+   "id",
+   "id  attribute",
+   "p",
+   "id=\"${1}\""
+  ],
+  [
+   "href",
+   "href  attribute",
+   "p",
+   "href=\"${1}\""
+  ],
+  [
+   "src",
+   "src  attribute",
+   "p",
+   "src=\"${1}\""
+  ],
+  [
+   "alt",
+   "alt  attribute",
+   "p",
+   "alt=\"${1}\""
+  ],
+  [
+   "style",
+   "style  attribute",
+   "p",
+   "style=\"${1}\""
+  ],
+  [
+   "type",
+   "type  attribute",
+   "p",
+   "type=\"${1}\""
+  ],
+  [
+   "name",
+   "name  attribute",
+   "p",
+   "name=\"${1}\""
+  ],
+  [
+   "value",
+   "value  attribute",
+   "p",
+   "value=\"${1}\""
+  ],
+  [
+   "placeholder",
+   "placeholder  attribute",
+   "p",
+   "placeholder=\"${1}\""
+  ],
+  [
+   "target",
+   "target  attribute",
+   "p",
+   "target=\"${1}\""
+  ],
+  [
+   "rel",
+   "rel  attribute",
+   "p",
+   "rel=\"${1}\""
+  ],
+  [
+   "lang",
+   "lang  attribute",
+   "p",
+   "lang=\"${1}\""
+  ],
+  [
+   "charset",
+   "charset  attribute",
+   "p",
+   "charset=\"${1}\""
+  ],
+  [
+   "content",
+   "content  attribute",
+   "p",
+   "content=\"${1}\""
+  ],
+  [
+   "width",
+   "width  attribute",
+   "p",
+   "width=\"${1}\""
+  ],
+  [
+   "height",
+   "height  attribute",
+   "p",
+   "height=\"${1}\""
+  ],
+  [
+   "title",
+   "title  attribute",
+   "p",
+   "title=\"${1}\""
+  ],
+  [
+   "action",
+   "action  attribute",
+   "p",
+   "action=\"${1}\""
+  ],
+  [
+   "method",
+   "method  attribute",
+   "p",
+   "method=\"${1}\""
+  ],
+  [
+   "for",
+   "for  attribute",
+   "p",
+   "for=\"${1}\""
+  ],
+  [
+   "onclick",
+   "onclick  attribute",
+   "p",
+   "onclick=\"${1}\""
+  ],
+  [
+   "disabled",
+   "disabled  attribute",
+   "p",
+   "disabled=\"${1}\""
+  ],
+  [
+   "required",
+   "required  attribute",
+   "p",
+   "required=\"${1}\""
+  ],
+  [
+   "checked",
+   "checked  attribute",
+   "p",
+   "checked=\"${1}\""
+  ],
+  [
+   "readonly",
+   "readonly  attribute",
+   "p",
+   "readonly=\"${1}\""
+  ],
+  [
+   "maxlength",
+   "maxlength  attribute",
+   "p",
+   "maxlength=\"${1}\""
+  ],
+  [
+   "min",
+   "min  attribute",
+   "p",
+   "min=\"${1}\""
+  ],
+  [
+   "max",
+   "max  attribute",
+   "p",
+   "max=\"${1}\""
+  ],
+  [
+   "data-",
+   "data-  attribute",
+   "p",
+   "data-=\"${1}\""
+  ]
+ ],
+ "members": {},
+ "snippets": [
+  [
+   "div",
+   "<div>",
+   "<div${1: class=\"$2\"}>\n    $0\n</div>"
+  ],
+  [
+   "span",
+   "<span>",
+   "<span>$0</span>"
+  ],
+  [
+   "p",
+   "<p>",
+   "<p>$0</p>"
+  ],
+  [
+   "a",
+   "<a>",
+   "<a href=\"${1:#}\">$0</a>"
+  ],
+  [
+   "img",
+   "<img>",
+   "<img src=\"$1\" alt=\"$2\">"
+  ],
+  [
+   "ul",
+   "<ul>",
+   "<ul>\n    <li>$0</li>\n</ul>"
+  ],
+  [
+   "ol",
+   "<ol>",
+   "<ol>\n    <li>$0</li>\n</ol>"
+  ],
+  [
+   "li",
+   "<li>",
+   "<li>$0</li>"
+  ],
+  [
+   "table",
+   "<table>",
+   "<table>\n    <tr>\n        <th>$1</th>\n    </tr>\n    <tr>\n        <td>$0</td>\n    </tr>\n</table>"
+  ],
+  [
+   "form",
+   "<form>",
+   "<form action=\"$1\" method=\"${2:post}\">\n    $0\n</form>"
+  ],
+  [
+   "input",
+   "<input>",
+   "<input type=\"${1:text}\" name=\"$2\">"
+  ],
+  [
+   "button",
+   "<button>",
+   "<button type=\"${1:button}\">$0</button>"
+  ],
+  [
+   "label",
+   "<label>",
+   "<label for=\"$1\">$0</label>"
+  ],
+  [
+   "select",
+   "<select>",
+   "<select name=\"$1\">\n    <option value=\"$2\">$0</option>\n</select>"
+  ],
+  [
+   "textarea",
+   "<textarea>",
+   "<textarea name=\"$1\" rows=\"4\">$0</textarea>"
+  ],
+  [
+   "h1",
+   "<h1>",
+   "<h1>$0</h1>"
+  ],
+  [
+   "h2",
+   "<h2>",
+   "<h2>$0</h2>"
+  ],
+  [
+   "h3",
+   "<h3>",
+   "<h3>$0</h3>"
+  ],
+  [
+   "header",
+   "<header>",
+   "<header>\n    $0\n</header>"
+  ],
+  [
+   "footer",
+   "<footer>",
+   "<footer>\n    $0\n</footer>"
+  ],
+  [
+   "nav",
+   "<nav>",
+   "<nav>\n    $0\n</nav>"
+  ],
+  [
+   "main",
+   "<main>",
+   "<main>\n    $0\n</main>"
+  ],
+  [
+   "section",
+   "<section>",
+   "<section>\n    $0\n</section>"
+  ],
+  [
+   "article",
+   "<article>",
+   "<article>\n    $0\n</article>"
+  ],
+  [
+   "script",
+   "<script>",
+   "<script>\n    $0\n</script>"
+  ],
+  [
+   "style",
+   "<style>",
+   "<style>\n    $0\n</style>"
+  ],
+  [
+   "link",
+   "<link>",
+   "<link rel=\"stylesheet\" href=\"$1\">"
+  ],
+  [
+   "meta",
+   "<meta>",
+   "<meta name=\"$1\" content=\"$2\">"
+  ],
+  [
+   "br",
+   "<br>",
+   "<br>"
+  ],
+  [
+   "hr",
+   "<hr>",
+   "<hr>"
+  ],
+  [
+   "html5",
+   "HTML5 page",
+   "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>${1:Document}</title>\n</head>\n<body>\n    $0\n</body>\n</html>"
+  ]
+ ]
+}

@@ -19,6 +19,8 @@ package com.vcode.studio.feature.editor.ui.editor.view
 import com.vcode.studio.core.extensions.showToast
 import com.vcode.studio.feature.editor.data.model.LanguageKeywords
 import com.vcode.studio.feature.editor.data.model.LanguageScope
+import com.vcode.studio.feature.editor.ui.editor.intellisense.IntelliSenseData
+import com.vcode.studio.feature.editor.ui.editor.intellisense.VcodeLanguage
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
@@ -86,15 +88,24 @@ internal fun CodeEditor.createFromRegistry(
         if (language == LanguageScope.TEXT) {
             return EmptyLanguage()
         }
-        TextMateLanguage.create(language, codeCompletion).apply {
+        val intelliSense = if (codeCompletion) IntelliSenseData.forScope(context, language) else null
+        val base = TextMateLanguage.create(language, codeCompletion).apply {
             this.tabSize = tabSize
             newlineHandler.isEnabled = autoIndentation
             symbolPairs.setEnabled(autoClosePairs)
             useTab(useTab)
             if (codeCompletion) {
-                LanguageKeywords.forScope(context, language)?.let { setCompleterKeywords(it) }
+                LanguageKeywords.forScope(context, language)?.let { words ->
+                    val filtered = if (intelliSense != null) {
+                        words.filterNot { it in intelliSense.labels }.toTypedArray()
+                    } else {
+                        words
+                    }
+                    setCompleterKeywords(filtered)
+                }
             }
         }
+        if (intelliSense != null) VcodeLanguage(base, intelliSense) else base
     } catch (e: Exception) {
         context.showToast(text = "Couldn't load grammar from registry: ${e.message}")
         EmptyLanguage()

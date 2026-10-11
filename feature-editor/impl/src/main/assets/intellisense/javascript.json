@@ -1,0 +1,1100 @@
+{
+ "tags": false,
+ "globals": [
+  [
+   "setTimeout",
+   "setTimeout(fn, ms)  Runs a function after a delay",
+   "f"
+  ],
+  [
+   "setInterval",
+   "setInterval(fn, ms)  Runs a function repeatedly",
+   "f"
+  ],
+  [
+   "clearTimeout",
+   "clearTimeout(id)  Cancels a timeout",
+   "f"
+  ],
+  [
+   "clearInterval",
+   "clearInterval(id)  Cancels an interval",
+   "f"
+  ],
+  [
+   "fetch",
+   "fetch(url, options)  HTTP request, returns a Promise",
+   "f"
+  ],
+  [
+   "parseInt",
+   "parseInt(string, radix)  String to integer",
+   "f"
+  ],
+  [
+   "parseFloat",
+   "parseFloat(string)  String to number",
+   "f"
+  ],
+  [
+   "isNaN",
+   "isNaN(value)  Checks for NaN",
+   "f"
+  ],
+  [
+   "require",
+   "require(module)  Loads a CommonJS module",
+   "f"
+  ],
+  [
+   "alert",
+   "alert(message)  Shows a message",
+   "f"
+  ],
+  [
+   "confirm",
+   "confirm(message)  Asks to confirm",
+   "f"
+  ],
+  [
+   "prompt",
+   "prompt(message)  Asks for input",
+   "f"
+  ],
+  [
+   "structuredClone",
+   "structuredClone(value)  Deep copy",
+   "f"
+  ],
+  [
+   "queueMicrotask",
+   "queueMicrotask(fn)  Queues a microtask",
+   "f"
+  ],
+  [
+   "requestAnimationFrame",
+   "requestAnimationFrame(fn)  Runs before the next repaint",
+   "f"
+  ],
+  [
+   "encodeURIComponent",
+   "encodeURIComponent(text)  Encodes a URL part",
+   "f"
+  ],
+  [
+   "decodeURIComponent",
+   "decodeURIComponent(text)  Decodes a URL part",
+   "f"
+  ],
+  [
+   "console",
+   "console  Logging utilities",
+   "c"
+  ],
+  [
+   "document",
+   "document  The current HTML document",
+   "c"
+  ],
+  [
+   "window",
+   "window  The browser window",
+   "c"
+  ],
+  [
+   "Math",
+   "Math  Mathematical functions",
+   "c"
+  ],
+  [
+   "JSON",
+   "JSON  Parse and stringify JSON",
+   "c"
+  ],
+  [
+   "Object",
+   "Object  Object utilities",
+   "c"
+  ],
+  [
+   "Array",
+   "Array  Array utilities",
+   "c"
+  ],
+  [
+   "String",
+   "String  String utilities",
+   "c"
+  ],
+  [
+   "Number",
+   "Number  Number utilities",
+   "c"
+  ],
+  [
+   "Boolean",
+   "Boolean",
+   "c"
+  ],
+  [
+   "Promise",
+   "Promise  Asynchronous result",
+   "c"
+  ],
+  [
+   "Date",
+   "Date  Dates and times",
+   "c"
+  ],
+  [
+   "Map",
+   "Map  Key/value collection",
+   "c"
+  ],
+  [
+   "Set",
+   "Set  Unique values collection",
+   "c"
+  ],
+  [
+   "WeakMap",
+   "WeakMap",
+   "c"
+  ],
+  [
+   "Symbol",
+   "Symbol",
+   "c"
+  ],
+  [
+   "RegExp",
+   "RegExp  Regular expressions",
+   "c"
+  ],
+  [
+   "Error",
+   "Error  Error object",
+   "c"
+  ],
+  [
+   "Intl",
+   "Intl  Internationalization",
+   "c"
+  ],
+  [
+   "localStorage",
+   "localStorage  Persistent storage",
+   "c"
+  ],
+  [
+   "sessionStorage",
+   "sessionStorage  Session storage",
+   "c"
+  ],
+  [
+   "navigator",
+   "navigator  Browser information",
+   "c"
+  ],
+  [
+   "location",
+   "location  Current URL",
+   "c"
+  ],
+  [
+   "history",
+   "history  Session history",
+   "c"
+  ],
+  [
+   "process",
+   "process  Node.js process",
+   "c"
+  ],
+  [
+   "module",
+   "module  CommonJS module",
+   "c"
+  ],
+  [
+   "exports",
+   "exports  CommonJS exports",
+   "c"
+  ],
+  [
+   "globalThis",
+   "globalThis  Global object",
+   "c"
+  ]
+ ],
+ "members": {
+  "console": [
+   [
+    "log",
+    "log(...data)  Prints to the console",
+    "m"
+   ],
+   [
+    "error",
+    "error(...data)  Prints an error",
+    "m"
+   ],
+   [
+    "warn",
+    "warn(...data)  Prints a warning",
+    "m"
+   ],
+   [
+    "info",
+    "info(...data)  Prints information",
+    "m"
+   ],
+   [
+    "debug",
+    "debug(...data)  Prints debug output",
+    "m"
+   ],
+   [
+    "table",
+    "table(data)  Prints a table",
+    "m"
+   ],
+   [
+    "time",
+    "time(label)  Starts a timer",
+    "m"
+   ],
+   [
+    "timeEnd",
+    "timeEnd(label)  Stops a timer",
+    "m"
+   ],
+   [
+    "group",
+    "group(label)  Starts a group",
+    "m"
+   ],
+   [
+    "groupEnd",
+    "groupEnd()  Ends a group",
+    "m"
+   ],
+   [
+    "assert",
+    "assert(condition, ...data)  Prints if false",
+    "m"
+   ],
+   [
+    "clear",
+    "clear()  Clears the console",
+    "m"
+   ],
+   [
+    "dir",
+    "dir(object)  Prints an object",
+    "m"
+   ],
+   [
+    "trace",
+    "trace()  Prints a stack trace",
+    "m"
+   ]
+  ],
+  "Math": [
+   [
+    "abs",
+    "abs(x)",
+    "m"
+   ],
+   [
+    "ceil",
+    "ceil(x)",
+    "m"
+   ],
+   [
+    "floor",
+    "floor(x)",
+    "m"
+   ],
+   [
+    "round",
+    "round(x)",
+    "m"
+   ],
+   [
+    "trunc",
+    "trunc(x)",
+    "m"
+   ],
+   [
+    "max",
+    "max(...values)",
+    "m"
+   ],
+   [
+    "min",
+    "min(...values)",
+    "m"
+   ],
+   [
+    "pow",
+    "pow(x, y)",
+    "m"
+   ],
+   [
+    "sqrt",
+    "sqrt(x)",
+    "m"
+   ],
+   [
+    "random",
+    "random()  0 (inclusive) to 1 (exclusive)",
+    "m"
+   ],
+   [
+    "sign",
+    "sign(x)",
+    "m"
+   ],
+   [
+    "sin",
+    "sin(x)",
+    "m"
+   ],
+   [
+    "cos",
+    "cos(x)",
+    "m"
+   ],
+   [
+    "tan",
+    "tan(x)",
+    "m"
+   ],
+   [
+    "log",
+    "log(x)  Natural logarithm",
+    "m"
+   ],
+   [
+    "exp",
+    "exp(x)",
+    "m"
+   ],
+   [
+    "hypot",
+    "hypot(...values)",
+    "m"
+   ],
+   [
+    "PI",
+    "PI  3.14159...",
+    "n"
+   ],
+   [
+    "E",
+    "E  Euler number",
+    "n"
+   ]
+  ],
+  "JSON": [
+   [
+    "stringify",
+    "stringify(value, replacer, space)  Value to JSON text",
+    "m"
+   ],
+   [
+    "parse",
+    "parse(text)  JSON text to value",
+    "m"
+   ]
+  ],
+  "Object": [
+   [
+    "keys",
+    "keys(object)",
+    "m"
+   ],
+   [
+    "values",
+    "values(object)",
+    "m"
+   ],
+   [
+    "entries",
+    "entries(object)",
+    "m"
+   ],
+   [
+    "assign",
+    "assign(target, ...sources)",
+    "m"
+   ],
+   [
+    "freeze",
+    "freeze(object)",
+    "m"
+   ],
+   [
+    "fromEntries",
+    "fromEntries(entries)",
+    "m"
+   ],
+   [
+    "create",
+    "create(proto)",
+    "m"
+   ],
+   [
+    "defineProperty",
+    "defineProperty(object, key, descriptor)",
+    "m"
+   ],
+   [
+    "getOwnPropertyNames",
+    "getOwnPropertyNames(object)",
+    "m"
+   ]
+  ],
+  "Array": [
+   [
+    "isArray",
+    "isArray(value)",
+    "m"
+   ],
+   [
+    "from",
+    "from(iterable, mapFn)",
+    "m"
+   ],
+   [
+    "of",
+    "of(...items)",
+    "m"
+   ]
+  ],
+  "Promise": [
+   [
+    "all",
+    "all(promises)",
+    "m"
+   ],
+   [
+    "allSettled",
+    "allSettled(promises)",
+    "m"
+   ],
+   [
+    "race",
+    "race(promises)",
+    "m"
+   ],
+   [
+    "any",
+    "any(promises)",
+    "m"
+   ],
+   [
+    "resolve",
+    "resolve(value)",
+    "m"
+   ],
+   [
+    "reject",
+    "reject(reason)",
+    "m"
+   ]
+  ],
+  "Date": [
+   [
+    "now",
+    "now()  Milliseconds since 1970",
+    "m"
+   ],
+   [
+    "parse",
+    "parse(text)",
+    "m"
+   ],
+   [
+    "UTC",
+    "UTC(...)",
+    "m"
+   ]
+  ],
+  "Number": [
+   [
+    "isInteger",
+    "isInteger(value)",
+    "m"
+   ],
+   [
+    "isFinite",
+    "isFinite(value)",
+    "m"
+   ],
+   [
+    "parseFloat",
+    "parseFloat(text)",
+    "m"
+   ],
+   [
+    "parseInt",
+    "parseInt(text)",
+    "m"
+   ],
+   [
+    "MAX_SAFE_INTEGER",
+    "MAX_SAFE_INTEGER",
+    "n"
+   ],
+   [
+    "EPSILON",
+    "EPSILON",
+    "n"
+   ]
+  ],
+  "document": [
+   [
+    "getElementById",
+    "getElementById(id)",
+    "m"
+   ],
+   [
+    "querySelector",
+    "querySelector(selector)",
+    "m"
+   ],
+   [
+    "querySelectorAll",
+    "querySelectorAll(selector)",
+    "m"
+   ],
+   [
+    "createElement",
+    "createElement(tag)",
+    "m"
+   ],
+   [
+    "addEventListener",
+    "addEventListener(type, listener)",
+    "m"
+   ],
+   [
+    "getElementsByClassName",
+    "getElementsByClassName(name)",
+    "m"
+   ],
+   [
+    "getElementsByTagName",
+    "getElementsByTagName(name)",
+    "m"
+   ],
+   [
+    "body",
+    "body",
+    "p"
+   ],
+   [
+    "title",
+    "title",
+    "p"
+   ],
+   [
+    "cookie",
+    "cookie",
+    "p"
+   ],
+   [
+    "documentElement",
+    "documentElement",
+    "p"
+   ]
+  ],
+  "window": [
+   [
+    "addEventListener",
+    "addEventListener(type, listener)",
+    "m"
+   ],
+   [
+    "setTimeout",
+    "setTimeout(fn, ms)",
+    "m"
+   ],
+   [
+    "requestAnimationFrame",
+    "requestAnimationFrame(fn)",
+    "m"
+   ],
+   [
+    "alert",
+    "alert(message)",
+    "m"
+   ],
+   [
+    "open",
+    "open(url)",
+    "m"
+   ],
+   [
+    "location",
+    "location",
+    "p"
+   ],
+   [
+    "innerWidth",
+    "innerWidth",
+    "p"
+   ],
+   [
+    "innerHeight",
+    "innerHeight",
+    "p"
+   ],
+   [
+    "localStorage",
+    "localStorage",
+    "p"
+   ]
+  ],
+  "localStorage": [
+   [
+    "getItem",
+    "getItem(key)",
+    "m"
+   ],
+   [
+    "setItem",
+    "setItem(key, value)",
+    "m"
+   ],
+   [
+    "removeItem",
+    "removeItem(key)",
+    "m"
+   ],
+   [
+    "clear",
+    "clear()",
+    "m"
+   ]
+  ],
+  "sessionStorage": [
+   [
+    "getItem",
+    "getItem(key)",
+    "m"
+   ],
+   [
+    "setItem",
+    "setItem(key, value)",
+    "m"
+   ],
+   [
+    "removeItem",
+    "removeItem(key)",
+    "m"
+   ],
+   [
+    "clear",
+    "clear()",
+    "m"
+   ]
+  ],
+  "*": [
+   [
+    "map",
+    "map(fn)  New array from results",
+    "m"
+   ],
+   [
+    "filter",
+    "filter(fn)  Items that pass the test",
+    "m"
+   ],
+   [
+    "reduce",
+    "reduce(fn, initial)  Combines items",
+    "m"
+   ],
+   [
+    "forEach",
+    "forEach(fn)",
+    "m"
+   ],
+   [
+    "find",
+    "find(fn)",
+    "m"
+   ],
+   [
+    "findIndex",
+    "findIndex(fn)",
+    "m"
+   ],
+   [
+    "some",
+    "some(fn)",
+    "m"
+   ],
+   [
+    "every",
+    "every(fn)",
+    "m"
+   ],
+   [
+    "includes",
+    "includes(value)",
+    "m"
+   ],
+   [
+    "indexOf",
+    "indexOf(value)",
+    "m"
+   ],
+   [
+    "join",
+    "join(separator)",
+    "m"
+   ],
+   [
+    "push",
+    "push(...items)",
+    "m"
+   ],
+   [
+    "pop",
+    "pop()",
+    "m"
+   ],
+   [
+    "shift",
+    "shift()",
+    "m"
+   ],
+   [
+    "unshift",
+    "unshift(...items)",
+    "m"
+   ],
+   [
+    "slice",
+    "slice(start, end)",
+    "m"
+   ],
+   [
+    "splice",
+    "splice(start, count, ...items)",
+    "m"
+   ],
+   [
+    "sort",
+    "sort(compareFn)",
+    "m"
+   ],
+   [
+    "reverse",
+    "reverse()",
+    "m"
+   ],
+   [
+    "concat",
+    "concat(...items)",
+    "m"
+   ],
+   [
+    "flat",
+    "flat(depth)",
+    "m"
+   ],
+   [
+    "flatMap",
+    "flatMap(fn)",
+    "m"
+   ],
+   [
+    "split",
+    "split(separator)",
+    "m"
+   ],
+   [
+    "trim",
+    "trim()",
+    "m"
+   ],
+   [
+    "toUpperCase",
+    "toUpperCase()",
+    "m"
+   ],
+   [
+    "toLowerCase",
+    "toLowerCase()",
+    "m"
+   ],
+   [
+    "replace",
+    "replace(pattern, value)",
+    "m"
+   ],
+   [
+    "replaceAll",
+    "replaceAll(pattern, value)",
+    "m"
+   ],
+   [
+    "startsWith",
+    "startsWith(text)",
+    "m"
+   ],
+   [
+    "endsWith",
+    "endsWith(text)",
+    "m"
+   ],
+   [
+    "substring",
+    "substring(start, end)",
+    "m"
+   ],
+   [
+    "padStart",
+    "padStart(length, text)",
+    "m"
+   ],
+   [
+    "padEnd",
+    "padEnd(length, text)",
+    "m"
+   ],
+   [
+    "charAt",
+    "charAt(index)",
+    "m"
+   ],
+   [
+    "repeat",
+    "repeat(count)",
+    "m"
+   ],
+   [
+    "match",
+    "match(regex)",
+    "m"
+   ],
+   [
+    "toString",
+    "toString()",
+    "m"
+   ],
+   [
+    "toFixed",
+    "toFixed(digits)",
+    "m"
+   ],
+   [
+    "then",
+    "then(onFulfilled)",
+    "m"
+   ],
+   [
+    "catch",
+    "catch(onRejected)",
+    "m"
+   ],
+   [
+    "finally",
+    "finally(fn)",
+    "m"
+   ],
+   [
+    "addEventListener",
+    "addEventListener(type, listener)",
+    "m"
+   ],
+   [
+    "appendChild",
+    "appendChild(node)",
+    "m"
+   ],
+   [
+    "remove",
+    "remove()",
+    "m"
+   ],
+   [
+    "setAttribute",
+    "setAttribute(name, value)",
+    "m"
+   ],
+   [
+    "getAttribute",
+    "getAttribute(name)",
+    "m"
+   ],
+   [
+    "get",
+    "get(key)",
+    "m"
+   ],
+   [
+    "set",
+    "set(key, value)",
+    "m"
+   ],
+   [
+    "has",
+    "has(key)",
+    "m"
+   ],
+   [
+    "delete",
+    "delete(key)",
+    "m"
+   ],
+   [
+    "add",
+    "add(value)",
+    "m"
+   ],
+   [
+    "clear",
+    "clear()",
+    "m"
+   ],
+   [
+    "length",
+    "length",
+    "p"
+   ],
+   [
+    "size",
+    "size",
+    "p"
+   ],
+   [
+    "classList",
+    "classList",
+    "p"
+   ],
+   [
+    "style",
+    "style",
+    "p"
+   ],
+   [
+    "innerHTML",
+    "innerHTML",
+    "p"
+   ],
+   [
+    "textContent",
+    "textContent",
+    "p"
+   ],
+   [
+    "value",
+    "value",
+    "p"
+   ],
+   [
+    "children",
+    "children",
+    "p"
+   ],
+   [
+    "parentElement",
+    "parentElement",
+    "p"
+   ]
+  ]
+ },
+ "snippets": [
+  [
+   "for",
+   "for loop",
+   "for (let ${1:i} = 0; ${1:i} < ${2:array}.length; ${1:i}++) {\n    $0\n}"
+  ],
+  [
+   "forof",
+   "for...of loop",
+   "for (const ${1:item} of ${2:items}) {\n    $0\n}"
+  ],
+  [
+   "forin",
+   "for...in loop",
+   "for (const ${1:key} in ${2:object}) {\n    $0\n}"
+  ],
+  [
+   "foreach",
+   "forEach loop",
+   "${1:array}.forEach((${2:item}) => {\n    $0\n});"
+  ],
+  [
+   "if",
+   "if statement",
+   "if (${1:condition}) {\n    $0\n}"
+  ],
+  [
+   "ifelse",
+   "if / else",
+   "if (${1:condition}) {\n    $2\n} else {\n    $0\n}"
+  ],
+  [
+   "function",
+   "function declaration",
+   "function ${1:name}(${2:params}) {\n    $0\n}"
+  ],
+  [
+   "arrow",
+   "arrow function",
+   "const ${1:name} = (${2:params}) => {\n    $0\n};"
+  ],
+  [
+   "async",
+   "async function",
+   "async function ${1:name}(${2:params}) {\n    $0\n}"
+  ],
+  [
+   "try",
+   "try / catch",
+   "try {\n    $1\n} catch (${2:error}) {\n    $0\n}"
+  ],
+  [
+   "class",
+   "class",
+   "class ${1:Name} {\n    constructor(${2:params}) {\n        $0\n    }\n}"
+  ],
+  [
+   "log",
+   "console.log",
+   "console.log($0);"
+  ],
+  [
+   "settimeout",
+   "setTimeout",
+   "setTimeout(() => {\n    $0\n}, ${1:1000});"
+  ],
+  [
+   "fetch",
+   "fetch request",
+   "fetch(${1:url})\n    .then((response) => response.json())\n    .then((data) => {\n        $0\n    });"
+  ],
+  [
+   "switch",
+   "switch",
+   "switch (${1:value}) {\n    case ${2:x}:\n        $0\n        break;\n    default:\n        break;\n}"
+  ],
+  [
+   "import",
+   "import",
+   "import ${1:name} from '${2:module}';"
+  ],
+  [
+   "export",
+   "export default",
+   "export default ${1:name};"
+  ]
+ ]
+}
