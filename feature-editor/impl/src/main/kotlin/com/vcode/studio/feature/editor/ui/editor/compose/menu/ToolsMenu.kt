@@ -32,6 +32,9 @@ internal fun ToolsMenu(
     modifier: Modifier = Modifier,
     onForceSyntaxClicked: () -> Unit = {},
     onInsertColorClicked: () -> Unit = {},
+    onRunClicked: () -> Unit = {},
+    onPreviewClicked: () -> Unit = {},
+    onPanelClicked: () -> Unit = {},
 ) {
     PopupMenu(
         expanded = expanded,
@@ -39,6 +42,21 @@ internal fun ToolsMenu(
         verticalOffset = (-56).dp,
         modifier = modifier,
     ) {
+        PopupMenuItem(
+            title = stringResource(R.string.editor_menu_tools_run),
+            iconResId = UiR.drawable.ic_play,
+            onClick = onRunClicked,
+        )
+        PopupMenuItem(
+            title = stringResource(R.string.editor_menu_tools_preview),
+            iconResId = UiR.drawable.ic_eye,
+            onClick = onPreviewClicked,
+        )
+        PopupMenuItem(
+            title = stringResource(R.string.editor_menu_tools_panel),
+            iconResId = UiR.drawable.ic_console,
+            onClick = onPanelClicked,
+        )
         PopupMenuItem(
             title = stringResource(R.string.editor_menu_tools_force_syntax),
             iconResId = UiR.drawable.ic_marker,

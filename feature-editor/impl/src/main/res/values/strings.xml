@@ -80,4 +80,7 @@
     <string name="editor_exit_dialog_title">Exit</string>
     <string name="editor_exit_dialog_message">Are you sure you want to exit? All changes will be saved into a cache</string>
 
+    <string name="editor_menu_tools_run" translatable="false">Run</string>
+    <string name="editor_menu_tools_preview" translatable="false">Browser preview</string>
+    <string name="editor_menu_tools_panel" translatable="false">Problems and output</string>
 </resources>
