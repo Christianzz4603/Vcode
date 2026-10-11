@@ -55,3 +55,8 @@
 -dontwarn org.newsclub.net.unix.AFUNIXSocketChannel
 -dontwarn org.slf4j.Logger
 -dontwarn org.slf4j.LoggerFactory
+
+# Vcode: JavaScript bridge used by Run
+-keepclassmembers class com.vcode.studio.feature.editor.ui.editor.panel.CodeRunner$Bridge {
+    @android.webkit.JavascriptInterface <methods>;
+}

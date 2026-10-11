@@ -29,9 +29,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.DrawerValue
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,11 +72,23 @@ import com.vcode.studio.feature.editor.ui.editor.compose.SearchPanel
 import com.vcode.studio.feature.editor.ui.editor.model.DocumentState
 import com.vcode.studio.feature.editor.ui.editor.model.EditorController
 import com.vcode.studio.feature.editor.ui.editor.model.ErrorAction
+import com.vcode.studio.feature.editor.ui.editor.model.EditorCommand
 import com.vcode.studio.feature.editor.ui.editor.model.rememberEditorController
+import com.vcode.studio.feature.editor.ui.editor.panel.CodeRunner
+import com.vcode.studio.feature.editor.ui.editor.panel.EditorPanel
+import com.vcode.studio.feature.editor.ui.editor.panel.EditorPanelState
+import com.vcode.studio.feature.editor.ui.editor.panel.PanelTab
+import com.vcode.studio.feature.editor.ui.editor.panel.Problem
+import com.vcode.studio.feature.editor.ui.editor.panel.ProblemsAnalyzer
+import com.vcode.studio.feature.editor.ui.editor.panel.RunTarget
+import com.vcode.studio.feature.editor.ui.editor.panel.rememberEditorPanelState
 import com.vcode.studio.feature.explorer.ui.explorer.DrawerExplorer
 import com.vcode.studio.feature.git.api.navigation.CheckoutRoute.Companion.KEY_CHECKOUT
 import com.vcode.studio.feature.git.api.navigation.PullRoute.Companion.KEY_PULL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.vcode.studio.ds.R as UiR
 
 internal const val KEY_CLOSE_FILE = "KEY_CLOSE_FILE"
@@ -94,6 +108,52 @@ internal fun EditorScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val tabsState = rememberLazyListState()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+
+    val panelContext = LocalContext.current.applicationContext
+    val panelState = rememberEditorPanelState()
+    val codeRunner = remember { CodeRunner(panelContext) }
+    DisposableEffect(Unit) {
+        onDispose { codeRunner.stop(panelState) }
+    }
+    val currentDocumentState = viewState.currentDocument
+    LaunchedEffect(panelState.visible, panelState.contentVersion, currentDocumentState?.document?.uuid) {
+        if (!panelState.visible) return@LaunchedEffect
+        delay(500)
+        val document = currentDocumentState?.document
+        val text = currentDocumentState?.content?.toString()
+        panelState.problems = if (document == null || text == null) {
+            emptyList()
+        } else {
+            withContext(Dispatchers.Default) { ProblemsAnalyzer.analyze(document.language, text) }
+        }
+        if (panelState.tab == PanelTab.PREVIEW && panelState.autoRefresh &&
+            panelState.previewHtml != null && document != null && text != null
+        ) {
+            panelState.updatePreview(document.language, text, document.fileUri)
+        }
+    }
+    val runCurrent: () -> Unit = {
+        val document = viewState.currentDocument?.document
+        val text = viewState.currentDocument?.content?.toString()
+        if (document != null && text != null) {
+            val dir = runCatching {
+                val uri = android.net.Uri.parse(document.fileUri)
+                if (uri.scheme == "file") uri.path?.let { java.io.File(it).parentFile } else null
+            }.getOrNull()
+            codeRunner.run(scope, panelState, RunTarget(document.displayName, document.language, text, dir))
+        } else {
+            panelState.show(PanelTab.OUTPUT)
+        }
+    }
+    val previewCurrent: () -> Unit = {
+        val document = viewState.currentDocument?.document
+        val text = viewState.currentDocument?.content?.toString()
+        if (document != null && text != null) {
+            panelState.updatePreview(document.language, text, document.fileUri)
+        } else {
+            panelState.show(PanelTab.PREVIEW)
+        }
+    }
 
     EditorScreen(
         viewState = viewState,
@@ -154,6 +214,15 @@ internal fun EditorScreen(
         onErrorActionClicked = viewModel::onErrorActionClicked,
         onExtraKeyClicked = viewModel::onExtraKeyClicked,
         onExtraOptionsClicked = viewModel::onExtraOptionsClicked,
+        panelState = panelState,
+        canRun = codeRunner.canRun(currentDocumentState?.document?.language.orEmpty()),
+        onRunClicked = runCurrent,
+        onStopClicked = { codeRunner.stop(panelState) },
+        onPreviewClicked = previewCurrent,
+        onPanelClicked = { panelState.toggle() },
+        onProblemClicked = { problem ->
+            scope.launch { editorController.send(EditorCommand.GoToLine(problem.line)) }
+        },
     )
 
     val defaultFileName = stringResource(UiR.string.common_untitled)
@@ -305,6 +374,13 @@ private fun EditorScreen(
     onErrorActionClicked: (ErrorAction) -> Unit = {},
     onExtraKeyClicked: (Char) -> Unit = {},
     onExtraOptionsClicked: () -> Unit = {},
+    panelState: EditorPanelState,
+    canRun: Boolean = false,
+    onRunClicked: () -> Unit = {},
+    onStopClicked: () -> Unit = {},
+    onPreviewClicked: () -> Unit = {},
+    onPanelClicked: () -> Unit = {},
+    onProblemClicked: (Problem) -> Unit = {},
 ) {
     ScaffoldSuite(
         topBar = {
@@ -335,9 +411,21 @@ private fun EditorScreen(
                 onCheckoutClicked = onCheckoutClicked,
                 onTerminalClicked = onTerminalClicked,
                 onSettingsClicked = onSettingsClicked,
+                onRunClicked = onRunClicked,
+                onPreviewClicked = onPreviewClicked,
+                onPanelClicked = onPanelClicked,
             )
         },
         bottomBar = {
+            Column {
+            EditorPanel(
+                state = panelState,
+                canRun = canRun,
+                onRunClicked = onRunClicked,
+                onStopClicked = onStopClicked,
+                onRefreshPreviewClicked = onPreviewClicked,
+                onProblemClicked = onProblemClicked,
+            )
             if (viewState.showExtendedKeyboard) {
                 ExtendedKeyboard(
                     currentDocument = viewState.currentDocument,
@@ -351,6 +439,7 @@ private fun EditorScreen(
                     onUndoClicked = onUndoClicked,
                     onRedoClicked = onRedoClicked,
                 )
+            }
             }
         },
         drawerState = drawerState,
@@ -413,7 +502,10 @@ private fun EditorScreen(
                         language = currentDocument.document.language,
                         settings = viewState.settings,
                         controller = editorController,
-                        onContentChanged = onContentChanged,
+                        onContentChanged = {
+                            onContentChanged()
+                            panelState.contentVersion++
+                        },
                         onShortcutPressed = onShortcutPressed,
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -454,6 +546,7 @@ private fun EditorScreen(
 private fun EditorScreenPreview() {
     PreviewBackground {
         EditorScreen(
+            panelState = EditorPanelState(),
             viewState = EditorViewState(
                 documents = listOf(
                     DocumentState(
