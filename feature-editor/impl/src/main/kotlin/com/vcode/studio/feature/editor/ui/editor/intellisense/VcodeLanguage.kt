@@ -24,7 +24,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.lang.completion.SimpleSnippetCompletionItem
-import io.github.rosemoe.sora.lang.completion.snippet.SnippetDescription
+import io.github.rosemoe.sora.lang.completion.SnippetDescription
 import io.github.rosemoe.sora.lang.completion.snippet.parser.CodeSnippetParser
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.text.CharPosition
