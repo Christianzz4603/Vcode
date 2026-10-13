@@ -74,6 +74,8 @@ import com.vcode.studio.feature.editor.ui.editor.model.EditorController
 import com.vcode.studio.feature.editor.ui.editor.model.ErrorAction
 import com.vcode.studio.feature.editor.ui.editor.model.EditorCommand
 import com.vcode.studio.feature.editor.ui.editor.model.rememberEditorController
+import com.vcode.studio.core.settings.SettingsManager
+import com.vcode.studio.feature.editor.ui.editor.panel.AiAssistant
 import com.vcode.studio.feature.editor.ui.editor.panel.CodeRunner
 import com.vcode.studio.feature.editor.ui.editor.panel.EditorPanel
 import com.vcode.studio.feature.editor.ui.editor.panel.EditorPanelState
@@ -112,8 +114,12 @@ internal fun EditorScreen(
     val panelContext = LocalContext.current.applicationContext
     val panelState = rememberEditorPanelState()
     val codeRunner = remember { CodeRunner(panelContext) }
+    val aiAssistant = remember { AiAssistant(SettingsManager(panelContext)) }
     DisposableEffect(Unit) {
-        onDispose { codeRunner.stop(panelState) }
+        onDispose {
+            codeRunner.stop(panelState)
+            aiAssistant.stop(panelState)
+        }
     }
     val currentDocumentState = viewState.currentDocument
     LaunchedEffect(panelState.visible, panelState.contentVersion, currentDocumentState?.document?.uuid) {
@@ -153,6 +159,12 @@ internal fun EditorScreen(
         } else {
             panelState.show(PanelTab.PREVIEW)
         }
+    }
+
+    val askAi: (String) -> Unit = { prompt ->
+        val document = viewState.currentDocument?.document
+        val text = viewState.currentDocument?.content?.toString()
+        aiAssistant.send(scope, panelState, prompt, document?.displayName, document?.language, text)
     }
 
     EditorScreen(
@@ -223,6 +235,13 @@ internal fun EditorScreen(
         onProblemClicked = { problem ->
             scope.launch { editorController.send(EditorCommand.GoToLine(problem.line)) }
         },
+        aiConfigured = { aiAssistant.isConfigured() },
+        onAskAi = askAi,
+        onStopAi = { aiAssistant.stop(panelState) },
+        onInsertCode = { code ->
+            scope.launch { editorController.send(EditorCommand.Insert(code)) }
+        },
+        onAiClicked = { panelState.show(PanelTab.AI) },
     )
 
     val defaultFileName = stringResource(UiR.string.common_untitled)
@@ -381,6 +400,11 @@ private fun EditorScreen(
     onPreviewClicked: () -> Unit = {},
     onPanelClicked: () -> Unit = {},
     onProblemClicked: (Problem) -> Unit = {},
+    aiConfigured: () -> Boolean = { false },
+    onAskAi: (String) -> Unit = {},
+    onStopAi: () -> Unit = {},
+    onInsertCode: (String) -> Unit = {},
+    onAiClicked: () -> Unit = {},
 ) {
     ScaffoldSuite(
         topBar = {
@@ -414,6 +438,7 @@ private fun EditorScreen(
                 onRunClicked = onRunClicked,
                 onPreviewClicked = onPreviewClicked,
                 onPanelClicked = onPanelClicked,
+                onAiClicked = onAiClicked,
             )
         },
         bottomBar = {
@@ -425,6 +450,10 @@ private fun EditorScreen(
                 onStopClicked = onStopClicked,
                 onRefreshPreviewClicked = onPreviewClicked,
                 onProblemClicked = onProblemClicked,
+                aiConfigured = aiConfigured,
+                onAskAi = onAskAi,
+                onStopAi = onStopAi,
+                onInsertCode = onInsertCode,
             )
             if (viewState.showExtendedKeyboard) {
                 ExtendedKeyboard(

@@ -70,6 +70,7 @@ internal fun EditorToolbar(
     onRunClicked: () -> Unit = {},
     onPreviewClicked: () -> Unit = {},
     onPanelClicked: () -> Unit = {},
+    onAiClicked: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     var menuType by rememberSaveable {
@@ -161,6 +162,7 @@ internal fun EditorToolbar(
                         onRunClicked = { menuType = null; onRunClicked() },
                         onPreviewClicked = { menuType = null; onPreviewClicked() },
                         onPanelClicked = { menuType = null; onPanelClicked() },
+                        onAiClicked = { menuType = null; onAiClicked() },
                     )
                     GitMenu(
                         expanded = menuType == MenuType.GIT,

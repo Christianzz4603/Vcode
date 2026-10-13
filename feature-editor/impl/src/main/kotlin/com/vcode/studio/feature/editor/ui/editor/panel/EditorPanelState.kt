@@ -28,7 +28,7 @@ import android.net.Uri
 import com.vcode.studio.feature.editor.data.model.LanguageScope
 import java.io.File
 
-internal enum class PanelTab { PROBLEMS, OUTPUT, PREVIEW }
+internal enum class PanelTab { PROBLEMS, OUTPUT, PREVIEW, AI }
 
 internal enum class Severity { ERROR, WARNING, INFO }
 
@@ -44,6 +44,11 @@ internal data class Problem(
 internal data class OutputLine(
     val kind: OutputKind,
     val text: String,
+)
+
+internal data class ChatMessage(
+    val role: String,
+    val content: String,
 )
 
 @Composable
@@ -65,6 +70,8 @@ internal class EditorPanelState {
     var autoRefresh by mutableStateOf(true)
     var contentVersion by mutableIntStateOf(0)
     val output = mutableStateListOf<OutputLine>()
+    val aiMessages = mutableStateListOf<ChatMessage>()
+    var aiBusy by mutableStateOf(false)
 
     fun show(tab: PanelTab) {
         this.tab = tab

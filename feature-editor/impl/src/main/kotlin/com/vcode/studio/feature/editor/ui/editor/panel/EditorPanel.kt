@@ -34,7 +34,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,6 +76,10 @@ internal fun EditorPanel(
     onRefreshPreviewClicked: () -> Unit,
     onProblemClicked: (Problem) -> Unit,
     modifier: Modifier = Modifier,
+    aiConfigured: () -> Boolean = { false },
+    onAskAi: (String) -> Unit = {},
+    onStopAi: () -> Unit = {},
+    onInsertCode: (String) -> Unit = {},
 ) {
     if (!state.visible) return
     val clipboard = LocalClipboardManager.current
@@ -70,7 +87,13 @@ internal fun EditorPanel(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(if (state.expanded) 420.dp else 240.dp)
+            .height(
+                when {
+                    state.expanded -> 460.dp
+                    state.tab == PanelTab.AI -> 340.dp
+                    else -> 240.dp
+                },
+            )
             .background(VcodeTheme.colors.colorBackgroundSecondary),
     ) {
         HorizontalDivider()
@@ -82,6 +105,7 @@ internal fun EditorPanel(
             PanelTabLabel(problemsLabel, state.tab == PanelTab.PROBLEMS) { state.tab = PanelTab.PROBLEMS }
             PanelTabLabel("Output", state.tab == PanelTab.OUTPUT) { state.tab = PanelTab.OUTPUT }
             PanelTabLabel("Preview", state.tab == PanelTab.PREVIEW) { state.tab = PanelTab.PREVIEW }
+            PanelTabLabel("AI", state.tab == PanelTab.AI) { state.tab = PanelTab.AI }
             Spacer(Modifier.weight(1f))
             if (state.tab == PanelTab.OUTPUT) {
                 PanelButton(UiR.drawable.ic_copy, "Copy output") {
@@ -108,6 +132,7 @@ internal fun EditorPanel(
             PanelTab.PROBLEMS -> ProblemsList(state, onProblemClicked)
             PanelTab.OUTPUT -> OutputList(state)
             PanelTab.PREVIEW -> PreviewView(state)
+            PanelTab.AI -> AiView(state, aiConfigured(), onAskAi, onStopAi, onInsertCode)
         }
     }
 }
@@ -263,5 +288,160 @@ private fun PreviewView(state: EditorPanelState) {
             }
         },
         modifier = Modifier.fillMaxSize(),
+    )
+}
+
+private val codeBlockRegex = Regex("```[A-Za-z0-9+#._-]*\\n([\\s\\S]*?)```")
+
+@Composable
+private fun AiView(
+    state: EditorPanelState,
+    configured: Boolean,
+    onAsk: (String) -> Unit,
+    onStop: () -> Unit,
+    onInsertCode: (String) -> Unit,
+) {
+    val clipboard = LocalClipboardManager.current
+    var input by rememberSaveable { mutableStateOf("") }
+    val listState = rememberLazyListState()
+    val lastLength = state.aiMessages.lastOrNull()?.content?.length ?: 0
+    LaunchedEffect(state.aiMessages.size, lastLength) {
+        if (state.aiMessages.isNotEmpty()) {
+            listState.scrollToItem(state.aiMessages.size - 1)
+        }
+    }
+    val send = {
+        val prompt = input.trim()
+        if (prompt.isNotEmpty() && !state.aiBusy) {
+            input = ""
+            onAsk(prompt)
+        }
+    }
+    Column(Modifier.fillMaxSize()) {
+        Box(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+        ) {
+            if (state.aiMessages.isEmpty()) {
+                EmptyText(
+                    if (configured) {
+                        "Ask about the open file. The question and the file are sent to OpenRouter."
+                    } else {
+                        "Add your OpenRouter API key in Settings > AI assistant"
+                    },
+                )
+            } else {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                    items(state.aiMessages) { message ->
+                        val isUser = message.role == "user"
+                        val code = if (isUser) null else codeBlockRegex.find(message.content)?.groupValues?.get(1)
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                        ) {
+                            Text(
+                                text = if (isUser) "You" else "AI",
+                                style = VcodeTheme.typography.text12Regular,
+                                color = if (isUser) VcodeTheme.colors.colorTextAndIconSecondary else VcodeTheme.colors.colorPrimary,
+                            )
+                            SelectionContainer {
+                                Text(
+                                    text = message.content.ifEmpty { "..." },
+                                    style = VcodeTheme.typography.text14Regular,
+                                    color = VcodeTheme.colors.colorTextAndIconPrimary,
+                                )
+                            }
+                            if (!isUser && message.content.isNotEmpty()) {
+                                Row(Modifier.padding(top = 4.dp)) {
+                                    Text(
+                                        text = "Copy",
+                                        style = VcodeTheme.typography.text12Regular,
+                                        color = VcodeTheme.colors.colorPrimary,
+                                        modifier = Modifier
+                                            .clickable { clipboard.setText(AnnotatedString(message.content)) }
+                                            .padding(end = 16.dp, top = 2.dp, bottom = 2.dp),
+                                    )
+                                    if (code != null) {
+                                        Text(
+                                            text = "Insert code at cursor",
+                                            style = VcodeTheme.typography.text12Regular,
+                                            color = VcodeTheme.colors.colorPrimary,
+                                            modifier = Modifier
+                                                .clickable { onInsertCode(code) }
+                                                .padding(end = 16.dp, top = 2.dp, bottom = 2.dp),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Row(Modifier.padding(horizontal = 8.dp)) {
+            val fixPrompt = if (state.problems.isEmpty()) {
+                "Review this file for bugs and suggest fixes."
+            } else {
+                "Fix the problems reported by the editor and show the corrected code."
+            }
+            AiChip("Explain") { onAsk("Explain what this file does, briefly.") }
+            AiChip("Fix problems") { onAsk(fixPrompt) }
+            AiChip("Refactor") { onAsk("Suggest a cleaner version of this file. Keep the behavior the same.") }
+            AiChip("Clear") { state.aiMessages.clear() }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+        ) {
+            Box(
+                Modifier
+                    .weight(1f)
+                    .border(1.dp, VcodeTheme.colors.colorOutline, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+            ) {
+                if (input.isEmpty()) {
+                    Text(
+                        text = "Ask something...",
+                        style = VcodeTheme.typography.text14Regular,
+                        color = VcodeTheme.colors.colorTextAndIconDisabled,
+                    )
+                }
+                BasicTextField(
+                    value = input,
+                    onValueChange = { input = it },
+                    textStyle = TextStyle(
+                        color = VcodeTheme.colors.colorTextAndIconPrimary,
+                        fontSize = VcodeTheme.typography.text14Regular.fontSize,
+                    ),
+                    cursorBrush = SolidColor(VcodeTheme.colors.colorPrimary),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(onSend = { send() }),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (state.aiBusy) {
+                PanelButton(UiR.drawable.ic_stop, "Stop", onStop)
+            } else {
+                PanelButton(UiR.drawable.ic_send, "Send") { send() }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AiChip(text: String, onClick: () -> Unit) {
+    Text(
+        text = text,
+        style = VcodeTheme.typography.text12Regular,
+        color = VcodeTheme.colors.colorTextAndIconPrimary,
+        modifier = Modifier
+            .padding(end = 6.dp, top = 2.dp, bottom = 2.dp)
+            .border(1.dp, VcodeTheme.colors.colorOutline, RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
     )
 }

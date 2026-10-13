@@ -24,6 +24,7 @@ import com.vcode.studio.feature.settings.api.navigation.CodeStyleHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.EditorHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.FilesHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.GitHeaderRoute
+import com.vcode.studio.feature.settings.api.navigation.AiHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.HeaderListRoute
 import com.vcode.studio.feature.settings.api.navigation.PluginsHeaderRoute
 import com.vcode.studio.feature.settings.api.navigation.TerminalHeaderRoute
@@ -33,6 +34,7 @@ import com.vcode.studio.feature.settings.ui.codestyle.CodeHeaderScreen
 import com.vcode.studio.feature.settings.ui.editor.EditorHeaderScreen
 import com.vcode.studio.feature.settings.ui.files.FilesHeaderScreen
 import com.vcode.studio.feature.settings.ui.git.GitHeaderScreen
+import com.vcode.studio.feature.settings.ui.ai.AiHeaderScreen
 import com.vcode.studio.feature.settings.ui.header.HeaderListScreen
 import com.vcode.studio.feature.settings.ui.plugins.PluginsHeaderScreen
 import com.vcode.studio.feature.settings.ui.terminal.TerminalHeaderScreen
@@ -64,6 +66,9 @@ internal class SettingsEntryProvider : EntryProvider {
         }
         entry<PluginsHeaderRoute> {
             PluginsHeaderScreen()
+        }
+        entry<AiHeaderRoute> {
+            AiHeaderScreen()
         }
         entry<AboutHeaderRoute> {
             AboutHeaderScreen()

@@ -35,6 +35,7 @@ internal fun ToolsMenu(
     onRunClicked: () -> Unit = {},
     onPreviewClicked: () -> Unit = {},
     onPanelClicked: () -> Unit = {},
+    onAiClicked: () -> Unit = {},
 ) {
     PopupMenu(
         expanded = expanded,
@@ -56,6 +57,11 @@ internal fun ToolsMenu(
             title = stringResource(R.string.editor_menu_tools_panel),
             iconResId = UiR.drawable.ic_console,
             onClick = onPanelClicked,
+        )
+        PopupMenuItem(
+            title = stringResource(R.string.editor_menu_tools_ai),
+            iconResId = UiR.drawable.ic_pencil,
+            onClick = onAiClicked,
         )
         PopupMenuItem(
             title = stringResource(R.string.editor_menu_tools_force_syntax),

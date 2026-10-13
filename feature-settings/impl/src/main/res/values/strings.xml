@@ -201,4 +201,17 @@
     <string name="settings_plugins_empty_title" translatable="false">No plugins installed</string>
     <string name="settings_plugins_empty_subtitle" translatable="false">Install a plugin file to add themes, keywords or file types</string>
     <string name="settings_plugins_remove_title" translatable="false">Remove %1$s</string>
+    <string name="settings_header_ai_title" translatable="false">AI assistant</string>
+    <string name="settings_header_ai_subtitle" translatable="false">OpenRouter key and model</string>
+    <string name="settings_ai_category" translatable="false">OpenRouter</string>
+    <string name="settings_ai_key_title" translatable="false">API key</string>
+    <string name="settings_ai_key_help" translatable="false">Create a key at openrouter.ai/keys. It is stored on this device.</string>
+    <string name="settings_ai_model_title" translatable="false">Model</string>
+    <string name="settings_ai_model_help" translatable="false">Any model id from openrouter.ai/models, for example openai/gpt-4o-mini. Use openrouter/auto to let OpenRouter choose.</string>
+    <string name="settings_ai_get_key_title" translatable="false">Get an API key</string>
+    <string name="settings_ai_get_key_subtitle" translatable="false">Opens openrouter.ai/keys</string>
+    <string name="settings_ai_models_title" translatable="false">Browse models</string>
+    <string name="settings_ai_models_subtitle" translatable="false">Opens openrouter.ai/models</string>
+    <string name="settings_ai_privacy_title" translatable="false">What is sent</string>
+    <string name="settings_ai_privacy_subtitle" translatable="false">Only when you ask a question, Vcode sends your question and the open file to OpenRouter.</string>
 </resources>

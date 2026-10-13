@@ -55,6 +55,8 @@ class SettingsManager(private val context: Context) {
         const val KEY_CURSOR_STYLE = "cursor_style"
         const val KEY_SMOOTH_CARET = "smooth_caret"
         const val KEY_FONT_LIGATURES = "font_ligatures"
+        const val KEY_AI_API_KEY = "ai_api_key"
+        const val KEY_AI_MODEL = "ai_model"
 
         // Keyboard
         const val KEY_USE_EXTENDED_KEYBOARD = "use_extended_keyboard"
@@ -173,6 +175,12 @@ class SettingsManager(private val context: Context) {
     var fontLigatures: Boolean
         get() = sharedPreferences.getBoolean(KEY_FONT_LIGATURES, true)
         set(value) = sharedPreferences.edit().putBoolean(KEY_FONT_LIGATURES, value).apply()
+    var aiApiKey: String
+        get() = sharedPreferences.getString(KEY_AI_API_KEY, "") ?: ""
+        set(value) = sharedPreferences.edit().putString(KEY_AI_API_KEY, value.trim()).apply()
+    var aiModel: String
+        get() = sharedPreferences.getString(KEY_AI_MODEL, "openrouter/auto") ?: "openrouter/auto"
+        set(value) = sharedPreferences.edit().putString(KEY_AI_MODEL, value.trim()).apply()
 
     var extendedKeyboard: Boolean
         get() = sharedPreferences.getBoolean(KEY_USE_EXTENDED_KEYBOARD, true)
