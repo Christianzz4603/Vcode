@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.5.1 (10034)
+
+* Updates now install over each other: every build is signed with the same permanent key. Builds up to 1.5.0 used a different temporary key each time, so uninstall them once (back up your files first) before installing 1.5.1.
+
 ## 1.5.0 (10033)
 
 * OpenRouter AI assistant: add your API key and model in Settings > AI assistant, then ask about the open file from the AI tab of the panel. Replies stream in, with copy and insert at cursor.
