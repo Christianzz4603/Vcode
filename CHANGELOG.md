@@ -6,6 +6,12 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.6.0 (10035)
+
+* Tools bar above the symbol row with Run, Termux, Preview, Output, Problems, AI and Full screen. Long-press a tool and drag to reorder; Hide removes the bar (Tools > Problems and output brings it back).
+* The bottom panel can be resized by dragging its top handle and can go full screen. In landscape it starts at half the screen height.
+* Run in Termux: runs the open file in the real Termux app (Python, Node.js, Java, Kotlin, C, C++, Go, Rust, PHP, Ruby, Perl, R, Dart, shell) and shows the result in Output.
+
 ## 1.5.1 (10034)
 
 * Updates now install over each other: every build is signed with the same permanent key. Builds up to 1.5.0 used a different temporary key each time, so uninstall them once (back up your files first) before installing 1.5.1.

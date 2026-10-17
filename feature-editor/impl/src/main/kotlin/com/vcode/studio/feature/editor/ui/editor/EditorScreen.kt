@@ -34,6 +34,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,7 +84,13 @@ import com.vcode.studio.feature.editor.ui.editor.panel.CodeRunner
 import com.vcode.studio.feature.editor.ui.editor.panel.EditorPanel
 import com.vcode.studio.feature.editor.ui.editor.panel.EditorPanelState
 import com.vcode.studio.feature.editor.ui.editor.panel.PanelTab
+import com.vcode.studio.feature.editor.ui.editor.panel.OutputKind
+import com.vcode.studio.feature.editor.ui.editor.panel.PanelTool
+import com.vcode.studio.feature.editor.ui.editor.panel.PanelToolsBar
 import com.vcode.studio.feature.editor.ui.editor.panel.Problem
+import com.vcode.studio.feature.editor.ui.editor.panel.TermuxBridge
+import com.vcode.studio.feature.editor.ui.editor.panel.TermuxCommands
+import com.vcode.studio.feature.editor.ui.editor.panel.toTool
 import com.vcode.studio.feature.editor.ui.editor.panel.ProblemsAnalyzer
 import com.vcode.studio.feature.editor.ui.editor.panel.RunTarget
 import com.vcode.studio.feature.editor.ui.editor.panel.rememberEditorPanelState
@@ -138,7 +148,7 @@ internal fun EditorScreen(
             panelState.updatePreview(document.language, text, document.fileUri)
         }
     }
-    val runCurrent: () -> Unit = {
+    val runInApp: () -> Unit = {
         val document = viewState.currentDocument?.document
         val text = viewState.currentDocument?.content?.toString()
         if (document != null && text != null) {
@@ -165,6 +175,106 @@ internal fun EditorScreen(
         val document = viewState.currentDocument?.document
         val text = viewState.currentDocument?.content?.toString()
         aiAssistant.send(scope, panelState, prompt, document?.displayName, document?.language, text)
+    }
+
+    val toolSettings = remember { SettingsManager(panelContext) }
+    var toolOrder by remember { mutableStateOf(PanelTool.parse(toolSettings.panelToolsOrder)) }
+    var toolsVisible by remember { mutableStateOf(toolSettings.panelToolsVisible) }
+
+    var pendingTermux by remember { mutableStateOf<(() -> Unit)?>(null) }
+    val termuxPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        val action = pendingTermux
+        pendingTermux = null
+        if (granted && action != null) {
+            action()
+        } else if (!granted) {
+            panelState.print(OutputKind.STDERR, "Permission to run commands in Termux was denied.")
+            panelState.show(PanelTab.OUTPUT)
+        }
+    }
+    DisposableEffect(Unit) {
+        TermuxBridge.listener = { result ->
+            panelState.termuxPending = false
+            panelState.running = false
+            result.stdout.lines().dropLastWhile { it.isEmpty() }.forEach { panelState.print(OutputKind.STDOUT, it) }
+            result.stderr.lines().dropLastWhile { it.isEmpty() }.forEach { panelState.print(OutputKind.STDERR, it) }
+            if (!result.errorMessage.isNullOrBlank()) {
+                panelState.print(OutputKind.STDERR, "Termux error: " + result.errorMessage)
+                panelState.print(OutputKind.SYSTEM, "In Termux run: mkdir -p ~/.termux && echo \"allow-external-apps=true\" >> ~/.termux/termux.properties")
+                panelState.print(OutputKind.SYSTEM, "Then close Termux completely and open it again.")
+            } else {
+                panelState.print(OutputKind.SYSTEM, "Process finished with exit code " + (result.exitCode ?: 0))
+                if (result.exitCode == 127 && panelState.termuxHint.isNotEmpty()) {
+                    panelState.print(OutputKind.SYSTEM, "A tool is missing. In Termux run: " + panelState.termuxHint)
+                }
+            }
+        }
+        onDispose { TermuxBridge.listener = null }
+    }
+    LaunchedEffect(panelState.termuxPending) {
+        if (panelState.termuxPending) {
+            delay(120_000)
+            if (panelState.termuxPending) {
+                panelState.termuxPending = false
+                panelState.running = false
+                panelState.print(OutputKind.SYSTEM, "Termux did not answer within 120 seconds. Make sure external apps are allowed in Termux.")
+            }
+        }
+    }
+    val runTermux: () -> Unit = {
+        val document = viewState.currentDocument?.document
+        val text = viewState.currentDocument?.content?.toString()
+        panelState.show(PanelTab.OUTPUT)
+        if (document != null && text != null) {
+            val plan = TermuxCommands.plan(document.language, document.displayName, text)
+            panelState.output.clear()
+            if (plan == null) {
+                panelState.print(OutputKind.SYSTEM, "Run in Termux is not set up for this language.")
+            } else if (!TermuxBridge.isInstalled(panelContext)) {
+                panelState.print(OutputKind.SYSTEM, "Termux is not installed. Install Termux from F-Droid (the Google Play version is outdated) and try again.")
+            } else {
+                val start = {
+                    val error = TermuxBridge.run(panelContext, plan, text)
+                    if (error != null) {
+                        panelState.print(OutputKind.STDERR, error)
+                    } else {
+                        panelState.running = true
+                        panelState.termuxPending = true
+                        panelState.termuxHint = plan.installHint
+                        panelState.print(OutputKind.SYSTEM, "> " + document.displayName + " (Termux)")
+                    }
+                }
+                if (TermuxBridge.hasPermission(panelContext)) {
+                    start()
+                } else {
+                    pendingTermux = start
+                    termuxPermissionLauncher.launch(TermuxBridge.PERMISSION)
+                }
+            }
+        }
+    }
+    val runCurrent: () -> Unit = {
+        if (panelState.running) {
+            codeRunner.stop(panelState)
+            panelState.termuxPending = false
+        } else {
+            val language = viewState.currentDocument?.document?.language.orEmpty()
+            if (codeRunner.canRun(language)) runInApp() else runTermux()
+        }
+    }
+    val onToolClicked: (PanelTool) -> Unit = { tool ->
+        when (tool) {
+            PanelTool.RUN -> runCurrent()
+            PanelTool.TERMUX -> runTermux()
+            PanelTool.PREVIEW -> previewCurrent()
+            PanelTool.OUTPUT -> panelState.show(PanelTab.OUTPUT)
+            PanelTool.PROBLEMS -> panelState.show(PanelTab.PROBLEMS)
+            PanelTool.AI -> panelState.show(PanelTab.AI)
+            PanelTool.FULLSCREEN -> {
+                if (!panelState.visible) panelState.show(panelState.tab)
+                panelState.fullscreen = !panelState.fullscreen
+            }
+        }
     }
 
     EditorScreen(
@@ -227,11 +337,20 @@ internal fun EditorScreen(
         onExtraKeyClicked = viewModel::onExtraKeyClicked,
         onExtraOptionsClicked = viewModel::onExtraOptionsClicked,
         panelState = panelState,
-        canRun = codeRunner.canRun(currentDocumentState?.document?.language.orEmpty()),
+        canRun = currentDocumentState?.document?.language.orEmpty().let { codeRunner.canRun(it) || TermuxCommands.supports(it) },
         onRunClicked = runCurrent,
-        onStopClicked = { codeRunner.stop(panelState) },
+        onStopClicked = {
+            codeRunner.stop(panelState)
+            panelState.termuxPending = false
+        },
         onPreviewClicked = previewCurrent,
-        onPanelClicked = { panelState.toggle() },
+        onPanelClicked = {
+            panelState.toggle()
+            if (!toolsVisible) {
+                toolsVisible = true
+                toolSettings.panelToolsVisible = true
+            }
+        },
         onProblemClicked = { problem ->
             scope.launch { editorController.send(EditorCommand.GoToLine(problem.line)) }
         },
@@ -242,6 +361,21 @@ internal fun EditorScreen(
             scope.launch { editorController.send(EditorCommand.Insert(code)) }
         },
         onAiClicked = { panelState.show(PanelTab.AI) },
+        toolOrder = toolOrder,
+        toolsVisible = toolsVisible,
+        onToolClicked = onToolClicked,
+        onToolMoved = { from, to ->
+            val list = toolOrder.toMutableList()
+            if (from in list.indices && to in list.indices) {
+                list.add(to, list.removeAt(from))
+                toolOrder = list
+                toolSettings.panelToolsOrder = PanelTool.serialize(list)
+            }
+        },
+        onToolsHide = {
+            toolsVisible = false
+            toolSettings.panelToolsVisible = false
+        },
     )
 
     val defaultFileName = stringResource(UiR.string.common_untitled)
@@ -405,6 +539,11 @@ private fun EditorScreen(
     onStopAi: () -> Unit = {},
     onInsertCode: (String) -> Unit = {},
     onAiClicked: () -> Unit = {},
+    toolOrder: List<PanelTool> = PanelTool.entries.toList(),
+    toolsVisible: Boolean = false,
+    onToolClicked: (PanelTool) -> Unit = {},
+    onToolMoved: (Int, Int) -> Unit = { _, _ -> },
+    onToolsHide: () -> Unit = {},
 ) {
     ScaffoldSuite(
         topBar = {
@@ -455,6 +594,17 @@ private fun EditorScreen(
                 onStopAi = onStopAi,
                 onInsertCode = onInsertCode,
             )
+            if (toolsVisible) {
+                PanelToolsBar(
+                    order = toolOrder,
+                    selected = if (panelState.visible) panelState.tab.toTool() else null,
+                    problemsCount = panelState.problems.size,
+                    running = panelState.running,
+                    onToolClicked = onToolClicked,
+                    onMoved = onToolMoved,
+                    onHideClicked = onToolsHide,
+                )
+            }
             if (viewState.showExtendedKeyboard) {
                 ExtendedKeyboard(
                     currentDocument = viewState.currentDocument,

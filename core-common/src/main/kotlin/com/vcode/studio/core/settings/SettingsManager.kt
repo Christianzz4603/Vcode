@@ -57,6 +57,8 @@ class SettingsManager(private val context: Context) {
         const val KEY_FONT_LIGATURES = "font_ligatures"
         const val KEY_AI_API_KEY = "ai_api_key"
         const val KEY_AI_MODEL = "ai_model"
+        const val KEY_PANEL_TOOLS_ORDER = "panel_tools_order"
+        const val KEY_PANEL_TOOLS_VISIBLE = "panel_tools_visible"
 
         // Keyboard
         const val KEY_USE_EXTENDED_KEYBOARD = "use_extended_keyboard"
@@ -181,6 +183,12 @@ class SettingsManager(private val context: Context) {
     var aiModel: String
         get() = sharedPreferences.getString(KEY_AI_MODEL, "openrouter/auto") ?: "openrouter/auto"
         set(value) = sharedPreferences.edit().putString(KEY_AI_MODEL, value.trim()).apply()
+    var panelToolsOrder: String
+        get() = sharedPreferences.getString(KEY_PANEL_TOOLS_ORDER, "") ?: ""
+        set(value) = sharedPreferences.edit().putString(KEY_PANEL_TOOLS_ORDER, value).apply()
+    var panelToolsVisible: Boolean
+        get() = sharedPreferences.getBoolean(KEY_PANEL_TOOLS_VISIBLE, true)
+        set(value) = sharedPreferences.edit().putBoolean(KEY_PANEL_TOOLS_VISIBLE, value).apply()
 
     var extendedKeyboard: Boolean
         get() = sharedPreferences.getBoolean(KEY_USE_EXTENDED_KEYBOARD, true)

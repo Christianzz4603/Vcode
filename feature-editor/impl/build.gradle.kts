@@ -52,6 +52,7 @@ dependencies {
     implementation(project(":filesystems:filesystem-local"))
     implementation(project(":filesystems:filesystem-saf"))
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.calvin.reorderable)
     implementation(libs.sora.editor)
     implementation(libs.sora.textmate)

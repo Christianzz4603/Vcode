@@ -23,6 +23,12 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -83,19 +89,49 @@ internal fun EditorPanel(
 ) {
     if (!state.visible) return
     val clipboard = LocalClipboardManager.current
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    val screenHeight = configuration.screenHeightDp
+    val maxHeight = (screenHeight * 0.92f).toInt()
+    val defaultHeight = when {
+        screenHeight < 500 -> (screenHeight * 0.5f).toInt()
+        state.tab == PanelTab.AI -> 340
+        else -> 240
+    }
+    val panelHeight = when {
+        state.fullscreen -> maxHeight
+        state.heightDp > 0 -> state.heightDp.coerceIn(100, maxHeight)
+        else -> defaultHeight
+    }
+    val currentHeight by rememberUpdatedState(panelHeight)
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(
-                when {
-                    state.expanded -> 460.dp
-                    state.tab == PanelTab.AI -> 340.dp
-                    else -> 240.dp
-                },
-            )
+            .height(panelHeight.dp)
             .background(VcodeTheme.colors.colorBackgroundSecondary),
     ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(18.dp)
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures { change, dragAmount ->
+                        change.consume()
+                        state.fullscreen = false
+                        val delta = dragAmount / density.density
+                        state.heightDp = (currentHeight - delta).toInt().coerceIn(100, maxHeight)
+                    }
+                },
+        ) {
+            Box(
+                Modifier
+                    .width(36.dp)
+                    .height(4.dp)
+                    .background(VcodeTheme.colors.colorOutline, RoundedCornerShape(2.dp)),
+            )
+        }
         HorizontalDivider()
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -122,9 +158,9 @@ internal fun EditorPanel(
                 PanelButton(UiR.drawable.ic_play, "Run", onRunClicked)
             }
             PanelButton(
-                if (state.expanded) UiR.drawable.ic_menu_down else UiR.drawable.ic_menu_up,
-                if (state.expanded) "Collapse panel" else "Expand panel",
-            ) { state.expanded = !state.expanded }
+                UiR.drawable.ic_fullscreen,
+                if (state.fullscreen) "Exit full screen" else "Full screen",
+            ) { state.fullscreen = !state.fullscreen }
             PanelButton(UiR.drawable.ic_close, "Close panel") { state.visible = false }
         }
         HorizontalDivider()

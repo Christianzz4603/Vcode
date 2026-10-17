@@ -91,6 +91,11 @@
             </intent-filter>
         </service>
 
+        <!-- Receives the result of "Run in Termux" -->
+        <receiver
+            android:name=".feature.editor.ui.editor.panel.TermuxResultReceiver"
+            android:exported="false" />
+
         <profileable
             android:shell="true"
             tools:targetApi="29" />
