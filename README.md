@@ -23,6 +23,8 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 
 Get the latest `Vcode-foss.apk` from the [website](https://vcode-site.pages.dev) or the [Releases](https://github.com/Christianzz4603/Vcode/releases) page.
 
+[![Get it on Orion Store](https://raw.githubusercontent.com/RookieEnough/Orion-Store/refs/heads/main/assets/orion-badge.png)](https://rookieenough.github.io/Orion-Data/redirect.html?id=vcode)
+
 ## Plugins
 
 Vcode can load data-only plugins (themes, keyword lists and file types) from **Settings > Plugins**. See the [plugin guide](docs/PLUGINS.md) and the [examples](examples/plugins).
