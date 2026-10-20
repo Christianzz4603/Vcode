@@ -2,9 +2,6 @@ name: Reproducibility check
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'fdroid-ready'
 
 jobs:
   compare:
