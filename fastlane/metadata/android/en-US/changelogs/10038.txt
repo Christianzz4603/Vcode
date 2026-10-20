@@ -1,0 +1,1 @@
+- New look, step 2: settings as rounded cards, rounded file drawer and file rows, rounder menus

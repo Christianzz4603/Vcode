@@ -51,7 +51,7 @@ fun PreferenceGroup(
                 VcodeTheme.colors.colorTextAndIconDisabled
             },
             style = VcodeTheme.typography.text14Medium.copy(letterSpacing = 0.8.sp),
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 28.dp)
         )
     }
 }
