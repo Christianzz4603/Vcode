@@ -18,6 +18,7 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 * New editor settings: cursor style, smooth cursor animation, font ligatures and an auto save delay
 * Plugin system: install `.zip` or `.json` plugins to add themes, keyword suggestions and file types (Settings > Plugins)
 * A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
+* F-Droid friendly build: no Google Play services and no closed-source libraries, release builds work without a signing key, and a workflow that builds the app twice and compares the results (see [docs/FDROID.md](docs/FDROID.md))
 
 ## Download
 
@@ -43,12 +44,13 @@ Vcode can load data-only plugins (themes, keyword lists and file types) from **S
 1. `$ git clone --recursive --depth=1 --shallow-submodules https://github.com/Christianzz4603/Vcode Vcode`
 2. In case you forgot the `--recursive` flag, `cd` into the `Vcode` directory
    and: `$ git submodule init && git submodule update --init --recursive --depth=1`
-3. Create a `local.properties` file with the following properties:  
+3. Optional, to sign the APK: create a `local.properties` file with the following properties:  
    `KEYSTORE_PATH`: path to the keystore file (relative to the `app` directory)  
    `KEYSTORE_PASSWORD`: password for the keystore  
    `KEY_ALIAS`: key alias that will be used to sign the app  
    `KEY_PASSWORD`: key password  
-   **Warning**: keep this file safe and make sure nobody, except you, has access to it.
+   **Warning**: keep this file safe and make sure nobody, except you, has access to it.  
+   Without this file the build still works and produces an unsigned APK (`app-foss-release-unsigned.apk`).
 4. Open the project in **[Android Studio](https://developer.android.com/studio/)** or build from the
    command line: `./gradlew :app:assembleFossRelease`
 
@@ -56,10 +58,11 @@ The **Release FOSS APK** workflow does the same on GitHub: it runs on every push
 APK with the keystore secrets (`KEYSTORE_FILE`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`) if they
 are set, and publishes `Vcode-foss.apk` to the `foss-latest` release.
 
-#### Available flavors
+#### Flavor
 
-* `foss`: a flavor without closed-source libraries
-* `gms`: a flavor with Google Play services (in-app updates)
+* `foss`: the only flavor, without closed-source libraries and without Google Play services
+
+See [docs/FDROID.md](docs/FDROID.md) for F-Droid, reproducible builds and the build recipe.
 
 ## Credits and license
 

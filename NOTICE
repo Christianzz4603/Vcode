@@ -16,5 +16,7 @@ Modifications made in Vcode:
  - Added keyword suggestions for code completion
  - Added a GitHub Actions workflow that builds and publishes the FOSS APK
  - Pinned bouncycastle and jsch to older versions to keep the build working
+ - Removed the Google Play services flavor and its in-app update dependency
+ - Release builds work without a signing key and leave dependency and VCS metadata out of the APK
 
 The full text of the license is available in the LICENSE file.

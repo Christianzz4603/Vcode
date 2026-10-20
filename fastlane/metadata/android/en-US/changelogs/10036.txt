@@ -1,0 +1,4 @@
+- F-Droid friendly build: no Google Play services flavor and no closed-source libraries
+- Release builds work without a signing key
+- The APK no longer carries dependency or git metadata
+- Updated store texts

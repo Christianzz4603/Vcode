@@ -43,9 +43,6 @@ class TestModulePlugin : Plugin<Project> {
 
                 flavorDimensions += listOf("platform_services")
                 productFlavors {
-                    create("gms") {
-                        dimension = "platform_services"
-                    }
                     create("foss") {
                         dimension = "platform_services"
                     }

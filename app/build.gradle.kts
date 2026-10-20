@@ -29,8 +29,8 @@ android {
 
     defaultConfig {
         applicationId = "com.vcode.studio"
-        versionCode = 10035
-        versionName = "1.6.0"
+        versionCode = 10036
+        versionName = "1.6.1"
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -44,6 +44,19 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    // Keep the APK free of Google-signed dependency metadata and git info, so that it can be rebuilt
+    // byte for byte from the source code (F-Droid reproducible builds)
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+    buildTypes {
+        release {
+            vcsInfo {
+                include = false
+            }
+        }
     }
 }
 
@@ -78,7 +91,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.viewmodel.navigation)
     implementation(libs.androidx.profileinstaller)
-    gmsImplementation(libs.google.appupdate)
 
     coreLibraryDesugaring(libs.android.tools.desugaring)
 

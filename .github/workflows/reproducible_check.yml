@@ -1,0 +1,59 @@
+name: Reproducibility check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'fdroid-ready'
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Build the unsigned APK in two different folders
+        run: |
+          set -e
+          mkdir -p /tmp/repro/first/Vcode /tmp/repro/second/different-checkout-name
+          for dir in /tmp/repro/first/Vcode /tmp/repro/second/different-checkout-name; do
+            rsync -a --exclude '.git' --exclude 'local.properties' ./ "$dir/"
+            (cd "$dir" && chmod +x gradlew && ./gradlew :app:assembleFossRelease --no-configuration-cache --no-daemon -Dorg.gradle.caching=false)
+          done
+
+      - name: Compare the two APKs
+        run: |
+          A=/tmp/repro/first/Vcode/app/build/outputs/apk/foss/release/app-foss-release-unsigned.apk
+          B=/tmp/repro/second/different-checkout-name/app/build/outputs/apk/foss/release/app-foss-release-unsigned.apk
+          ls -l "$A" "$B"
+          sha256sum "$A" "$B"
+          if cmp -s "$A" "$B"; then
+            echo "RESULT: the two APKs are byte for byte identical"
+            exit 0
+          fi
+          echo "RESULT: the two APKs differ, listing the files that differ"
+          mkdir -p /tmp/repro/unzip-first /tmp/repro/unzip-second
+          unzip -q "$A" -d /tmp/repro/unzip-first
+          unzip -q "$B" -d /tmp/repro/unzip-second
+          diff -rq /tmp/repro/unzip-first /tmp/repro/unzip-second || true
+          exit 1

@@ -1,1 +1,1 @@
-Fast and powerful code editor & file manager for over 30 programming languages
+Code editor for Android with IntelliSense, Run panel, plugins and themes

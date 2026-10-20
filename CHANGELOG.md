@@ -6,6 +6,12 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.6.1 (10036)
+
+* F-Droid friendly build: the Google Play services flavor is gone, so there are no closed-source libraries left; release builds work without a signing key; the APK no longer carries dependency or git metadata.
+* New "Reproducibility check" workflow that builds the app twice in different folders and compares the APKs.
+* Updated the F-Droid store texts and removed the old screenshots and graphics.
+
 ## 1.6.0 (10035)
 
 * Tools bar above the symbol row with Run, Termux, Preview, Output, Problems, AI and Full screen. Long-press a tool and drag to reorder; Hide removes the bar (Tools > Problems and output brings it back).

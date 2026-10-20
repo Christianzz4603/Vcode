@@ -45,9 +45,6 @@ class ApplicationModulePlugin : Plugin<Project> {
 
                 setFlavorDimensions(listOf("platform_services"))
                 productFlavors {
-                    create("gms") {
-                        dimension = "platform_services"
-                    }
                     create("foss") {
                         dimension = "platform_services"
                     }
@@ -59,17 +56,23 @@ class ApplicationModulePlugin : Plugin<Project> {
                         load(localFile.inputStream())
                     }
                 }
-                signingConfigs {
-                    create("release") {
-                        storeFile = file("${properties["KEYSTORE_PATH"]}")
-                        storePassword = "${properties["KEYSTORE_PASSWORD"]}"
-                        keyAlias = "${properties["KEY_ALIAS"]}"
-                        keyPassword = "${properties["KEY_PASSWORD"]}"
+                // Without a keystore (for example in an F-Droid build) the release APK stays unsigned
+                val keystorePath = properties["KEYSTORE_PATH"]?.toString()
+                if (keystorePath != null) {
+                    signingConfigs {
+                        create("release") {
+                            storeFile = file(keystorePath)
+                            storePassword = properties["KEYSTORE_PASSWORD"]?.toString()
+                            keyAlias = properties["KEY_ALIAS"]?.toString()
+                            keyPassword = properties["KEY_PASSWORD"]?.toString()
+                        }
                     }
                 }
                 buildTypes {
                     release {
-                        signingConfig = signingConfigs.getByName("release")
+                        if (keystorePath != null) {
+                            signingConfig = signingConfigs.getByName("release")
+                        }
 
                         isMinifyEnabled = true
                         isShrinkResources = true
