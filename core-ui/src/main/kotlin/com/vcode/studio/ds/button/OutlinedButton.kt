@@ -89,7 +89,7 @@ fun OutlinedButton(
             )
         }
         Text(
-            text = text.uppercase(),
+            text = text,
             color = buttonColor,
             style = outlinedButtonStyle.textStyle,
             modifier = Modifier.padding(outlinedButtonSize.textPadding)

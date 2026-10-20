@@ -40,7 +40,7 @@ object ToolbarSizeDefaults {
     val M: ToolbarSize
         get() = ToolbarSize(
             height = 56.dp,
-            shadowSize = 4.dp,
+            shadowSize = 0.dp,
             emptyIconPadding = 8.dp,
             emptyActionsPadding = 8.dp,
             iconButtonSize = IconButtonSizeDefaults.L,

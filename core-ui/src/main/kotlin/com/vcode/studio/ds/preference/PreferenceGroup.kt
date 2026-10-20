@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vcode.studio.ds.PreviewBackground
 import com.vcode.studio.ds.VcodeTheme
 import com.vcode.studio.ds.extensions.clearSemantics
@@ -43,13 +44,13 @@ fun PreferenceGroup(
             .clearSemantics()
     ) {
         Text(
-            text = title,
+            text = title.uppercase(),
             color = if (enabled) {
                 VcodeTheme.colors.colorPrimary
             } else {
                 VcodeTheme.colors.colorTextAndIconDisabled
             },
-            style = VcodeTheme.typography.text14Medium,
+            style = VcodeTheme.typography.text14Medium.copy(letterSpacing = 0.8.sp),
             modifier = Modifier.padding(start = 16.dp)
         )
     }

@@ -35,7 +35,7 @@ object TextButtonSizeDefaults {
         get() = TextButtonSize(
             minWidth = 64.dp,
             minHeight = 36.dp,
-            cornerRadius = 4.dp,
+            cornerRadius = 18.dp,
             padding = PaddingValues(8.dp),
         )
 }

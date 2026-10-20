@@ -46,15 +46,15 @@ class Colors internal constructor(
     companion object {
 
         fun lightColors() = Colors(
-            colorPrimary = Color(0xFF3E73B9),
-            colorOutline = Color(0xFFE0E0E0),
+            colorPrimary = Color(0xFF0E64F0),
+            colorOutline = Color(0xFFD5DEEE),
             colorBackgroundPrimary = Color(0xFFFFFFFF),
             colorBackgroundSecondary = Color(0xFFFFFFFF),
-            colorBackgroundTertiary = Color(0xFFF0F1F4),
-            colorTextAndIconPrimary = Color(0xFF000000),
+            colorBackgroundTertiary = Color(0xFFE9EEF8),
+            colorTextAndIconPrimary = Color(0xFF0B1428),
             colorTextAndIconPrimaryInverse = Color(0xFFFFFFFF),
-            colorTextAndIconSecondary = Color(0xFF7F8290),
-            colorTextAndIconDisabled = Color(0xFFA9ADBC),
+            colorTextAndIconSecondary = Color(0xFF5B6B8C),
+            colorTextAndIconDisabled = Color(0xFFA3B0C8),
             colorTextAndIconAdditional = Color(0xFF8CCEF7),
             colorTextAndIconSuccess = Color(0xFF008860),
             colorTextAndIconError = Color(0xFFCD0000),
@@ -62,18 +62,18 @@ class Colors internal constructor(
         )
 
         fun darkColors() = Colors(
-            colorPrimary = Color(0xFFFF8000),
-            colorOutline = Color(0xFF393B40),
-            colorBackgroundPrimary = Color(0xFF1E1F22),
-            colorBackgroundSecondary = Color(0xFF2B2D30),
-            colorBackgroundTertiary = Color(0xFF3E3F43),
-            colorTextAndIconPrimary = Color(0xFFFFFFFF),
-            colorTextAndIconPrimaryInverse = Color(0xFF000000),
-            colorTextAndIconSecondary = Color(0xFFBCBCBC),
-            colorTextAndIconDisabled = Color(0xFF6E6E6E),
-            colorTextAndIconAdditional = Color(0xFFFFBB33),
+            colorPrimary = Color(0xFF3EC6FD),
+            colorOutline = Color(0xFF1C2A4A),
+            colorBackgroundPrimary = Color(0xFF0B1428),
+            colorBackgroundSecondary = Color(0xFF0F1B36),
+            colorBackgroundTertiary = Color(0xFF16254A),
+            colorTextAndIconPrimary = Color(0xFFEAF2FF),
+            colorTextAndIconPrimaryInverse = Color(0xFF04101F),
+            colorTextAndIconSecondary = Color(0xFF93A6C9),
+            colorTextAndIconDisabled = Color(0xFF5B6C8F),
+            colorTextAndIconAdditional = Color(0xFF2594FC),
             colorTextAndIconSuccess = Color(0xFF71D98C),
-            colorTextAndIconError = Color(0xFFE45356),
+            colorTextAndIconError = Color(0xFFFF6B7A),
             isDark = true,
         )
 

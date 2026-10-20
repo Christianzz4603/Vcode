@@ -37,9 +37,9 @@ object TextFieldSizeDefaults {
 
     val M: TextFieldSize
         get() = TextFieldSize(
-            inputCornerRadius = 6.dp,
+            inputCornerRadius = 12.dp,
             inputMinWidth = Dp.Unspecified,
-            inputMinHeight = 42.dp,
+            inputMinHeight = 46.dp,
             inputPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
             errorBorderSize = 2.dp,
             labelPadding = PaddingValues(bottom = 6.dp),

@@ -38,7 +38,7 @@ object OutlinedButtonSizeDefaults {
         get() = OutlinedButtonSize(
             minWidth = 64.dp,
             minHeight = 36.dp,
-            cornerRadius = 4.dp,
+            cornerRadius = 18.dp,
             borderSize = 1.dp,
             innerPadding = PaddingValues(8.dp),
             textPadding = PaddingValues(horizontal = 8.dp),

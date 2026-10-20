@@ -34,7 +34,7 @@ object DropdownSizeDefaults {
     val M: DropdownSize
         get() = DropdownSize(
             height = 42.dp,
-            cornerRadius = 4.dp,
+            cornerRadius = 12.dp,
             startPadding = 8.dp,
             endPadding = 8.dp,
             textSpacer = 16.dp,

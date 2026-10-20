@@ -29,8 +29,8 @@ android {
 
     defaultConfig {
         applicationId = "com.vcode.studio"
-        versionCode = 10036
-        versionName = "1.6.1"
+        versionCode = 10037
+        versionName = "1.7.0"
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

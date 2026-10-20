@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.7.0 (10037)
+
+* New design language, step 1: pill-shaped buttons with sentence-case labels, rounder text fields, dropdowns and dialogs, chip-style tabs with a short pill indicator, flat toolbar, spaced group headings and a new navy and cyan fallback palette (the old orange one is gone).
+
 ## 1.6.1 (10036)
 
 * F-Droid friendly build: the Google Play services flavor is gone, so there are no closed-source libraries left; release builds work without a signing key; the APK no longer carries dependency or git metadata.

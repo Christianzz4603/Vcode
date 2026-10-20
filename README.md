@@ -17,6 +17,7 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 * VS Code-style tabs with a language icon and a dot for unsaved changes
 * New editor settings: cursor style, smooth cursor animation, font ligatures and an auto save delay
 * Plugin system: install `.zip` or `.json` plugins to add themes, keyword suggestions and file types (Settings > Plugins)
+* New Vcode design language: pill buttons, chip tabs, rounder fields and dialogs, flat toolbar and a navy and cyan palette
 * A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
 * F-Droid friendly build: no Google Play services and no closed-source libraries, release builds work without a signing key, and a workflow that builds the app twice and compares the results (see [docs/FDROID.md](docs/FDROID.md))
 

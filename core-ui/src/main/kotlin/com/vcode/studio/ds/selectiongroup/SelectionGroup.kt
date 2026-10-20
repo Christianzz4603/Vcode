@@ -61,7 +61,7 @@ fun SelectionGroup(
 
         Spacer(Modifier.height(6.dp))
 
-        val shape = RoundedCornerShape(6.dp)
+        val shape = RoundedCornerShape(12.dp)
         LazyColumn(
             state = state,
             content = content,

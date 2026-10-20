@@ -62,7 +62,7 @@ fun TextButton(
             .padding(textButtonSize.padding)
     ) {
         Text(
-            text = text.uppercase(),
+            text = text,
             color = if (enabled) {
                 textButtonStyle.enabledTextColor
             } else {

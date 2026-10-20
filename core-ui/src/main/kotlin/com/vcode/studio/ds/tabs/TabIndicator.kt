@@ -22,8 +22,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -50,11 +50,11 @@ fun TabIndicator(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(28.dp)
                 .height(3.dp)
                 .background(
                     color = VcodeTheme.colors.colorPrimary,
-                    shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
+                    shape = RoundedCornerShape(50)
                 )
         )
     }

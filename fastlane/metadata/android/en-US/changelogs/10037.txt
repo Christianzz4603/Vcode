@@ -1,0 +1,2 @@
+- New look: pill-shaped buttons, chip-style tabs, rounder text fields, dropdowns and dialogs, flat toolbar
+- New navy and cyan default palette

@@ -94,7 +94,7 @@ fun AlertDialog(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(24.dp),
         color = VcodeTheme.colors.colorBackgroundSecondary,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
