@@ -1,0 +1,2 @@
+- Code editor feel: flat tabs, breadcrumb path bar, status bar with line/column and language
+- Command palette to search and run editor actions

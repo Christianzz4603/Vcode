@@ -39,6 +39,7 @@ import com.vcode.studio.feature.editor.ui.editor.view.startOfLine
 import com.vcode.studio.feature.editor.ui.editor.view.toggleCase
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.KeyBindingEvent
+import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.util.regex.RegexBackrefGrammar
 import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
@@ -51,6 +52,7 @@ internal fun CodeEditor(
     settings: EditorSettings,
     controller: EditorController,
     modifier: Modifier = Modifier,
+    cursor: CursorState = remember { CursorState() },
     onContentChanged: () -> Unit = {},
     onShortcutPressed: (Boolean, Boolean, Boolean, Int) -> Unit = { _, _, _, _ -> },
 ) {
@@ -65,6 +67,13 @@ internal fun CodeEditor(
                 if (event.action != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
                     onContentChanged()
                 }
+            }
+            subscribeAlways<SelectionChangeEvent> { event ->
+                cursor.update(
+                    line = event.left.line + 1,
+                    column = event.left.column + 1,
+                    selected = if (event.isSelected) event.right.index - event.left.index else 0,
+                )
             }
             subscribeAlways<KeyBindingEvent> { event ->
                 if (event.action == KeyEvent.ACTION_DOWN) {

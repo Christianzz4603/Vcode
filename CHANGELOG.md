@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.9.0 (10039)
+
+* A code editor feel: flat editor tabs with an accent line on the selected one, a breadcrumb bar with the file path under the tabs, a status bar with line and column, selection size, indentation, problems count and language, and a command palette (magnifier button in the toolbar) that searches every editor action.
+
 ## 1.8.0 (10038)
 
 * New design language, step 2: settings rows are rounded cards, the file drawer has rounded edges and its file rows have rounded highlights, and menus and popups use bigger corners.

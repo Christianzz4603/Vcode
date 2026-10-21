@@ -71,6 +71,7 @@ internal fun EditorToolbar(
     onPreviewClicked: () -> Unit = {},
     onPanelClicked: () -> Unit = {},
     onAiClicked: () -> Unit = {},
+    onCommandPaletteClicked: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     var menuType by rememberSaveable {
@@ -81,6 +82,11 @@ internal fun EditorToolbar(
         navigationIcon = UiR.drawable.ic_menu,
         onNavigationClicked = onDrawerClicked,
         navigationActions = {
+            IconButton(
+                iconResId = UiR.drawable.ic_search,
+                onClick = onCommandPaletteClicked,
+                contentDescription = stringResource(R.string.editor_command_palette),
+            )
             IconButton(
                 iconResId = UiR.drawable.ic_folder,
                 onClick = { menuType = MenuType.FILE },

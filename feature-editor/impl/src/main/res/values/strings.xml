@@ -84,4 +84,5 @@
     <string name="editor_menu_tools_preview" translatable="false">Browser preview</string>
     <string name="editor_menu_tools_panel" translatable="false">Problems and output</string>
     <string name="editor_menu_tools_ai" translatable="false">AI assistant</string>
+    <string name="editor_command_palette">Command palette</string>
 </resources>

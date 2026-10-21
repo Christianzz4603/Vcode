@@ -16,6 +16,7 @@
 
 package com.vcode.studio.feature.editor.ui.editor.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.vcode.studio.ds.PreviewBackground
+import com.vcode.studio.ds.VcodeTheme
 import com.vcode.studio.ds.tabs.TabLayout
 import com.vcode.studio.feature.editor.domain.model.DocumentModel
 import com.vcode.studio.feature.editor.ui.editor.model.DocumentState
@@ -54,7 +56,7 @@ internal fun DocumentTabLayout(
 
     TabLayout(
         state = state,
-        modifier = modifier,
+        modifier = modifier.background(VcodeTheme.colors.colorBackgroundSecondary),
     ) {
         itemsIndexed(
             items = tabs,

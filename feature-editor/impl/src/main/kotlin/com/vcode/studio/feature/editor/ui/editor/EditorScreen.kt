@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,12 +68,17 @@ import com.vcode.studio.ds.scaffold.ScaffoldSuite
 import com.vcode.studio.feature.editor.R
 import com.vcode.studio.feature.editor.domain.model.DocumentModel
 import com.vcode.studio.feature.editor.internal.EditorComponent
+import com.vcode.studio.feature.editor.ui.editor.compose.Breadcrumbs
 import com.vcode.studio.feature.editor.ui.editor.compose.CodeEditor
+import com.vcode.studio.feature.editor.ui.editor.compose.CommandPalette
+import com.vcode.studio.feature.editor.ui.editor.compose.CursorState
 import com.vcode.studio.feature.editor.ui.editor.compose.DocumentTabLayout
 import com.vcode.studio.feature.editor.ui.editor.compose.EditorToolbar
 import com.vcode.studio.feature.editor.ui.editor.compose.ErrorStatus
 import com.vcode.studio.feature.editor.ui.editor.compose.ExtendedKeyboard
+import com.vcode.studio.feature.editor.ui.editor.compose.PaletteCommand
 import com.vcode.studio.feature.editor.ui.editor.compose.SearchPanel
+import com.vcode.studio.feature.editor.ui.editor.compose.StatusBar
 import com.vcode.studio.feature.editor.ui.editor.model.DocumentState
 import com.vcode.studio.feature.editor.ui.editor.model.EditorController
 import com.vcode.studio.feature.editor.ui.editor.model.ErrorAction
@@ -545,6 +551,8 @@ private fun EditorScreen(
     onToolMoved: (Int, Int) -> Unit = { _, _ -> },
     onToolsHide: () -> Unit = {},
 ) {
+    val cursorState = remember { CursorState() }
+    var showPalette by rememberSaveable { mutableStateOf(false) }
     ScaffoldSuite(
         topBar = {
             EditorToolbar(
@@ -578,6 +586,7 @@ private fun EditorScreen(
                 onPreviewClicked = onPreviewClicked,
                 onPanelClicked = onPanelClicked,
                 onAiClicked = onAiClicked,
+                onCommandPaletteClicked = { showPalette = true },
             )
         },
         bottomBar = {
@@ -619,6 +628,16 @@ private fun EditorScreen(
                     onRedoClicked = onRedoClicked,
                 )
             }
+            if (!viewState.isLoading && !viewState.isError) {
+                viewState.currentDocument?.let { document ->
+                    StatusBar(
+                        cursor = cursorState,
+                        language = document.document.language,
+                        settings = viewState.settings,
+                        problemsCount = panelState.problems.size,
+                    )
+                }
+            }
             }
         },
         drawerState = drawerState,
@@ -656,6 +675,14 @@ private fun EditorScreen(
             val isLoading = viewState.isLoading
             val isEmpty = viewState.isEmpty
 
+            if (!isLoading) {
+                currentDocument?.let { document ->
+                    Breadcrumbs(
+                        fileUri = document.document.fileUri,
+                        displayName = document.document.displayName,
+                    )
+                }
+            }
             if (!isError && !isLoading && searchState != null) {
                 SearchPanel(
                     searchState = searchState,
@@ -681,6 +708,7 @@ private fun EditorScreen(
                         language = currentDocument.document.language,
                         settings = viewState.settings,
                         controller = editorController,
+                        cursor = cursorState,
                         onContentChanged = {
                             onContentChanged()
                             panelState.contentVersion++
@@ -717,6 +745,43 @@ private fun EditorScreen(
                 }
             }
         }
+    }
+    if (showPalette) {
+        CommandPalette(
+            commands = listOf(
+                PaletteCommand("File: New File", action = onNewFileClicked),
+                PaletteCommand("File: Open File", action = onOpenFileClicked),
+                PaletteCommand("File: Save", action = onSaveFileClicked),
+                PaletteCommand("File: Save As", action = onSaveFileAsClicked),
+                PaletteCommand("File: Reload from Disk", action = onReloadFileClicked),
+                PaletteCommand("Edit: Undo", action = onUndoClicked),
+                PaletteCommand("Edit: Redo", action = onRedoClicked),
+                PaletteCommand("Edit: Cut", action = onCutClicked),
+                PaletteCommand("Edit: Copy", action = onCopyClicked),
+                PaletteCommand("Edit: Paste", action = onPasteClicked),
+                PaletteCommand("Edit: Select All", action = onSelectAllClicked),
+                PaletteCommand("Edit: Select Line", action = onSelectLineClicked),
+                PaletteCommand("Edit: Delete Line", action = onDeleteLineClicked),
+                PaletteCommand("Edit: Duplicate Line", action = onDuplicateLineClicked),
+                PaletteCommand("Edit: Find", action = onToggleFindClicked),
+                PaletteCommand("Edit: Insert Color", action = onInsertColorClicked),
+                PaletteCommand("Language: Force Syntax Highlighting", action = onForceSyntaxClicked),
+                PaletteCommand("Run: Run File", enabled = canRun, action = onRunClicked),
+                PaletteCommand("Run: Stop", action = onStopClicked),
+                PaletteCommand("Run: Preview", action = onPreviewClicked),
+                PaletteCommand("View: Toggle Panel", action = onPanelClicked),
+                PaletteCommand("View: AI Assistant", action = onAiClicked),
+                PaletteCommand("View: Toggle Explorer", action = onDrawerClicked),
+                PaletteCommand("View: Open Terminal", action = onTerminalClicked),
+                PaletteCommand("Git: Fetch", action = onFetchClicked),
+                PaletteCommand("Git: Pull", action = onPullClicked),
+                PaletteCommand("Git: Commit", action = onCommitClicked),
+                PaletteCommand("Git: Push", action = onPushClicked),
+                PaletteCommand("Git: Checkout", action = onCheckoutClicked),
+                PaletteCommand("Preferences: Open Settings", action = onSettingsClicked),
+            ),
+            onDismiss = { showPalette = false },
+        )
     }
 }
 

@@ -45,7 +45,7 @@ import com.vcode.studio.ds.VcodeTheme
 import com.vcode.studio.ds.button.IconButton
 import com.vcode.studio.ds.button.IconButtonSizeDefaults
 import com.vcode.studio.ds.button.IconButtonStyleDefaults
-import com.vcode.studio.ds.tabs.TabItem
+import com.vcode.studio.ds.tabs.EditorTab
 import com.vcode.studio.feature.editor.R
 import com.vcode.studio.feature.editor.data.provider.FileIconProviderImpl
 import com.vcode.studio.feature.editor.ui.editor.compose.menu.CloseMenu
@@ -68,7 +68,7 @@ internal fun DocumentTab(
     }
     val closeDescription = stringResource(R.string.editor_menu_file_close)
 
-    TabItem(
+    EditorTab(
         title = name,
         selected = selected,
         onClick = {
