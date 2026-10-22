@@ -223,7 +223,7 @@ object PluginRuntime {
     ) : DexClassLoader(dexPath, optimizedDirectory, null, parent) {
 
         override fun loadClass(name: String, resolve: Boolean): Class<*> {
-            synchronized(getClassLoadingLock(name)) {
+            synchronized(this) {
                 findLoadedClass(name)?.let { return it }
                 if (isShared(name)) {
                     return super.loadClass(name, resolve)
