@@ -25,6 +25,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +48,7 @@ import com.vcode.studio.ds.scaffold.ScaffoldSuite
 import com.vcode.studio.ds.toolbar.Toolbar
 import com.vcode.studio.feature.settings.R
 import com.vcode.studio.feature.settings.internal.SettingsComponent
+import com.vcode.studio.plugin.api.PluginPermissions
 import com.vcode.studio.ds.R as UiR
 
 private const val GUIDE_URL = "https://github.com/Christianzz4603/Vcode/blob/main/docs/PLUGINS.md"
@@ -64,6 +68,9 @@ internal fun PluginsHeaderScreen(
         onPluginPicked = viewModel::onInstallPlugin,
         onPluginToggled = viewModel::onPluginToggled,
         onPluginRemoved = viewModel::onPluginRemoved,
+        onCodeAllowedToggled = viewModel::onCodeAllowedToggled,
+        onInstallConfirmed = viewModel::onInstallConfirmed,
+        onInstallCancelled = viewModel::onInstallCancelled,
         onGuideClicked = {
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = GUIDE_URL.toUri()
@@ -88,12 +95,52 @@ private fun PluginsHeaderScreen(
     onPluginPicked: (Uri) -> Unit = {},
     onPluginToggled: (String, Boolean) -> Unit = { _, _ -> },
     onPluginRemoved: (String, String) -> Unit = { _, _ -> },
+    onCodeAllowedToggled: (Boolean) -> Unit = {},
+    onInstallConfirmed: () -> Unit = {},
+    onInstallCancelled: () -> Unit = {},
     onGuideClicked: () -> Unit = {},
 ) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             onPluginPicked(uri)
         }
+    }
+    viewState.pending?.let { pending ->
+        AlertDialog(
+            onDismissRequest = onInstallCancelled,
+            title = { Text("Install " + pending.name + " " + pending.version + "?") },
+            text = {
+                val details = buildString {
+                    append("This plugin runs code inside Vcode. It can do anything Vcode can do, ")
+                    append("including reading and changing your files and using the network. ")
+                    append("Only install it if you trust its author.\n\n")
+                    if (pending.author.isNotBlank()) {
+                        append("Author: ").append(pending.author).append("\n\n")
+                    }
+                    append("It asks for these permissions:\n")
+                    if (pending.permissions.isEmpty()) {
+                        append("- none\n")
+                    }
+                    pending.permissions.forEach { permission ->
+                        append("- ").append(PluginPermissions.describe(permission)).append("\n")
+                    }
+                    append("\nSHA-256 of the file:\n").append(pending.sha256)
+                }
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Text(details)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = onInstallConfirmed) {
+                    Text("Install")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onInstallCancelled) {
+                    Text("Cancel")
+                }
+            },
+        )
     }
     ScaffoldSuite(
         topBar = {
@@ -122,6 +169,12 @@ private fun PluginsHeaderScreen(
                 title = stringResource(R.string.settings_plugins_guide_title),
                 subtitle = stringResource(R.string.settings_plugins_guide_subtitle),
                 onClick = onGuideClicked,
+            )
+            SwitchPreference(
+                title = "Allow code plugins",
+                subtitle = "Kotlin plugins run inside Vcode with the same access as the app. Turn this on only for plugins you trust.",
+                checked = viewState.codeAllowed,
+                onCheckedChange = onCodeAllowedToggled,
             )
             HorizontalDivider()
             PreferenceGroup(
@@ -156,5 +209,7 @@ private fun describe(plugin: PluginInfo): String {
     if (plugin.themes > 0) parts.add(plugin.themes.toString() + " theme(s)")
     if (plugin.keywordLanguages > 0) parts.add(plugin.keywordLanguages.toString() + " keyword list(s)")
     if (plugin.extensions > 0) parts.add(plugin.extensions.toString() + " file type(s)")
+    if (plugin.code) parts.add("Kotlin code, " + plugin.permissions.size + " permission(s)")
+    plugin.loadError?.let { parts.add("failed to load: " + it) }
     return parts.joinToString(" - ")
 }

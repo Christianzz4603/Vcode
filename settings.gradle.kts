@@ -35,7 +35,7 @@ dependencyResolutionManagement {
     }
 }
 
-include(":app", ":benchmark")
+include(":app", ":benchmark", ":plugin-api", ":plugin-sample")
 
 include(
     ":core-common",

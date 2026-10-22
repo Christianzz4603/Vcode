@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    api(project(":plugin-api"))
     implementation(project(":core-ui"))
 
     implementation(libs.androidx.lifecycle.service)

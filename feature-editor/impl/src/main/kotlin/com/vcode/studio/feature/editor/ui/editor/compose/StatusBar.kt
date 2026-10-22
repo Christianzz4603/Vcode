@@ -37,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vcode.studio.core.plugins.PluginRegistry
+import com.vcode.studio.core.plugins.PluginStatusItem
 import com.vcode.studio.ds.VcodeTheme
 import com.vcode.studio.feature.editor.ui.editor.model.EditorSettings
 import com.vcode.studio.ds.R as UiR
@@ -61,6 +63,7 @@ internal fun StatusBar(
     settings: EditorSettings,
     problemsCount: Int,
     modifier: Modifier = Modifier,
+    pluginItems: List<PluginStatusItem> = emptyList(),
 ) {
     val contentColor = VcodeTheme.colors.colorTextAndIconPrimaryInverse
     val textStyle = VcodeTheme.typography.text14Regular.copy(fontSize = 12.sp)
@@ -87,6 +90,12 @@ internal fun StatusBar(
         Text(text = position, color = contentColor, style = textStyle, maxLines = 1)
         Text(text = indentation, color = contentColor, style = textStyle, maxLines = 1)
         Spacer(Modifier.weight(1f))
+        pluginItems.forEach { item ->
+            val text = PluginRegistry.statusText(item)
+            if (!text.isNullOrBlank()) {
+                Text(text = text, color = contentColor, style = textStyle, maxLines = 1)
+            }
+        }
         if (settings.readOnly) {
             Text(text = "Read-only", color = contentColor, style = textStyle, maxLines = 1)
         }
@@ -107,36 +116,58 @@ internal fun StatusBar(
 }
 
 private val LanguageLabels = mapOf(
-    "plaintext" to "Plain Text",
-    "javascript" to "JavaScript",
-    "typescript" to "TypeScript",
-    "kotlin" to "Kotlin",
-    "java" to "Java",
-    "python" to "Python",
-    "html" to "HTML",
-    "css" to "CSS",
-    "json" to "JSON",
-    "xml" to "XML",
-    "markdown" to "Markdown",
-    "shell" to "Shell Script",
-    "cpp" to "C++",
-    "c" to "C",
-    "csharp" to "C#",
-    "go" to "Go",
-    "rust" to "Rust",
-    "php" to "PHP",
-    "ruby" to "Ruby",
-    "sql" to "SQL",
-    "swift" to "Swift",
-    "lua" to "Lua",
-    "yaml" to "YAML",
-    "ini" to "INI",
-    "dockerfile" to "Dockerfile",
-    "diff" to "Diff",
-    "powershell" to "PowerShell",
-    "sass" to "Sass",
+    "source.batchfile" to "Batch",
+    "source.c" to "C",
+    "source.clojure" to "Clojure",
+    "source.cpp" to "C++",
+    "source.cs" to "C#",
+    "source.css" to "CSS",
+    "source.dart" to "Dart",
+    "source.dockerfile" to "Dockerfile",
+    "source.fortran" to "Fortran",
+    "source.fsharp" to "F#",
+    "source.go" to "Go",
+    "source.groovy" to "Groovy",
+    "text.html.basic" to "HTML",
+    "source.ini" to "INI",
+    "source.java" to "Java",
+    "source.js" to "JavaScript",
+    "source.json" to "JSON",
+    "source.julia" to "Julia",
+    "source.kotlin" to "Kotlin",
+    "text.tex" to "LaTeX",
+    "source.lisp" to "Lisp",
+    "source.lua" to "Lua",
+    "source.makefile" to "Makefile",
+    "text.html.markdown" to "Markdown",
+    "source.perl" to "Perl",
+    "source.php" to "PHP",
+    "source.python" to "Python",
+    "source.ruby" to "Ruby",
+    "source.rust" to "Rust",
+    "source.shell" to "Shell Script",
+    "source.smali" to "Smali",
+    "source.sql" to "SQL",
+    "text.plain" to "Plain Text",
+    "source.toml" to "TOML",
+    "source.ts" to "TypeScript",
+    "source.vb" to "Visual Basic",
+    "text.xml" to "XML",
+    "source.yaml" to "YAML",
+    "source.zig" to "Zig",
+    "source.vue" to "Vue",
+    "source.swift" to "Swift",
+    "source.r" to "R",
+    "source.powershell" to "PowerShell",
+    "source.objc" to "Objective-C",
+    "source.css.less" to "Less",
+    "source.css.scss" to "SCSS",
+    "source.coffee" to "CoffeeScript",
+    "text.pug" to "Pug",
+    "text.html.handlebars" to "Handlebars",
+    "source.diff" to "Diff",
 )
 
 private fun languageLabel(language: String): String {
-    return LanguageLabels[language] ?: language.replaceFirstChar { it.uppercase() }
+    return LanguageLabels[language] ?: language.substringAfterLast('.').replaceFirstChar { it.uppercase() }
 }

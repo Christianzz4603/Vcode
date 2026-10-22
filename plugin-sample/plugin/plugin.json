@@ -1,0 +1,13 @@
+{
+  "id": "com.vcode.sample.hello",
+  "name": "Hello (Kotlin)",
+  "version": "1.0.0",
+  "author": "Vcode",
+  "description": "Sample Kotlin plugin: commands, status bar text, dialogs and editor access",
+  "apiVersion": 1,
+  "permissions": ["commands", "status.bar", "ui", "editor.read", "editor.write"],
+  "code": {
+    "dex": "classes.dex",
+    "main": "com.vcode.studio.sample.HelloPlugin"
+  }
+}

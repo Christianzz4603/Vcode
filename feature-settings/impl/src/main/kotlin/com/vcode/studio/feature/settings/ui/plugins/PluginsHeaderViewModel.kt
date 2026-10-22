@@ -48,6 +48,8 @@ internal class PluginsHeaderViewModel @Inject constructor(
     private val _viewEvent = Channel<ViewEvent>(Channel.BUFFERED)
     val viewEvent: Flow<ViewEvent> = _viewEvent.receiveAsFlow()
 
+    private var pendingUri: Uri? = null
+
     init {
         viewModelScope.launch {
             refresh()
@@ -61,17 +63,64 @@ internal class PluginsHeaderViewModel @Inject constructor(
     fun onInstallPlugin(uri: Uri) {
         viewModelScope.launch {
             val result = withContext(dispatcherProvider.io()) {
-                PluginManager.install(context, uri)
+                PluginManager.inspect(context, uri)
             }
-            val plugin = result.getOrNull()
-            if (plugin != null) {
-                _viewEvent.send(ViewEvent.Toast("Installed " + plugin.name))
-            } else {
-                val message = result.exceptionOrNull()?.message ?: "Could not install the plugin"
+            val preview = result.getOrNull()
+            if (preview == null) {
+                val message = result.exceptionOrNull()?.message ?: "Could not read the plugin"
                 _viewEvent.send(ViewEvent.Toast(message))
+                return@launch
+            }
+            if (preview.hasCode) {
+                if (!PluginManager.isCodeAllowed(context)) {
+                    _viewEvent.send(ViewEvent.Toast("Turn on Allow code plugins first"))
+                    return@launch
+                }
+                pendingUri = uri
+                _viewState.value = _viewState.value.copy(pending = preview)
+            } else {
+                installNow(uri)
+            }
+        }
+    }
+
+    fun onInstallConfirmed() {
+        val uri = pendingUri
+        pendingUri = null
+        _viewState.value = _viewState.value.copy(pending = null)
+        if (uri != null) {
+            viewModelScope.launch {
+                installNow(uri)
+            }
+        }
+    }
+
+    fun onInstallCancelled() {
+        pendingUri = null
+        _viewState.value = _viewState.value.copy(pending = null)
+    }
+
+    fun onCodeAllowedToggled(allowed: Boolean) {
+        viewModelScope.launch {
+            withContext(dispatcherProvider.io()) {
+                PluginManager.setCodeAllowed(context, allowed)
             }
             refresh()
         }
+    }
+
+    private suspend fun installNow(uri: Uri) {
+        val result = withContext(dispatcherProvider.io()) {
+            PluginManager.install(context, uri)
+        }
+        val plugin = result.getOrNull()
+        if (plugin != null) {
+            _viewEvent.send(ViewEvent.Toast("Installed " + plugin.name))
+        } else {
+            val message = result.exceptionOrNull()?.message ?: "Could not install the plugin"
+            _viewEvent.send(ViewEvent.Toast(message))
+        }
+        refresh()
     }
 
     fun onPluginToggled(id: String, enabled: Boolean) {
@@ -97,7 +146,10 @@ internal class PluginsHeaderViewModel @Inject constructor(
         val plugins = withContext(dispatcherProvider.io()) {
             PluginManager.list(context)
         }
-        _viewState.value = PluginsHeaderViewState(plugins)
+        _viewState.value = _viewState.value.copy(
+            plugins = plugins,
+            codeAllowed = PluginManager.isCodeAllowed(context),
+        )
     }
 
     class Factory : ViewModelProvider.Factory {

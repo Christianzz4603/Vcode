@@ -31,6 +31,7 @@ import androidx.compose.material.DrawerValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ import com.vcode.studio.core.effect.ResultEffect
 import com.vcode.studio.core.extensions.daggerViewModel
 import com.vcode.studio.core.extensions.showToast
 import com.vcode.studio.core.mvi.ViewEvent
+import com.vcode.studio.core.plugins.PluginRegistry
 import com.vcode.studio.ds.PreviewBackground
 import com.vcode.studio.ds.divider.HorizontalDivider
 import com.vcode.studio.ds.drawer.DrawerState
@@ -77,6 +79,7 @@ import com.vcode.studio.feature.editor.ui.editor.compose.EditorToolbar
 import com.vcode.studio.feature.editor.ui.editor.compose.ErrorStatus
 import com.vcode.studio.feature.editor.ui.editor.compose.ExtendedKeyboard
 import com.vcode.studio.feature.editor.ui.editor.compose.PaletteCommand
+import com.vcode.studio.feature.editor.ui.editor.compose.PluginDialogHost
 import com.vcode.studio.feature.editor.ui.editor.compose.SearchPanel
 import com.vcode.studio.feature.editor.ui.editor.compose.StatusBar
 import com.vcode.studio.feature.editor.ui.editor.model.DocumentState
@@ -553,6 +556,8 @@ private fun EditorScreen(
 ) {
     val cursorState = remember { CursorState() }
     var showPalette by rememberSaveable { mutableStateOf(false) }
+    val pluginCommands by PluginRegistry.commands.collectAsState()
+    val pluginStatusItems by PluginRegistry.statusItems.collectAsState()
     ScaffoldSuite(
         topBar = {
             EditorToolbar(
@@ -635,6 +640,7 @@ private fun EditorScreen(
                         language = document.document.language,
                         settings = viewState.settings,
                         problemsCount = panelState.problems.size,
+                        pluginItems = pluginStatusItems,
                     )
                 }
             }
@@ -709,6 +715,7 @@ private fun EditorScreen(
                         settings = viewState.settings,
                         controller = editorController,
                         cursor = cursorState,
+                        fileUri = currentDocument.document.fileUri,
                         onContentChanged = {
                             onContentChanged()
                             panelState.contentVersion++
@@ -779,10 +786,13 @@ private fun EditorScreen(
                 PaletteCommand("Git: Push", action = onPushClicked),
                 PaletteCommand("Git: Checkout", action = onCheckoutClicked),
                 PaletteCommand("Preferences: Open Settings", action = onSettingsClicked),
-            ),
+            ) + pluginCommands.map { command ->
+                PaletteCommand("Plugin: " + command.title, action = { PluginRegistry.run(command) })
+            },
             onDismiss = { showPalette = false },
         )
     }
+    PluginDialogHost()
 }
 
 @PreviewLightDark

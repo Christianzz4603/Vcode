@@ -1,0 +1,2 @@
+- Kotlin plugins: classes.dex plugins with a plugin API (commands, status bar, editor access, dialogs), permissions and an install confirmation
+- Fix: status bar shows the language name

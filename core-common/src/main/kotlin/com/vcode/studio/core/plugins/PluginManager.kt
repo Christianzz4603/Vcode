@@ -20,6 +20,9 @@ import android.content.Context
 import android.net.Uri
 import com.vcode.studio.core.files.Directories
 import com.vcode.studio.core.settings.SettingsManager
+import com.vcode.studio.plugin.api.PLUGIN_API_VERSION
+import com.vcode.studio.plugin.api.PluginPermissions
+import java.security.MessageDigest
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -36,6 +39,20 @@ data class PluginInfo(
     val themes: Int,
     val keywordLanguages: Int,
     val extensions: Int,
+    val code: Boolean = false,
+    val permissions: List<String> = emptyList(),
+    val loadError: String? = null,
+)
+
+data class PluginPreview(
+    val id: String,
+    val name: String,
+    val version: String,
+    val author: String,
+    val description: String,
+    val hasCode: Boolean,
+    val permissions: List<String>,
+    val sha256: String,
 )
 
 /**
@@ -49,6 +66,7 @@ object PluginManager {
 
     private const val PREFS_NAME = "vcode_plugins"
     private const val KEY_DISABLED = "disabled_plugins"
+    private const val KEY_ALLOW_CODE = "allow_code_plugins"
     private const val MANIFEST = "plugin.json"
     private const val THEME_PREFIX = "plugin_"
     private const val DEFAULT_THEME = "vcode_dark"
@@ -158,6 +176,7 @@ object PluginManager {
         extensionMap = extensions
         keywordMap = keywords.mapValues { it.value.toList() }
         initialized = true
+    PluginRuntime.reload(context)
     }
 
     fun list(context: Context): List<PluginInfo> {
@@ -183,12 +202,16 @@ object PluginManager {
             val manifest = JSONObject(File(root, MANIFEST).readText())
             val id = validate(root, manifest, languageScopes(context))
 
+            if (manifest.optJSONObject("code") != null) {
+                require(isCodeAllowed(context)) { "Turn on Allow code plugins before installing a plugin with code" }
+            }
             val target = File(File(context.filesDir, "plugins"), id)
             if (target.exists()) {
                 target.deleteRecursively()
             }
             target.parentFile?.mkdirs()
             root.copyRecursively(target, overwrite = true)
+            lockDex(target, manifest)
 
             setDisabled(context, id, false)
             reload(context)
@@ -217,6 +240,115 @@ object PluginManager {
         reload(context)
         syncThemes(context)
     }
+
+    // region CODE PLUGINS
+
+    private val MAIN_REGEX = Regex("^[A-Za-z_][A-Za-z0-9_.$]{0,200}$")
+
+    fun isCodeAllowed(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_ALLOW_CODE, false)
+    }
+
+    @Synchronized
+    fun setCodeAllowed(context: Context, allowed: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_ALLOW_CODE, allowed)
+            .apply()
+        reload(context)
+    }
+
+    /** Reads a plugin file without installing it, so that the user can decide. */
+    fun inspect(context: Context, uri: Uri): Result<PluginPreview> {
+        val temp = File(Directories.tmpDir(context), "plugin_preview_" + System.currentTimeMillis())
+        return try {
+            temp.mkdirs()
+            val bytes = readLimited(context, uri)
+            val isZip = bytes.size > 3 && bytes[0] == 0x50.toByte() && bytes[1] == 0x4B.toByte()
+            if (isZip) {
+                unzip(bytes, temp)
+            } else {
+                File(temp, MANIFEST).writeBytes(bytes)
+            }
+            val root = findRoot(temp) ?: error("plugin.json was not found in this file")
+            val manifest = JSONObject(File(root, MANIFEST).readText())
+            val id = validate(root, manifest, languageScopes(context))
+            val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
+            Result.success(
+                PluginPreview(
+                    id = id,
+                    name = manifest.optString("name", id),
+                    version = manifest.optString("version", "1.0.0"),
+                    author = manifest.optString("author"),
+                    description = manifest.optString("description"),
+                    hasCode = manifest.optJSONObject("code") != null,
+                    permissions = readPermissions(manifest),
+                    sha256 = digest.joinToString("") { "%02x".format(it) },
+                )
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        } finally {
+            temp.deleteRecursively()
+        }
+    }
+
+    internal fun codePlugins(context: Context): List<CodePluginSpec> {
+        val disabled = disabledIds(context)
+        val result = ArrayList<CodePluginSpec>()
+        for (dir in pluginDirs(context)) {
+            val manifest = readManifest(dir) ?: continue
+            val id = manifest.optString("id")
+            if (id.isBlank() || id in disabled) continue
+            val code = manifest.optJSONObject("code") ?: continue
+            val dex = File(dir, code.optString("dex", "classes.dex"))
+            if (!dex.canonicalPath.startsWith(dir.canonicalPath + File.separator)) continue
+            result.add(CodePluginSpec(id, dex, code.optString("main"), readPermissions(manifest).toSet()))
+        }
+        return result
+    }
+
+    @Synchronized
+    internal fun addRuntimeKeywords(context: Context, language: String, words: List<String>) {
+        val scope = languageScopes(context)[language] ?: return
+        val valid = words.filter { WORD_REGEX.matches(it) }
+        val merged = (keywordMap[scope].orEmpty() + valid).distinct().take(MAX_WORDS)
+        keywordMap = keywordMap + (scope to merged)
+    }
+
+    @Synchronized
+    internal fun addRuntimeExtension(context: Context, extension: String, language: String) {
+        if (!EXT_REGEX.matches(extension)) return
+        val scope = languageScopes(context)[language] ?: return
+        extensionMap = extensionMap + (extension to scope)
+    }
+
+    private fun readPermissions(manifest: JSONObject): List<String> {
+        val array = manifest.optJSONArray("permissions") ?: return emptyList()
+        return (0 until array.length()).map { array.optString(it) }.filter { it.isNotBlank() }.distinct()
+    }
+
+    private fun validateCode(root: File, manifest: JSONObject) {
+        val code = manifest.optJSONObject("code") ?: return
+        val dexName = code.optString("dex", "classes.dex")
+        require(dexName.endsWith(".dex")) { "The code file must be a .dex file" }
+        require(resolve(root, dexName).isFile) { "Code file not found: " + dexName }
+        require(MAIN_REGEX.matches(code.optString("main"))) { "The code section needs a valid main class name" }
+        val api = manifest.optInt("apiVersion", 0)
+        require(api in 1..PLUGIN_API_VERSION) {
+            "Unsupported apiVersion " + api + ", this Vcode supports up to " + PLUGIN_API_VERSION
+        }
+        for (permission in readPermissions(manifest)) {
+            require(permission in PluginPermissions.ALL) { "Unknown permission: " + permission }
+        }
+    }
+
+    private fun lockDex(target: File, manifest: JSONObject) {
+        val code = manifest.optJSONObject("code") ?: return
+        File(target, code.optString("dex", "classes.dex")).setReadOnly()
+    }
+
+    // endregion
 
     // region PRIVATE
 
@@ -249,6 +381,9 @@ object PluginManager {
             themes = manifest.optJSONArray("themes")?.length() ?: 0,
             keywordLanguages = manifest.optJSONObject("keywords")?.length() ?: 0,
             extensions = manifest.optJSONObject("extensions")?.length() ?: 0,
+            code = manifest.optJSONObject("code") != null,
+            permissions = readPermissions(manifest),
+            loadError = PluginRuntime.errorFor(id),
         )
     }
 
@@ -347,8 +482,10 @@ object PluginManager {
         val themes = manifest.optJSONArray("themes")
         val keywords = manifest.optJSONObject("keywords")
         val extensions = manifest.optJSONObject("extensions")
-        val contributions = (themes?.length() ?: 0) + (keywords?.length() ?: 0) + (extensions?.length() ?: 0)
+        val contributions = (themes?.length() ?: 0) + (keywords?.length() ?: 0) + (extensions?.length() ?: 0) +
+            (if (manifest.optJSONObject("code") != null) 1 else 0)
         require(contributions > 0) { "The plugin does not contribute anything" }
+        validateCode(root, manifest)
 
         if (themes != null) {
             for (i in 0 until themes.length()) {

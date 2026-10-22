@@ -1,0 +1,60 @@
+name: Build sample plugin
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'kotlin-plugins'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle Cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Build the plugin
+        run: |
+          chmod +x gradlew
+          ./gradlew :plugin-sample:assembleDebug --no-daemon
+
+      - name: Package the plugin
+        run: |
+          set -e
+          APK=plugin-sample/build/outputs/apk/debug/plugin-sample-debug.apk
+          mkdir -p /tmp/plugin
+          unzip -p "$APK" classes.dex > /tmp/plugin/classes.dex
+          cp plugin-sample/plugin/plugin.json /tmp/plugin/plugin.json
+          (cd /tmp/plugin && zip hello-kotlin-plugin.zip plugin.json classes.dex)
+          unzip -l /tmp/plugin/hello-kotlin-plugin.zip
+
+      - name: Publish the plugin
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete sample-plugins --cleanup-tag -y || true
+          gh release create sample-plugins /tmp/plugin/hello-kotlin-plugin.zip \
+            --prerelease \
+            --title "Sample plugins" \
+            --notes "Sample Kotlin plugin for Vcode. Turn on Allow code plugins in Settings, Plugins, then install the zip file." \
+            --target "$GITHUB_SHA"

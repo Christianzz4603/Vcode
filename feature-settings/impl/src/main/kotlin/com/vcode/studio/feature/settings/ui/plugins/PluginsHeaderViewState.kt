@@ -19,8 +19,11 @@ package com.vcode.studio.feature.settings.ui.plugins
 import androidx.compose.runtime.Immutable
 import com.vcode.studio.core.mvi.ViewState
 import com.vcode.studio.core.plugins.PluginInfo
+import com.vcode.studio.core.plugins.PluginPreview
 
 @Immutable
 internal data class PluginsHeaderViewState(
     val plugins: List<PluginInfo> = emptyList(),
+    val codeAllowed: Boolean = false,
+    val pending: PluginPreview? = null,
 ) : ViewState

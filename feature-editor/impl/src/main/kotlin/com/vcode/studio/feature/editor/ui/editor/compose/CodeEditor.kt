@@ -19,15 +19,18 @@ package com.vcode.studio.feature.editor.ui.editor.compose
 import android.view.KeyEvent
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.vcode.studio.core.plugins.PluginRegistry
 import com.vcode.studio.feature.editor.ui.editor.model.EditorCommand
 import com.vcode.studio.feature.editor.ui.editor.model.EditorController
 import com.vcode.studio.feature.editor.ui.editor.model.EditorSettings
 import com.vcode.studio.feature.editor.ui.editor.view.CodeEditor
+import com.vcode.studio.feature.editor.ui.editor.view.SoraEditorApi
 import com.vcode.studio.feature.editor.ui.editor.view.VcodeScheme
 import com.vcode.studio.feature.editor.ui.editor.view.createFromRegistry
 import com.vcode.studio.feature.editor.ui.editor.view.deleteLine
@@ -53,6 +56,7 @@ internal fun CodeEditor(
     controller: EditorController,
     modifier: Modifier = Modifier,
     cursor: CursorState = remember { CursorState() },
+    fileUri: String = "",
     onContentChanged: () -> Unit = {},
     onShortcutPressed: (Boolean, Boolean, Boolean, Int) -> Unit = { _, _, _, _ -> },
 ) {
@@ -89,6 +93,16 @@ internal fun CodeEditor(
             colorScheme = VcodeScheme.create()
         }
     }
+    DisposableEffect(view, fileUri, language) {
+        val api = SoraEditorApi(view, fileUri, language)
+        PluginRegistry.editor = api
+        onDispose {
+            if (PluginRegistry.editor === api) {
+                PluginRegistry.editor = null
+            }
+        }
+    }
+
     AndroidView(
         factory = { view },
         update = { editor ->

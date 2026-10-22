@@ -16,7 +16,7 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 * 6 new VS Code-style themes: Vcode Dark (the new default), Dark+, Light+, One Dark, GitHub Dark and Dracula (15 themes in total)
 * VS Code-style tabs with a language icon and a dot for unsaved changes
 * New editor settings: cursor style, smooth cursor animation, font ligatures and an auto save delay
-* Plugin system: install `.zip` or `.json` plugins to add themes, keyword suggestions and file types (Settings > Plugins)
+* Plugin system: install `.zip` or `.json` plugins to add themes, keyword suggestions and file types (Settings > Plugins), and, if you allow it, Kotlin plugins that use a plugin API for commands, status bar items and editor access
 * New Vcode design language: pill buttons, chip tabs, rounder fields and dialogs, flat toolbar and a navy and cyan palette
 * A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
 * F-Droid friendly build: no Google Play services and no closed-source libraries, release builds work without a signing key, and a workflow that builds the app twice and compares the results (see [docs/FDROID.md](docs/FDROID.md))
@@ -29,7 +29,7 @@ Get the latest `Vcode-foss.apk` from the [website](https://vcode-site.pages.dev)
 
 ## Plugins
 
-Vcode can load data-only plugins (themes, keyword lists and file types) from **Settings > Plugins**. See the [plugin guide](docs/PLUGINS.md) and the [examples](examples/plugins).
+Vcode can load plugins from **Settings > Plugins**: data-only plugins (themes, keyword lists and file types) and, once you turn on **Allow code plugins**, Kotlin plugins that use the [plugin API](plugin-api). A Kotlin plugin runs inside Vcode with the same access as the app, so only install ones you trust. See the [plugin guide](docs/PLUGINS.md) and the [examples](examples/plugins).
 
 ## Build instructions
 
