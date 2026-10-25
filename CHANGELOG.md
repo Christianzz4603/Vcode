@@ -10,6 +10,7 @@ Vcode uses one version per feature or update:
 
 * Kotlin plugins: a plugin can now ship a classes.dex file with a class that extends VcodePlugin and use the new plugin API (plugin-api module, API version 1) to add commands to the command palette, show text in the status bar, read and change the open file, show dialogs, and add keywords and file types. Plugins declare permissions, Vcode shows them (and a SHA-256 of the file) before installing, and code plugins are off until you turn on Allow code plugins in Settings, Plugins. A Kotlin plugin runs inside Vcode with the same access as the app.
 * New sample plugin and a workflow that builds it, see docs/PLUGINS.md.
+* Decompiling: a compiled (binary) AndroidManifest.xml, layout or other XML from an APK now opens as readable XML, and opening an .apk shows its decoded AndroidManifest.xml and the list of its files. Resource references are shown as ids (for example @0x7f0b0001). The decoded text cannot be saved over the original, use Save As.
 * Fixed: the status bar showed the language scope (for example Source.kotlin) instead of its name.
 
 ## 1.9.0 (10039)

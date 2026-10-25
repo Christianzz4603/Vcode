@@ -21,6 +21,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import com.vcode.studio.core.database.dao.document.DocumentDao
+import com.vcode.studio.core.decompile.BinaryDecompiler
 import com.vcode.studio.core.extensions.PermissionException
 import com.vcode.studio.core.extensions.isStorageAccessGranted
 import com.vcode.studio.core.provider.coroutine.DispatcherProvider
@@ -45,6 +46,7 @@ import com.vcode.studio.filesystem.base.model.LineBreak
 import com.vcode.studio.filesystem.local.LocalFilesystem
 import com.vcode.studio.filesystem.saf.SAFFilesystem
 import io.github.rosemoe.sora.text.Content
+import java.io.File
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
@@ -111,7 +113,12 @@ internal class DocumentRepositoryImpl(
                     chardet = settingsManager.encodingAutoDetect,
                     charset = charsetFor(settingsManager.encodingForOpening),
                 )
-                Content(filesystem.loadFile(fileModel, fileParams)).also { content ->
+                val decompiled = if (document.filesystemUuid == LocalFilesystem.LOCAL_UUID) {
+                    BinaryDecompiler.decompile(File(fileModel.path))
+                } else {
+                    null
+                }
+                Content(decompiled ?: filesystem.loadFile(fileModel, fileParams)).also { content ->
                     cacheDocument(document, content)
                 }
             }
@@ -122,6 +129,14 @@ internal class DocumentRepositoryImpl(
         withContext(dispatcherProvider.io()) {
             val filesystem = filesystemFactory.create(document.filesystemUuid)
             val fileModel = DocumentMapper.toModel(document)
+            // Compiled files are shown decoded, writing the text back would destroy them
+            if (document.filesystemUuid == LocalFilesystem.LOCAL_UUID &&
+                BinaryDecompiler.isDecompilable(File(fileModel.path))
+            ) {
+                throw UnsupportedOperationException(
+                    "This file is compiled and is shown decoded. Use Save As to keep a text copy."
+                )
+            }
             val fileParams = FileParams(
                 charset = charsetFor(settingsManager.encodingForSaving),
                 linebreak = LineBreak.of(settingsManager.lineBreakForSaving),

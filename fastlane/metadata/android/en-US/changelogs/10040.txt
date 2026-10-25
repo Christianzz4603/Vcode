@@ -1,2 +1,3 @@
 - Kotlin plugins: classes.dex plugins with a plugin API (commands, status bar, editor access, dialogs), permissions and an install confirmation
+- Decompiling: compiled AndroidManifest.xml and other binary XML open as text, APKs show their decoded manifest
 - Fix: status bar shows the language name
