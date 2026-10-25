@@ -8,6 +8,10 @@ plugins {
 android {
     namespace = "com.vcode.studio.sample"
     compileSdk = 36
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
     defaultConfig {
         applicationId = "com.vcode.studio.sample"
         minSdk = 24
