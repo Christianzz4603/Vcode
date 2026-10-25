@@ -2,9 +2,6 @@ name: Build sample plugin
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'kotlin-plugins'
 
 jobs:
   build:
