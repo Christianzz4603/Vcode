@@ -1,0 +1,1 @@
+- Edit compiled XML: AndroidManifest.xml and other binary XML open as text and are compiled again on save (the original is kept as .orig)

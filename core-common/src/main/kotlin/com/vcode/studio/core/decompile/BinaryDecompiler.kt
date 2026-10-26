@@ -32,6 +32,32 @@ object BinaryDecompiler {
         return isXmlHeader(header) || (isZipHeader(header) && file.extension.equals("apk", ignoreCase = true))
     }
 
+    /** True for compiled XML files, these can be edited as text and are compiled again when they are saved. */
+    fun isBinaryXml(file: File): Boolean {
+        if (!file.isFile) return false
+        val header = readHeader(file) ?: return false
+        return isXmlHeader(header)
+    }
+
+    /**
+     * Compiles the text to binary XML and replaces the file. The first time a copy of the original
+     * is kept next to it with the extension .orig.
+     * @throws IllegalArgumentException when the text cannot be written without changes
+     */
+    fun saveBinaryXml(file: File, text: String) {
+        val encoded = AxmlEncoder.encode(text, file.readBytes())
+        val backup = File(file.parentFile, file.name + ".orig")
+        if (!backup.exists()) {
+            file.copyTo(backup)
+        }
+        val temp = File(file.parentFile, file.name + ".tmp")
+        temp.writeBytes(encoded)
+        if (!temp.renameTo(file)) {
+            file.writeBytes(encoded)
+            temp.delete()
+        }
+    }
+
     /** Returns the decoded text, or null when the file is not one of the supported kinds or cannot be decoded. */
     fun decompile(file: File): String? {
         if (!file.isFile || file.length() > MAX_BYTES * 4) return null

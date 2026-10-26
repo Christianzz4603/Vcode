@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.11.0 (10041)
+
+* Edit compiled XML: a binary AndroidManifest.xml (or other compiled XML) opens as text and is compiled to binary XML again when you save it. Before it writes the file, Vcode decodes the result and compares it with your text, and refuses to save when something would be lost. The first save keeps a copy of the original next to the file (.orig). APK files are still read only, because an edited APK would also need to be signed.
+
 ## 1.10.0 (10040)
 
 * Kotlin plugins: a plugin can now ship a classes.dex file with a class that extends VcodePlugin and use the new plugin API (plugin-api module, API version 1) to add commands to the command palette, show text in the status bar, read and change the open file, show dialogs, and add keywords and file types. Plugins declare permissions, Vcode shows them (and a SHA-256 of the file) before installing, and code plugins are off until you turn on Allow code plugins in Settings, Plugins. A Kotlin plugin runs inside Vcode with the same access as the app.

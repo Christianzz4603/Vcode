@@ -58,6 +58,13 @@ object AxmlDecoder {
     private val DIMENSION_UNITS = arrayOf("px", "dp", "sp", "pt", "in", "mm")
     private val FRACTION_UNITS = arrayOf("%", "%p")
 
+    /** What a binary file says about its attributes, used when an edited file is written back. */
+    class Inspection(
+        val attributeIds: Map<String, Int>,
+        val typedValues: Map<String, IntArray>,
+        val typeByAttribute: Map<String, Int>,
+    )
+
     private class Attribute(val prefix: String?, val name: String, val value: String)
 
     private class Element(val prefix: String?, val name: String) {
@@ -85,7 +92,25 @@ object AxmlDecoder {
         }
     }
 
+    /** @throws IllegalArgumentException when the data is not valid binary XML */
+    fun inspect(bytes: ByteArray): Inspection {
+        require(isBinaryXml(bytes)) { "This is not a binary XML file" }
+        val parser = Parser(bytes)
+        try {
+            parser.parse()
+        } catch (e: IndexOutOfBoundsException) {
+            throw IllegalArgumentException("The binary XML file is damaged", e)
+        } catch (e: NegativeArraySizeException) {
+            throw IllegalArgumentException("The binary XML file is damaged", e)
+        }
+        return Inspection(parser.attributeIds, parser.typedValues, parser.typeByAttribute)
+    }
+
     private class Parser(private val bytes: ByteArray) {
+
+        val attributeIds = HashMap<String, Int>()
+        val typedValues = HashMap<String, IntArray>()
+        val typeByAttribute = HashMap<String, Int>()
 
         private val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         private var strings: List<String> = emptyList()
@@ -179,11 +204,19 @@ object AxmlDecoder {
                 val raw = buffer.getInt(start + 8)
                 val dataType = buffer.get(start + 15).toInt() and 0xFF
                 val data = buffer.getInt(start + 16)
+                val nameText = attributeName(attrName)
+                val valueText = valueOf(raw, dataType, data)
+                val key = (if (attrNamespace >= 0) string(attrNamespace) else "") + "|" + nameText
+                resourceIds.getOrNull(attrName)?.let { id ->
+                    if (id != 0) attributeIds[key] = id
+                }
+                typedValues[key + "|" + valueText] = intArrayOf(dataType, data)
+                if (!typeByAttribute.containsKey(key)) typeByAttribute[key] = dataType
                 element.attributes.add(
                     Attribute(
                         prefix = prefixOf(attrNamespace),
-                        name = attributeName(attrName),
-                        value = valueOf(raw, dataType, data),
+                        name = nameText,
+                        value = valueText,
                     )
                 )
             }

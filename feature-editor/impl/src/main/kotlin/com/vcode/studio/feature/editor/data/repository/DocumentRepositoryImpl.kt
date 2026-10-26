@@ -130,12 +130,19 @@ internal class DocumentRepositoryImpl(
             val filesystem = filesystemFactory.create(document.filesystemUuid)
             val fileModel = DocumentMapper.toModel(document)
             // Compiled files are shown decoded, writing the text back would destroy them
-            if (document.filesystemUuid == LocalFilesystem.LOCAL_UUID &&
-                BinaryDecompiler.isDecompilable(File(fileModel.path))
-            ) {
-                throw UnsupportedOperationException(
-                    "This file is compiled and is shown decoded. Use Save As to keep a text copy."
-                )
+            if (document.filesystemUuid == LocalFilesystem.LOCAL_UUID) {
+                val file = File(fileModel.path)
+                if (BinaryDecompiler.isBinaryXml(file)) {
+                    // A compiled XML file is shown as text and compiled again here
+                    BinaryDecompiler.saveBinaryXml(file, content.toString())
+                    cacheDocument(document, content)
+                    return@withContext
+                }
+                if (BinaryDecompiler.isDecompilable(file)) {
+                    throw UnsupportedOperationException(
+                        "An APK is shown decoded and cannot be saved. Use Save As to keep a text copy."
+                    )
+                }
             }
             val fileParams = FileParams(
                 charset = charsetFor(settingsManager.encodingForSaving),
