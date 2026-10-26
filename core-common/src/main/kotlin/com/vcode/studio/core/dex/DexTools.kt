@@ -20,6 +20,7 @@ import android.content.Context
 import android.net.Uri
 import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
 import com.android.tools.smali.baksmali.BaksmaliOptions
+import com.android.tools.smali.baksmali.formatter.BaksmaliWriter
 import com.android.tools.smali.dexlib2.DexFileFactory
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.iface.ClassDef
@@ -27,7 +28,6 @@ import com.android.tools.smali.dexlib2.iface.DexFile
 import com.android.tools.smali.dexlib2.writer.pool.DexPool
 import com.android.tools.smali.smali.Smali
 import com.android.tools.smali.smali.SmaliOptions
-import com.android.tools.smali.util.IndentingWriter
 import org.json.JSONObject
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
@@ -153,7 +153,7 @@ object DexTools {
         target.parentFile?.mkdirs()
         val options = BaksmaliOptions()
         BufferedWriter(OutputStreamWriter(target.outputStream(), Charsets.UTF_8)).use { buffered ->
-            val writer = IndentingWriter(buffered)
+            val writer = BaksmaliWriter(buffered)
             ClassDefinition(options, classDef).writeTo(writer)
             writer.flush()
         }
