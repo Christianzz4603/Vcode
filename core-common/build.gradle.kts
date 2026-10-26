@@ -44,6 +44,9 @@ android {
 dependencies {
 
     api(project(":plugin-api"))
+    implementation(libs.smali.assembler)
+    implementation(libs.smali.baksmali)
+    implementation(libs.smali.dexlib2)
     implementation(project(":core-ui"))
 
     implementation(libs.androidx.lifecycle.service)

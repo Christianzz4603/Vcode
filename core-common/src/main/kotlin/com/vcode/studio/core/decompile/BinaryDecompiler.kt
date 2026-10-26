@@ -16,6 +16,7 @@
 
 package com.vcode.studio.core.decompile
 
+import com.vcode.studio.core.dex.DexTools
 import java.io.File
 import java.util.zip.ZipFile
 
@@ -29,7 +30,8 @@ object BinaryDecompiler {
     fun isDecompilable(file: File): Boolean {
         if (!file.isFile) return false
         val header = readHeader(file) ?: return false
-        return isXmlHeader(header) || (isZipHeader(header) && file.extension.equals("apk", ignoreCase = true))
+        return isXmlHeader(header) || isDexHeader(header) ||
+            (isZipHeader(header) && file.extension.equals("apk", ignoreCase = true))
     }
 
     /** True for compiled XML files, these can be edited as text and are compiled again when they are saved. */
@@ -68,6 +70,7 @@ object BinaryDecompiler {
                     if (file.length() > MAX_BYTES) null else AxmlDecoder.decode(file.readBytes())
                 }
                 isZipHeader(header) && file.extension.equals("apk", ignoreCase = true) -> decompileApk(file)
+                isDexHeader(header) -> DexTools.summary(file)
                 else -> null
             }
         } catch (e: Exception) {
@@ -111,6 +114,11 @@ object BinaryDecompiler {
     private fun isXmlHeader(header: ByteArray): Boolean {
         return header[0] == 0x03.toByte() && header[1] == 0x00.toByte() &&
             header[2] == 0x08.toByte() && header[3] == 0x00.toByte()
+    }
+
+    private fun isDexHeader(header: ByteArray): Boolean {
+        return header[0] == 0x64.toByte() && header[1] == 0x65.toByte() &&
+            header[2] == 0x78.toByte() && header[3] == 0x0A.toByte()
     }
 
     private fun isZipHeader(header: ByteArray): Boolean {
