@@ -28,6 +28,7 @@ import com.android.tools.smali.dexlib2.iface.DexFile
 import com.android.tools.smali.dexlib2.writer.pool.DexPool
 import com.android.tools.smali.smali.Smali
 import com.android.tools.smali.smali.SmaliOptions
+import java.io.StringWriter
 import org.json.JSONObject
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
@@ -213,6 +214,54 @@ object DexTools {
         edited.delete()
         merged.delete()
         return "Updated " + changed.size + " class(es) in " + dex.name
+    }
+
+    /** The smali text of one class, for example for type Lcom/foo/Bar;. */
+    fun smaliOf(dex: File, type: String): String {
+        val classDef = DexFileFactory.loadDexFile(dex, opcodes()).classes.firstOrNull { it.type == type }
+            ?: throw IllegalArgumentException("Class not found: " + type)
+        val text = StringWriter()
+        val writer = BaksmaliWriter(text)
+        ClassDefinition(BaksmaliOptions(), classDef).writeTo(writer)
+        writer.flush()
+        return text.toString()
+    }
+
+    /** Puts the classes of smali texts into a DEX file and removes classes, the file is replaced. */
+    fun replaceInDex(dex: File, workDir: File, smaliTexts: List<String>, removeTypes: Set<String>) {
+        workDir.mkdirs()
+        val id = System.nanoTime().toString()
+        val edited = File(workDir, "edited-$id.dex")
+        val merged = File(workDir, "merged-$id.dex")
+        val sources = ArrayList<File>()
+        try {
+            val opcodes = opcodes()
+            val replacement: DexFile? = if (smaliTexts.isEmpty()) {
+                null
+            } else {
+                for ((index, text) in smaliTexts.withIndex()) {
+                    val file = File(workDir, "source-$id-$index.smali")
+                    file.writeText(text)
+                    sources.add(file)
+                }
+                assemble(sources.map { it.absolutePath }, edited)
+                DexFileFactory.loadDexFile(edited, opcodes)
+            }
+            val original = DexFileFactory.loadDexFile(dex, opcodes)
+            val replacedTypes = replacement?.classes?.map { it.type }?.toSet().orEmpty()
+            val classes = LinkedHashSet<ClassDef>()
+            for (classDef in original.classes) {
+                if (classDef.type !in replacedTypes && classDef.type !in removeTypes) classes.add(classDef)
+            }
+            if (replacement != null) classes.addAll(replacement.classes)
+            DexPool.writeTo(merged.absolutePath, MergedDexFile(opcodes, classes))
+            check(isDex(merged)) { "The new DEX file could not be written" }
+            merged.copyTo(dex, overwrite = true)
+        } finally {
+            edited.delete()
+            merged.delete()
+            for (source in sources) source.delete()
+        }
     }
 
     private fun assemble(paths: List<String>, output: File) {

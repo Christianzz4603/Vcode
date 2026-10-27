@@ -1,0 +1,2 @@
+- Zip, jar, apk, aar and dex files open as folders in the file browser, edit files inside and save to repackage
+- DEX classes show as smali files in package folders

@@ -17,6 +17,7 @@
 package com.vcode.studio.feature.explorer.data.factory
 
 import android.content.Context
+import com.vcode.studio.core.archive.ArchiveFilesystem
 import com.vcode.studio.feature.explorer.api.factory.FilesystemFactory
 import com.vcode.studio.feature.servers.api.factory.ServerFactory
 import com.vcode.studio.feature.servers.api.interactor.ServerInteractor
@@ -24,6 +25,7 @@ import com.vcode.studio.filesystem.base.Filesystem
 import com.vcode.studio.filesystem.local.LocalFilesystem
 import com.vcode.studio.filesystem.root.RootFilesystem
 import com.vcode.studio.filesystem.saf.SAFFilesystem
+import java.io.File
 
 internal class FilesystemFactoryImpl(
     private val serverFactory: ServerFactory,
@@ -33,7 +35,10 @@ internal class FilesystemFactoryImpl(
 
     override suspend fun create(uuid: String): Filesystem {
         return when (uuid) {
-            LocalFilesystem.LOCAL_UUID -> LocalFilesystem()
+            LocalFilesystem.LOCAL_UUID -> ArchiveFilesystem(
+                delegate = LocalFilesystem(),
+                workDir = File(context.cacheDir, "archive-work"),
+            )
             RootFilesystem.ROOT_UUID -> RootFilesystem()
             SAFFilesystem.SAF_UUID -> SAFFilesystem(context)
             else -> {

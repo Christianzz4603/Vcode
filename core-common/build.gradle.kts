@@ -44,6 +44,7 @@ android {
 dependencies {
 
     api(project(":plugin-api"))
+    implementation(project(":filesystems:filesystem-base"))
     implementation(libs.smali.assembler)
     implementation(libs.smali.baksmali)
     implementation(libs.smali.dexlib2)
