@@ -140,7 +140,7 @@ internal class DocumentRepositoryImpl(
                 }
                 if (BinaryDecompiler.isDecompilable(file)) {
                     throw UnsupportedOperationException(
-                        "An APK is shown decoded and cannot be saved. Use Save As to keep a text copy."
+                        "This file is shown decoded and cannot be saved as text. Use Save As to keep a text copy."
                     )
                 }
             }

@@ -1,0 +1,1 @@
+- Edit DEX files as smali: open a class from the command palette, edit it, then apply the changes back into the .dex file

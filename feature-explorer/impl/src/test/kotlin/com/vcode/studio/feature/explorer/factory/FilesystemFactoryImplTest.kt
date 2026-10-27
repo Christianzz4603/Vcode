@@ -17,6 +17,7 @@
 package com.vcode.studio.feature.explorer.factory
 
 import android.content.Context
+import com.vcode.studio.core.archive.ArchiveFilesystem
 import com.vcode.studio.feature.explorer.data.factory.FilesystemFactoryImpl
 import com.vcode.studio.feature.servers.api.factory.ServerFactory
 import com.vcode.studio.feature.servers.api.interactor.ServerInteractor
@@ -44,7 +45,7 @@ class FilesystemFactoryImplTest {
     )
 
     @Test
-    fun `When uuid is LOCAL_UUID Then create LocalFilesystem`() = runTest {
+    fun `When uuid is LOCAL_UUID Then create ArchiveFilesystem`() = runTest {
         // Given
         val uuid = LocalFilesystem.LOCAL_UUID
 
@@ -52,7 +53,7 @@ class FilesystemFactoryImplTest {
         val filesystem = filesystemFactory.create(uuid)
 
         // Then
-        assertTrue(filesystem is LocalFilesystem)
+        assertTrue(filesystem is ArchiveFilesystem)
     }
 
     @Test

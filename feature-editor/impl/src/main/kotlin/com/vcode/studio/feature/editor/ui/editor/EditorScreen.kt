@@ -16,6 +16,8 @@
 
 package com.vcode.studio.feature.editor.ui.editor
 
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.ReportDrawnWhen
@@ -54,6 +56,7 @@ import com.vcode.studio.core.contract.ContractResult
 import com.vcode.studio.core.contract.MimeType
 import com.vcode.studio.core.contract.rememberCreateFileContract
 import com.vcode.studio.core.contract.rememberOpenFileContract
+import com.vcode.studio.core.dex.DexTools
 import com.vcode.studio.core.effect.CleanupEffect
 import com.vcode.studio.core.effect.ResultEffect
 import com.vcode.studio.core.extensions.daggerViewModel
@@ -370,6 +373,7 @@ internal fun EditorScreen(
             scope.launch { editorController.send(EditorCommand.Insert(code)) }
         },
         onAiClicked = { panelState.show(PanelTab.AI) },
+        onOpenUri = viewModel::onFileOpened,
         toolOrder = toolOrder,
         toolsVisible = toolsVisible,
         onToolClicked = onToolClicked,
@@ -548,6 +552,7 @@ private fun EditorScreen(
     onStopAi: () -> Unit = {},
     onInsertCode: (String) -> Unit = {},
     onAiClicked: () -> Unit = {},
+    onOpenUri: (Uri) -> Unit = {},
     toolOrder: List<PanelTool> = PanelTool.entries.toList(),
     toolsVisible: Boolean = false,
     onToolClicked: (PanelTool) -> Unit = {},
@@ -558,6 +563,10 @@ private fun EditorScreen(
     var showPalette by rememberSaveable { mutableStateOf(false) }
     val pluginCommands by PluginRegistry.commands.collectAsState()
     val pluginStatusItems by PluginRegistry.statusItems.collectAsState()
+    val dexScope = rememberCoroutineScope()
+    val dexContext = LocalContext.current
+    val dexFileUri = viewState.currentDocument?.document?.fileUri
+    var dexClasses by remember { mutableStateOf<List<String>?>(null) }
     ScaffoldSuite(
         topBar = {
             EditorToolbar(
@@ -786,10 +795,55 @@ private fun EditorScreen(
                 PaletteCommand("Git: Push", action = onPushClicked),
                 PaletteCommand("Git: Checkout", action = onCheckoutClicked),
                 PaletteCommand("Preferences: Open Settings", action = onSettingsClicked),
+                PaletteCommand(
+                    "Dex: Open Class",
+                    action = {
+                        dexScope.launch {
+                            try {
+                                dexClasses = withContext(Dispatchers.IO) { DexTools.listFor(dexContext, dexFileUri) }
+                            } catch (t: Throwable) {
+                                Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                ),
+                PaletteCommand(
+                    "Dex: Apply Changes to DEX",
+                    action = {
+                        dexScope.launch {
+                            try {
+                                val message = withContext(Dispatchers.IO) { DexTools.applyFor(dexContext, dexFileUri) }
+                                Toast.makeText(dexContext, message, Toast.LENGTH_LONG).show()
+                            } catch (t: Throwable) {
+                                Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                ),
             ) + pluginCommands.map { command ->
                 PaletteCommand("Plugin: " + command.title, action = { PluginRegistry.run(command) })
             },
             onDismiss = { showPalette = false },
+        )
+    }
+    dexClasses?.let { classes ->
+        CommandPalette(
+            commands = classes.map { type ->
+                PaletteCommand(
+                    type,
+                    action = {
+                        dexScope.launch {
+                            try {
+                                val file = withContext(Dispatchers.IO) { DexTools.exportFor(dexContext, dexFileUri, type) }
+                                onOpenUri(Uri.fromFile(file))
+                            } catch (t: Throwable) {
+                                Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                )
+            },
+            onDismiss = { dexClasses = null },
         )
     }
     PluginDialogHost()

@@ -60,3 +60,13 @@
 -keepclassmembers class com.vcode.studio.feature.editor.ui.editor.panel.CodeRunner$Bridge {
     @android.webkit.JavascriptInterface <methods>;
 }
+
+# Vcode: smali and baksmali are used to edit DEX files
+-keep class com.android.tools.smali.** { *; }
+-keep class org.antlr.runtime.** { *; }
+-dontwarn javax.annotation.**
+-dontwarn org.checkerframework.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn org.antlr.stringtemplate.**
+-dontwarn com.beust.jcommander.**

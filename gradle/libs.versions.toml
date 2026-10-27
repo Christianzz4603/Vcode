@@ -1,4 +1,5 @@
 [versions]
+smali = "3.0.9"
 activity = "1.12.2"
 android-desugaring = "2.1.5"
 android-platform = "4.1.1.4"
@@ -54,6 +55,9 @@ kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [libraries]
+smali-assembler = { module = "com.android.tools.smali:smali", version.ref = "smali" }
+smali-baksmali = { module = "com.android.tools.smali:smali-baksmali", version.ref = "smali" }
+smali-dexlib2 = { module = "com.android.tools.smali:smali-dexlib2", version.ref = "smali" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
