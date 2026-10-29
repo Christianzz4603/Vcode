@@ -1,0 +1,99 @@
+name: Native disassembler
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'disassembler'
+    paths:
+      - 'native/**'
+      - '.github/workflows/native_disasm.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install the Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+          rustc --version
+
+      - name: Unit tests
+        working-directory: native/disasm
+        run: cargo test --release
+
+      - name: Get an ARM64 library to try it on
+        run: |
+          python3 -m pip install --quiet capstone==5.0.7
+          python3 -m pip download capstone==5.0.7 --platform manylinux2014_aarch64 --only-binary=:all: --no-deps -d /tmp/arm
+          mkdir -p /tmp/arm/x && cd /tmp/arm/x && unzip -q ../*.whl
+          find /tmp/arm/x -name 'libcapstone*' | head
+
+      - name: Run the library functions on it
+        working-directory: native/disasm
+        run: |
+          LIB=$(find /tmp/arm/x -name 'libcapstone*.so*' | head -1)
+          echo "Using $LIB"
+          cargo run --release --example dump -- "$LIB" | head -150
+
+      - name: Compare the instructions with Capstone
+        working-directory: native/disasm
+        run: |
+          LIB=$(find /tmp/arm/x -name 'libcapstone*.so*' | head -1)
+          cargo run --release --example dump -- "$LIB" raw 150000 > /tmp/raw.txt
+          wc -l /tmp/raw.txt
+          python3 - <<'PY'
+          import re, collections
+          from capstone import Cs, CS_ARCH_ARM64, CS_MODE_ARM
+          md = Cs(CS_ARCH_ARM64, CS_MODE_ARM)
+          def norm(s):
+              s = s.lower().replace('#', '').replace('$', '')
+              s = re.sub(r'\s*;.*$', '', s)
+              s = re.sub(r'\s+', ' ', s).strip()
+              s = re.sub(r', ', ',', s)
+              s = re.sub(r'0x([0-9a-f]+)', lambda m: str(int(m.group(1), 16)), s)
+              return s
+          total = same = mnem_same = undefined = 0
+          bad = collections.Counter(); examples = {}
+          for line in open('/tmp/raw.txt'):
+              if not line.startswith('RAW'):
+                  continue
+              _, addr, word, text = line.rstrip('\n').split('\t', 3)
+              addr = int(addr, 16); w = int(word, 16)
+              total += 1
+              ins = list(md.disasm(w.to_bytes(4, 'little'), addr))
+              if not ins:
+                  undefined += 1
+                  continue
+              ref = ins[0].mnemonic + (' ' + ins[0].op_str if ins[0].op_str else '')
+              if norm(ref) == norm(text):
+                  same += 1
+              else:
+                  m = text.split(' ')[0]
+                  if m == ins[0].mnemonic:
+                      mnem_same += 1
+                  bad[ins[0].mnemonic] += 1
+                  examples.setdefault(ins[0].mnemonic, (word, ref, text))
+          print('instructions', total, 'identical', same, 'same mnemonic', mnem_same, 'capstone undefined', undefined)
+          for m, c in bad.most_common(25):
+              print(c, m, examples[m])
+          PY
+
+      - name: Build for Android
+        working-directory: native/disasm
+        run: |
+          NDK="${ANDROID_NDK_HOME:-$ANDROID_NDK_ROOT}"
+          BIN="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$BIN/aarch64-linux-android26-clang"
+          export CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER="$BIN/armv7a-linux-androideabi26-clang"
+          export CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER="$BIN/x86_64-linux-android26-clang"
+          export RUSTFLAGS="-C link-arg=-Wl,-z,max-page-size=16384"
+          for target in aarch64-linux-android armv7-linux-androideabi x86_64-linux-android; do
+            cargo build --release --target "$target"
+            ls -la "target/$target/release/libvcode_disasm.so"
+          done

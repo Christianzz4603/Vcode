@@ -1,0 +1,26 @@
+[package]
+name = "vcode_disasm"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Library inspector and ARM64 disassembler for Vcode"
+publish = false
+
+[lib]
+name = "vcode_disasm"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+yaxpeax-arch = { version = "0.3.3", default-features = false }
+yaxpeax-arm = { version = "0.5.0", default-features = false, features = ["std", "alloc", "fmt"] }
+object = { version = "0.36", default-features = false, features = ["read_core", "elf", "std"] }
+cpp_demangle = "0.4"
+rustc-demangle = "0.1"
+jni = "0.21"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+debug = false
