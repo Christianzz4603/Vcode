@@ -12,6 +12,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -97,3 +99,14 @@ jobs:
             cargo build --release --target "$target"
             ls -la "target/$target/release/libvcode_disasm.so"
           done
+
+      - name: Keep the lock file in the repository
+        if: github.event_name == 'push'
+        run: |
+          if [ -n "$(git status --porcelain native/disasm/Cargo.lock)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add native/disasm/Cargo.lock
+            git commit -m "Add Cargo.lock for the native disassembler"
+            git push
+          fi

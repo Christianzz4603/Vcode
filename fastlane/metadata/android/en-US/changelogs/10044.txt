@@ -1,0 +1,1 @@
+- Library viewer: .so files open as a folder with info, symbols, strings and ARM64 disassembly per function

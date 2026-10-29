@@ -6,6 +6,11 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.14.0 (10044)
+
+* Library viewer: a native library (.so), in the file browser or inside an APK, opens as a folder with info.txt (header and sections), symbols.txt, strings.txt, a functions folder with a file for every function and a code folder with the code in pieces. ARM64 code is disassembled, branch targets get the name of the function they point to, and calls through the PLT are named (for example memcpy@plt). C++ and Rust names are shown readable. Libraries are read only. Other CPU types show the information but not the code yet.
+* The disassembler is written in Rust (native/disasm, uses the yaxpeax-arm and object crates). It is built together with the app when cargo, the Rust targets for Android and the NDK are installed, and left out of the build otherwise.
+
 ## 1.13.0 (10043)
 
 * Archives and DEX files as folders: in the file browser, tap a zip, jar, apk, aar, war, ear, xapk, apks, aab or dex file and it opens like a folder with the files inside. Open a file to edit it and save it, and Vcode writes the archive again (the first time a copy of the original is kept as .orig). Compiled XML inside an APK, such as AndroidManifest.xml, is shown as text and compiled again when saved. A DEX file shows its classes in folders for the packages, a class opens as smali and a save assembles it back into the DEX file, also when the DEX file is inside an APK. New files and folders, renaming, deleting and copying files in and out of an archive work too. An edited APK has to be signed before it can be installed, which is not part of this version. Binary files (images, resources.arsc) are shown as a note and cannot be saved as text.

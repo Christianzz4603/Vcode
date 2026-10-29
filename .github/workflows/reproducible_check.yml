@@ -29,6 +29,12 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      - name: Setup Rust targets
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+
       - name: Build the unsigned APK in two different folders
         run: |
           set -e

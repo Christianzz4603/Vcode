@@ -19,6 +19,7 @@ package com.vcode.studio.core.archive
 import com.vcode.studio.core.decompile.AxmlDecoder
 import com.vcode.studio.core.decompile.AxmlEncoder
 import com.vcode.studio.core.dex.DexTools
+import com.vcode.studio.core.disasm.ElfBrowser
 import com.vcode.studio.filesystem.base.Filesystem
 import com.vcode.studio.filesystem.base.exception.FileAlreadyExistsException
 import com.vcode.studio.filesystem.base.exception.FileNotFoundException
@@ -52,6 +53,7 @@ class ArchiveFilesystem(
             return when (location) {
                 is Location.Zip -> listZip(parent, location)
                 is Location.Dex -> listDex(parent, location)
+                is Location.Elf -> listElf(parent, location)
             }
         } catch (e: ZipException) {
             throw InvalidArchiveException(parent.path)
@@ -73,7 +75,7 @@ class ArchiveFilesystem(
                 }
                 edit.applyTo(location.archive)
             }
-            is Location.Dex -> throw UnsupportedOperationException()
+            is Location.Dex, is Location.Elf -> throw UnsupportedOperationException("This cannot be changed here")
         }
     }
 
@@ -94,7 +96,7 @@ class ArchiveFilesystem(
                 }
                 edit.applyTo(location.archive)
             }
-            is Location.Dex -> throw UnsupportedOperationException()
+            is Location.Dex, is Location.Elf -> throw UnsupportedOperationException("This cannot be changed here")
         }
     }
 
@@ -106,6 +108,7 @@ class ArchiveFilesystem(
                 edit.remove.add(if (fileModel.isDirectory) location.inner + "/" else location.inner)
                 edit.applyTo(location.archive)
             }
+            is Location.Elf -> throw UnsupportedOperationException("Libraries are read only")
             is Location.Dex -> {
                 val types = withDex(location, false) { DexTools.listClasses(it) }.filter {
                     if (fileModel.isDirectory) {
@@ -145,6 +148,7 @@ class ArchiveFilesystem(
         try {
             return when (location) {
                 is Location.Zip -> decode(readEntry(location.archive, location.inner), fileParams)
+                is Location.Elf -> withElf(location) { ElfBrowser.read(it, location.inner) }
                 is Location.Dex -> {
                     if (!location.inner.endsWith(".smali")) throw FileNotFoundException(fileModel.path)
                     withDex(location, false) { DexTools.smaliOf(it, typeOf(location.inner)) }
@@ -175,6 +179,7 @@ class ArchiveFilesystem(
                 edit.put[location.inner] = bytes
                 edit.applyTo(location.archive)
             }
+            is Location.Elf -> throw UnsupportedOperationException("Libraries are read only")
             is Location.Dex -> {
                 require(location.inner.endsWith(".smali")) { "Only smali files can be saved here" }
                 withDex(location, true) { DexTools.replaceInDex(it, workDir, listOf(text), emptySet()) }
@@ -198,6 +203,11 @@ class ArchiveFilesystem(
             null -> null
             is Location.Zip -> if (location.inner.isEmpty()) null else location
             is Location.Dex -> when {
+                location.inner.isNotEmpty() -> location
+                location.zipEntry != null -> Location.Zip(location.archive, location.zipEntry)
+                else -> null
+            }
+            is Location.Elf -> when {
                 location.inner.isNotEmpty() -> location
                 location.zipEntry != null -> Location.Zip(location.archive, location.zipEntry)
                 else -> null
@@ -232,7 +242,7 @@ class ArchiveFilesystem(
                 if (children.containsKey(child)) continue
                 val directory = slash >= 0
                 // A DEX file inside an archive is opened as a folder of classes
-                val container = !directory && child.endsWith(".dex", ignoreCase = true)
+                val container = !directory && (child.endsWith(".dex", ignoreCase = true) || ArchiveLocator.isLibraryName(child))
                 val time = if (entry.time > 0) entry.time else location.archive.lastModified()
                 children[child] = model(parent, child, directory || container, if (directory) 0L else entry.size, time)
             }
@@ -258,6 +268,28 @@ class ArchiveFilesystem(
         }
         val time = location.archive.lastModified()
         return children.map { (name, directory) -> model(parent, name, directory, 0L, time) }
+    }
+
+    private fun listElf(parent: FileModel, location: Location.Elf): List<FileModel> {
+        val time = location.archive.lastModified()
+        return withElf(location) { ElfBrowser.list(it, location.inner) }
+            .map { model(parent, it.name, it.directory, it.size, time) }
+    }
+
+    /** Runs [block] with a native library. A library in an archive is taken out first. */
+    private fun <T> withElf(location: Location.Elf, block: (File) -> T): T {
+        val zipEntry = location.zipEntry ?: return block(location.archive)
+        workDir.mkdirs()
+        val temp = File(workDir, UUID.randomUUID().toString() + ".so")
+        try {
+            ZipFile(location.archive).use { zip ->
+                val entry = zip.getEntry(zipEntry) ?: throw FileNotFoundException(location.archive.path + "/" + zipEntry)
+                zip.getInputStream(entry).use { input -> temp.outputStream().use { input.copyTo(it) } }
+            }
+            return block(temp)
+        } finally {
+            temp.delete()
+        }
     }
 
     private fun typePath(type: String): String = type.removePrefix("L").removeSuffix(";") + ".smali"

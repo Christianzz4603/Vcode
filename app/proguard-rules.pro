@@ -70,3 +70,6 @@
 -dontwarn com.google.j2objc.annotations.**
 -dontwarn org.antlr.stringtemplate.**
 -dontwarn com.beust.jcommander.**
+
+# Vcode: the library viewer calls into Rust
+-keep class com.vcode.studio.core.disasm.NativeDisassembler { *; }

@@ -24,6 +24,12 @@ internal sealed class Location {
     class Zip(val archive: File, val inner: String) : Location()
 
     /**
+     * A path inside a native library (.so). The library is [archive] itself, or the entry [zipEntry] of the zip
+     * based [archive]. [inner] is a file of the library viewer below it.
+     */
+    class Elf(val archive: File, val zipEntry: String?, val inner: String) : Location()
+
+    /**
      * A path inside a DEX file. The DEX file is [archive] itself, or the entry [zipEntry] of the zip
      * based [archive]. [inner] is the path of a class (as smali) below it.
      */
@@ -33,12 +39,15 @@ internal sealed class Location {
 internal object ArchiveLocator {
 
     private val ZIP_EXTENSIONS = setOf("zip", "jar", "apk", "aar", "war", "ear", "xapk", "apks", "aab")
-    private val PATTERN = Regex("\\.(zip|jar|apk|aar|war|ear|xapk|apks|aab|dex)(/|$)", RegexOption.IGNORE_CASE)
+    private val PATTERN = Regex("\\.(zip|jar|apk|aar|war|ear|xapk|apks|aab|dex|so(\\.[0-9]+)*)(/|$)", RegexOption.IGNORE_CASE)
+    private val LIBRARY_NAME = Regex(".*\\.so(\\.[0-9]+)*$", RegexOption.IGNORE_CASE)
 
     fun isArchiveName(name: String): Boolean {
         val extension = name.substringAfterLast('.', "").lowercase()
-        return extension in ZIP_EXTENSIONS || extension == "dex"
+        return extension in ZIP_EXTENSIONS || extension == "dex" || isLibraryName(name)
     }
+
+    fun isLibraryName(name: String): Boolean = LIBRARY_NAME.matches(name)
 
     /** Finds out whether a path leads into an archive or a DEX file, and where. */
     fun locate(path: String): Location? {
@@ -62,13 +71,17 @@ internal object ArchiveLocator {
     }
 
     private fun build(file: File, rest: List<String>): Location {
+        if (isLibraryName(file.name)) {
+            return Location.Elf(file, null, rest.joinToString("/"))
+        }
         if (file.extension.equals("dex", ignoreCase = true)) {
             return Location.Dex(file, null, rest.joinToString("/"))
         }
-        val dexIndex = rest.indexOfFirst { it.endsWith(".dex", ignoreCase = true) }
-        if (dexIndex >= 0) {
-            val entry = rest.subList(0, dexIndex + 1).joinToString("/")
-            return Location.Dex(file, entry, rest.drop(dexIndex + 1).joinToString("/"))
+        val nestedIndex = rest.indexOfFirst { it.endsWith(".dex", ignoreCase = true) || isLibraryName(it) }
+        if (nestedIndex >= 0) {
+            val entry = rest.subList(0, nestedIndex + 1).joinToString("/")
+            val inner = rest.drop(nestedIndex + 1).joinToString("/")
+            return if (isLibraryName(rest[nestedIndex])) Location.Elf(file, entry, inner) else Location.Dex(file, entry, inner)
         }
         return Location.Zip(file, rest.joinToString("/"))
     }

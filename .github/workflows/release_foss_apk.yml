@@ -82,6 +82,12 @@ jobs:
             echo "KEY_PASSWORD=$KEY_PASSWORD"
           } > local.properties
 
+      - name: Setup Rust targets
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
