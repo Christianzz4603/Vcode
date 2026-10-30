@@ -88,6 +88,7 @@ jobs:
 
       - name: Try the Rust library through JNI
         run: |
+          (cd native/disasm && cargo build --release)
           mkdir -p /tmp/jt/src/com/vcode/studio/core/disasm
           cp native/disasm/jni-test/NativeDisassembler.java /tmp/jt/src/com/vcode/studio/core/disasm/
           javac -d /tmp/jt/out /tmp/jt/src/com/vcode/studio/core/disasm/NativeDisassembler.java
