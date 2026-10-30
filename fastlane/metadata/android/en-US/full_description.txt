@@ -13,11 +13,23 @@
 
 <b>Themes and plugins</b>
 • 15 themes, including Vcode Dark, Dark+, Light+, One Dark, GitHub Dark and Dracula
-• Data-only plugins that add themes, keyword lists and file types (no code runs from a plugin)
+• Data-only plugins add themes, keyword lists and file types
+• Optional Kotlin plugins (off until you allow them) add commands, status bar texts and editor access. They run inside the app, so only install plugins you trust.
 
 <b>Files and Git</b>
 • File manager with SFTP and FTP(S) support
 • Git integration: commit, push, pull and branches
+
+<b>Editor tools</b>
+• Command palette that searches and runs every editor action
+• Status bar with line, column, indentation and language, and a breadcrumb bar with the file path
+
+<b>Archives, DEX and libraries</b>
+• Zip, jar, apk, aar and other archives open as folders in the file browser. Edit files inside and save to write the archive again.
+• Compiled XML such as AndroidManifest.xml opens as text and is compiled again when you save
+• DEX files show their classes in package folders. Edit a class as smali and save it back into the DEX file.
+• Native libraries (.so) open as a read-only folder with info, symbols, strings and an ARM64 disassembly of every function
+• An edited APK has to be signed again before it can be installed
 
 <b>Optional AI assistant</b>
 • Ask questions about the open file from the AI tab. It uses the OpenRouter service with your own API key.

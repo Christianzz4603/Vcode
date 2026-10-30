@@ -13,9 +13,18 @@ Vcode is built so that F-Droid (and anybody else) can rebuild the APK from the s
 
 The build uses JDK 17 and the Gradle wrapper that is in the repository.
 
+## Rust and the NDK (library viewer)
+
+The library viewer is written in Rust and lives in `native/disasm`. Its dependencies are free software (yaxpeax-arm under 0BSD, `object`, `cpp_demangle`, `rustc-demangle` and `jni` under Apache-2.0 or MIT) and `Cargo.lock` is in the repository.
+
+* `core-common/build.gradle.kts` builds it for `arm64-v8a`, `armeabi-v7a` and `x86_64` when `cargo`, the Rust targets `aarch64-linux-android`, `armv7-linux-androideabi` and `x86_64-linux-android`, and the Android NDK (`ANDROID_NDK_HOME`) are all available.
+* When one of them is missing, the build leaves the library out and still succeeds, the library viewer then tells you that it is not part of the build.
+* The F-Droid build server has to provide Rust and the NDK for the library viewer to be included. Ask the fdroiddata maintainers how Rust apps get these in the recipe before you submit.
+* The **Reproducibility check** workflow installs the Rust targets too. On the 1.14.0 branch it built two identical unsigned APKs (sha256 `3bc8d8f87da2c0abf51c7ba3b90a1a33cf7bd93395205f067f29418e276e10ce`), with the Rust library inside.
+
 ## Release tags
 
-The **Release FOSS APK** workflow publishes `Vcode-foss.apk` for every tag that starts with `v`, for example `v1.6.1`. Create the tag only when `versionName` and `versionCode` in `app/build.gradle.kts` match it (`1.6.1` and `10036`).
+The **Release FOSS APK** workflow publishes `Vcode-foss.apk` for every tag that starts with `v`, for example `v1.14.0`. Create the tag only when `versionName` and `versionCode` in `app/build.gradle.kts` match it (`1.14.0` and `10044`).
 
 ## Anti-feature to declare
 
@@ -45,9 +54,9 @@ Repo: https://github.com/Christianzz4603/Vcode.git
 Binaries: https://github.com/Christianzz4603/Vcode/releases/download/v%v/Vcode-foss.apk
 
 Builds:
-  - versionName: 1.6.1
-    versionCode: 10036
-    commit: v1.6.1
+  - versionName: 1.14.0
+    versionCode: 10044
+    commit: v1.14.0
     subdir: app
     submodules: true
     gradle:
@@ -57,8 +66,8 @@ AllowedAPKSigningKeys: <SHA-256 of the signing certificate>
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.6.1
-CurrentVersionCode: 10036
+CurrentVersion: 1.14.0
+CurrentVersionCode: 10044
 ```
 
 Get the certificate fingerprint for `AllowedAPKSigningKeys` from a released APK:

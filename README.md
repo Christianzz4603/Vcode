@@ -67,6 +67,10 @@ are set, and publishes `Vcode-foss.apk` to the `foss-latest` release.
 
 * `foss`: the only flavor, without closed-source libraries and without Google Play services
 
+#### Library viewer (Rust)
+
+The library viewer is written in Rust (`native/disasm`). The Gradle build compiles it when `cargo`, the Rust targets (`rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android`) and the Android NDK (`ANDROID_NDK_HOME`) are installed, and leaves it out otherwise. The Rust code can be tested on its own with `cargo test` in `native/disasm`.
+
 See [docs/FDROID.md](docs/FDROID.md) for F-Droid, reproducible builds and the build recipe.
 
 ## Credits and license

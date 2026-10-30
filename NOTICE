@@ -18,5 +18,9 @@ Modifications made in Vcode:
  - Pinned bouncycastle and jsch to older versions to keep the build working
  - Removed the Google Play services flavor and its in-app update dependency
  - Release builds work without a signing key and leave dependency and VCS metadata out of the APK
+ - Added a command palette, a status bar, breadcrumbs, a Kotlin plugin API, browsing and editing of archives, DEX files and compiled XML, and a library viewer with an ARM64 disassembler written in Rust
+
+Third-party software added by Vcode: smali, baksmali and dexlib2 (Google's fork, BSD 3-clause license),
+yaxpeax-arm (0BSD license), object, cpp_demangle and rustc-demangle (Apache-2.0 or MIT license) and jni (MIT or Apache-2.0 license).
 
 The full text of the license is available in the LICENSE file.
