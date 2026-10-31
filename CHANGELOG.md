@@ -6,6 +6,11 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.15.0 (10045)
+
+* Pseudocode: the library viewer has a new pseudocode folder with a .c file for every function, made by the pure Rust port of the Ghidra decompiler (github.com/Christianzz4603/ghidra-decompiler, Apache-2.0) for ARM64 and ARM libraries. The last opened library is kept in memory so the next function opens faster, and the decompiler runs on a thread with a large stack.
+* The Rust library is now built for arm64-v8a and armeabi-v7a only (the x86_64 build is gone to keep the build time and the APK size down).
+
 ## 1.14.0 (10044)
 
 * Library viewer: a native library (.so), in the file browser or inside an APK, opens as a folder with info.txt (header and sections), symbols.txt, strings.txt, a functions folder with a file for every function and a code folder with the code in pieces. ARM64 code is disassembled, branch targets get the name of the function they point to, and calls through the PLT are named (for example memcpy@plt). C++ and Rust names are shown readable. Libraries are read only. Other CPU types show the information but not the code yet.

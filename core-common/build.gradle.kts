@@ -48,7 +48,6 @@ val nativeDir = rootProject.file("native/disasm")
 val rustTargets = listOf(
     Triple("arm64-v8a", "aarch64-linux-android", "aarch64-linux-android26"),
     Triple("armeabi-v7a", "armv7-linux-androideabi", "armv7a-linux-androideabi26"),
-    Triple("x86_64", "x86_64-linux-android", "x86_64-linux-android26"),
 )
 
 fun commandOutput(vararg command: String): String? {

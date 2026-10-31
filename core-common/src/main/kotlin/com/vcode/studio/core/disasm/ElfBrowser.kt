@@ -29,7 +29,14 @@ internal object ElfBrowser {
 
     private val CHUNK_NAME = Regex("^([0-9a-f]+)-([0-9a-f]+)\\..*$")
 
-    private class Function(val address: Long, val size: Long, val name: String, val readable: String, val fileName: String)
+    private class Function(
+        val address: Long,
+        val size: Long,
+        val name: String,
+        val readable: String,
+        val fileName: String,
+        val baseName: String,
+    )
 
     private class Chunk(val start: Long, val end: Long, val fileName: String)
 
@@ -43,9 +50,11 @@ internal object ElfBrowser {
                 ElfEntry("symbols.txt", false),
                 ElfEntry("strings.txt", false),
                 ElfEntry("functions", true),
+                ElfEntry("pseudocode", true),
                 ElfEntry("code", true),
             )
             "functions" -> functions(library).map { ElfEntry(it.fileName, false, it.size) }
+            "pseudocode" -> functions(library).map { ElfEntry(it.baseName + ".c", false, it.size) }
             "code" -> chunks(library).map { ElfEntry(it.fileName, false, it.end - it.start) }
             else -> emptyList()
         }
@@ -70,6 +79,18 @@ internal object ElfBrowser {
                     .append(", ").append(function.size).append(" bytes\n")
                 if (function.size > MAX_FUNCTION_BYTES) header.append("; only the first ").append(MAX_FUNCTION_BYTES).append(" bytes are shown\n")
                 header.toString() + NativeDisassembler.disassemble(path, function.address, function.address + length)
+            }
+            inner.startsWith("pseudocode/") -> {
+                val baseName = inner.removePrefix("pseudocode/").removeSuffix(".c")
+                val function = functions(library).firstOrNull { it.baseName == baseName }
+                    ?: throw IllegalArgumentException("Function not found")
+                val header = StringBuilder()
+                header.append("// ").append(function.readable).append('\n')
+                if (function.readable != function.name) header.append("// ").append(function.name).append('\n')
+                header.append("// address 0x").append(java.lang.Long.toHexString(function.address))
+                    .append(", ").append(function.size).append(" bytes\n")
+                header.append("// made by the Ghidra decompiler, check it against the disassembly\n\n")
+                header.toString() + NativeDisassembler.decompile(path, function.address)
             }
             inner.startsWith("code/") -> {
                 val chunk = chunks(library).firstOrNull { it.fileName == inner.removePrefix("code/") }
@@ -96,12 +117,14 @@ internal object ElfBrowser {
             if (parts.size < 4) continue
             val address = parts[0].toLongOrNull(16) ?: continue
             val size = parts[1].toLongOrNull(16) ?: continue
-            var fileName = sanitize(parts[2]) + ".asm"
+            var baseName = sanitize(parts[2])
+            var fileName = baseName + ".asm"
             if (!used.add(fileName)) {
-                fileName = sanitize(parts[2]) + "@" + parts[0] + ".asm"
+                baseName = baseName + "@" + parts[0]
+                fileName = baseName + ".asm"
                 used.add(fileName)
             }
-            result.add(Function(address, size, parts[2], parts[3], fileName))
+            result.add(Function(address, size, parts[2], parts[3], fileName, baseName))
         }
         return result
     }

@@ -8,6 +8,27 @@ use vcode_disasm::Library;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let library = Library::open(&args[1]).expect("open");
+    if args.len() > 3 && args[2] == "decompile" {
+        let address = u64::from_str_radix(&args[3], 16).unwrap();
+        println!("{}", vcode_disasm::decompile::decompile(&args[1], address).unwrap());
+        return;
+    }
+    if args.len() > 2 && args[2] == "decompile-sample" {
+        let functions = library.functions().unwrap();
+        let mut shown = 0;
+        for f in functions.iter().filter(|f| f.size >= 64 && f.size <= 600 && !f.name.contains("@plt")) {
+            let start = std::time::Instant::now();
+            match vcode_disasm::decompile::decompile(&args[1], f.addr) {
+                Ok(text) => println!("=== {} at {:x} ({} ms)\n{}", f.name, f.addr, start.elapsed().as_millis(), text),
+                Err(e) => println!("=== {} failed: {}", f.name, e),
+            }
+            shown += 1;
+            if shown >= 4 {
+                break;
+            }
+        }
+        return;
+    }
     if args.len() > 3 && args[2] == "raw" {
         let count: usize = args[3].parse().unwrap();
         let chunks = library.chunks().unwrap();

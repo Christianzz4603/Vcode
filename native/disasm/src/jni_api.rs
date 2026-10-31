@@ -110,3 +110,14 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_disa
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
     run(&mut env, || Library::open(&path)?.disassemble(start as u64, end as u64))
 }
+
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_decompile<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    address: jlong,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::decompile::decompile(&path, address as u64))
+}

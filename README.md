@@ -20,7 +20,7 @@ Website: [vcode-site.pages.dev](https://vcode-site.pages.dev)
 * Decompiling and editing: open a compiled AndroidManifest.xml (or other binary XML from an APK) as readable XML, edit it and save it back as binary XML, or open an `.apk` to see its decoded manifest and file list
 * DEX editing: open a `.dex` file, pick a class from the command palette, edit it as smali and apply the changes back into the file (uses smali and baksmali)
 * Archives as folders: tap a zip, jar, apk, aar or dex file in the file browser to browse it, edit files inside and save to write the archive again; DEX files show their classes in package folders as smali
-* Library viewer: open a native library (`.so`) as a folder with its info, symbols, strings and an ARM64 disassembly of every function (written in Rust)
+* Library viewer: open a native library (`.so`) as a folder with its info, symbols, strings, an ARM64 disassembly of every function and C like pseudocode made by the Ghidra decompiler (all written in Rust, for arm64-v8a and armeabi-v7a)
 * New Vcode design language: pill buttons, chip tabs, rounder fields and dialogs, flat toolbar and a navy and cyan palette
 * A GitHub Actions workflow that builds the FOSS APK and publishes it on the releases page
 * F-Droid friendly build: no Google Play services and no closed-source libraries, release builds work without a signing key, and a workflow that builds the app twice and compares the results (see [docs/FDROID.md](docs/FDROID.md))

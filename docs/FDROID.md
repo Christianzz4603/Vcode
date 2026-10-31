@@ -17,7 +17,8 @@ The build uses JDK 17 and the Gradle wrapper that is in the repository.
 
 The library viewer is written in Rust and lives in `native/disasm`. Its dependencies are free software (yaxpeax-arm under 0BSD, `object`, `cpp_demangle`, `rustc-demangle` and `jni` under Apache-2.0 or MIT) and `Cargo.lock` is in the repository.
 
-* `core-common/build.gradle.kts` builds it for `arm64-v8a`, `armeabi-v7a` and `x86_64` when `cargo`, the Rust targets `aarch64-linux-android`, `armv7-linux-androideabi` and `x86_64-linux-android`, and the Android NDK (`ANDROID_NDK_HOME`) are all available.
+* `core-common/build.gradle.kts` builds it for `arm64-v8a` and `armeabi-v7a` when `cargo`, the Rust targets `aarch64-linux-android` and `armv7-linux-androideabi`, and the Android NDK (`ANDROID_NDK_HOME`) are all available.
+* The pseudocode comes from [ghidra-decompiler](https://github.com/Christianzz4603/ghidra-decompiler), a pure Rust port of the Ghidra decompiler (Apache-2.0). It is a git dependency that is pinned to a commit in `native/disasm/Cargo.toml` and `Cargo.lock`. F-Droid builds without network access, so the crates have to be vendored (`cargo vendor`) for an F-Droid build.
 * When one of them is missing, the build leaves the library out and still succeeds, the library viewer then tells you that it is not part of the build.
 * The F-Droid build server has to provide Rust and the NDK for the library viewer to be included. Ask the fdroiddata maintainers how Rust apps get these in the recipe before you submit.
 * The **Reproducibility check** workflow installs the Rust targets too. On the 1.14.0 branch it built two identical unsigned APKs (sha256 `3bc8d8f87da2c0abf51c7ba3b90a1a33cf7bd93395205f067f29418e276e10ce`), with the Rust library inside.

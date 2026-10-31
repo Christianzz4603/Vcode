@@ -49,4 +49,8 @@ object NativeDisassembler {
 
     @JvmStatic
     external fun disassemble(path: String, start: Long, end: Long): String
+
+    /** C like pseudocode of the function at the address, made by the Rust port of the Ghidra decompiler. */
+    @JvmStatic
+    external fun decompile(path: String, address: Long): String
 }

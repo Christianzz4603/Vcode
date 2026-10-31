@@ -21,6 +21,6 @@ Modifications made in Vcode:
  - Added a command palette, a status bar, breadcrumbs, a Kotlin plugin API, browsing and editing of archives, DEX files and compiled XML, and a library viewer with an ARM64 disassembler written in Rust
 
 Third-party software added by Vcode: smali, baksmali and dexlib2 (Google's fork, BSD 3-clause license),
-yaxpeax-arm (0BSD license), object, cpp_demangle and rustc-demangle (Apache-2.0 or MIT license) and jni (MIT or Apache-2.0 license).
+yaxpeax-arm (0BSD license), ghidra-decompiler (Apache-2.0 license, a Rust port of the Ghidra decompiler), object, cpp_demangle and rustc-demangle (Apache-2.0 or MIT license) and jni (MIT or Apache-2.0 license).
 
 The full text of the license is available in the LICENSE file.

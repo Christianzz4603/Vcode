@@ -1,0 +1,2 @@
+- Library viewer: pseudocode folder with C like code for every function, made by the Ghidra decompiler (Rust port)
+- The Rust library is built for arm64-v8a and armeabi-v7a

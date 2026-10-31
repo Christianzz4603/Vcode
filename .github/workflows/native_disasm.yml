@@ -12,6 +12,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -42,6 +43,12 @@ jobs:
           LIB=$(find /tmp/arm/x -name 'libcapstone*.so*' | head -1)
           echo "Using $LIB"
           cargo run --release --example dump -- "$LIB" | head -150
+
+      - name: Decompile a few functions
+        working-directory: native/disasm
+        run: |
+          LIB=$(find /tmp/arm/x -name 'libcapstone*.so*' | head -1)
+          cargo run --release --example dump -- "$LIB" decompile-sample | head -150
 
       - name: Compare the instructions with Capstone
         working-directory: native/disasm
@@ -104,7 +111,7 @@ jobs:
           export CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER="$BIN/armv7a-linux-androideabi26-clang"
           export CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER="$BIN/x86_64-linux-android26-clang"
           export RUSTFLAGS="-C link-arg=-Wl,-z,max-page-size=16384"
-          for target in aarch64-linux-android armv7-linux-androideabi x86_64-linux-android; do
+          for target in aarch64-linux-android armv7-linux-androideabi; do
             cargo build --release --target "$target"
             ls -la "target/$target/release/libvcode_disasm.so"
           done

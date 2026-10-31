@@ -8,6 +8,7 @@ public class NativeDisassembler {
     public static native String functions(String path);
     public static native String chunks(String path);
     public static native String disassemble(String path, long start, long end);
+    public static native String decompile(String path, long address);
 
     public static void main(String[] args) {
         System.load(args[0]);
@@ -24,6 +25,9 @@ public class NativeDisassembler {
                 String text = disassemble(lib, start, start + 32);
                 System.out.println("disassembly of " + p[3] + ":\n" + text);
                 if (!text.contains("  ")) throw new RuntimeException("empty disassembly");
+                String pseudo = decompile(lib, start);
+                System.out.println("pseudocode:\n" + pseudo.substring(0, Math.min(500, pseudo.length())));
+                if (pseudo.isEmpty()) throw new RuntimeException("empty pseudocode");
                 break;
             }
         }
