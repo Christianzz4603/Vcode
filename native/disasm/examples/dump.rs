@@ -8,6 +8,15 @@ use vcode_disasm::Library;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let library = Library::open(&args[1]).expect("open");
+    if args.len() > 3 && args[2] == "report" {
+        println!("{}", vcode_disasm::analysis::report(&args[1], &args[3]).unwrap());
+        return;
+    }
+    if args.len() > 3 && args[2] == "xrefs" {
+        let address = u64::from_str_radix(&args[3], 16).unwrap();
+        println!("{}", vcode_disasm::analysis::function_header(&args[1], address, "// ").unwrap());
+        return;
+    }
     if args.len() > 3 && args[2] == "decompile" {
         let address = u64::from_str_radix(&args[3], 16).unwrap();
         println!("{}", vcode_disasm::decompile::decompile(&args[1], address).unwrap());

@@ -50,6 +50,20 @@ jobs:
           LIB=$(find /tmp/arm/x -name 'libcapstone*.so*' | head -1)
           cargo run --release --example dump -- "$LIB" decompile-sample | head -150
 
+      - name: Cross references and call graph
+        working-directory: native/disasm
+        run: |
+          LIB=$(find /tmp/arm/x -name 'libcapstone*.so*' | head -1)
+          for kind in imports exports xrefs callgraph; do
+            cargo run --release --example dump -- "$LIB" report "$kind" > "/tmp/report-$kind.txt"
+            echo "=== $kind: $(wc -l < /tmp/report-$kind.txt) lines"
+            head -25 "/tmp/report-$kind.txt"
+          done
+          ADDR=$(grep -m1 '^cs_open  ' /tmp/report-xrefs.txt | awk '{print $2}')
+          echo "=== header of cs_open at $ADDR"
+          cargo run --release --example dump -- "$LIB" xrefs "$ADDR" > /tmp/header.txt
+          cat /tmp/header.txt
+
       - name: Compare the instructions with Capstone
         working-directory: native/disasm
         run: |

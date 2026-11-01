@@ -49,6 +49,10 @@ internal object ElfBrowser {
                 ElfEntry("info.txt", false),
                 ElfEntry("symbols.txt", false),
                 ElfEntry("strings.txt", false),
+                ElfEntry("imports.txt", false),
+                ElfEntry("exports.txt", false),
+                ElfEntry("xrefs.txt", false),
+                ElfEntry("callgraph.txt", false),
                 ElfEntry("functions", true),
                 ElfEntry("pseudocode", true),
                 ElfEntry("code", true),
@@ -67,6 +71,10 @@ internal object ElfBrowser {
             inner == "info.txt" -> NativeDisassembler.info(path)
             inner == "symbols.txt" -> NativeDisassembler.symbols(path)
             inner == "strings.txt" -> NativeDisassembler.strings(path)
+            inner == "imports.txt" -> NativeDisassembler.report(path, "imports")
+            inner == "exports.txt" -> NativeDisassembler.report(path, "exports")
+            inner == "xrefs.txt" -> NativeDisassembler.report(path, "xrefs")
+            inner == "callgraph.txt" -> NativeDisassembler.report(path, "callgraph")
             inner.startsWith("functions/") -> {
                 val fileName = inner.removePrefix("functions/")
                 val function = functions(library).firstOrNull { it.fileName == fileName }
@@ -78,6 +86,7 @@ internal object ElfBrowser {
                 header.append("; address 0x").append(java.lang.Long.toHexString(function.address))
                     .append(", ").append(function.size).append(" bytes\n")
                 if (function.size > MAX_FUNCTION_BYTES) header.append("; only the first ").append(MAX_FUNCTION_BYTES).append(" bytes are shown\n")
+                header.append(references(path, function.address, "; "))
                 header.toString() + NativeDisassembler.disassemble(path, function.address, function.address + length)
             }
             inner.startsWith("pseudocode/") -> {
@@ -89,7 +98,9 @@ internal object ElfBrowser {
                 if (function.readable != function.name) header.append("// ").append(function.name).append('\n')
                 header.append("// address 0x").append(java.lang.Long.toHexString(function.address))
                     .append(", ").append(function.size).append(" bytes\n")
-                header.append("// made by the Ghidra decompiler, check it against the disassembly\n\n")
+                header.append("// made by the Ghidra decompiler, check it against the disassembly\n")
+                header.append(references(path, function.address, "// "))
+                header.append('\n')
                 header.toString() + NativeDisassembler.decompile(path, function.address)
             }
             inner.startsWith("code/") -> {
@@ -98,6 +109,15 @@ internal object ElfBrowser {
                 NativeDisassembler.disassemble(path, chunk.start, chunk.end)
             }
             else -> throw IllegalArgumentException("Not found")
+        }
+    }
+
+    /** Callers, callees and strings of a function as comment lines, empty when they are not available. */
+    private fun references(path: String, address: Long, comment: String): String {
+        return try {
+            NativeDisassembler.xrefs(path, address, comment)
+        } catch (e: Exception) {
+            ""
         }
     }
 

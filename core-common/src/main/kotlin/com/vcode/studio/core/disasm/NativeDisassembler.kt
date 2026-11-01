@@ -53,4 +53,12 @@ object NativeDisassembler {
     /** C like pseudocode of the function at the address, made by the Rust port of the Ghidra decompiler. */
     @JvmStatic
     external fun decompile(path: String, address: Long): String
+
+    /** A report about the whole library: `imports`, `exports`, `xrefs` or `callgraph`. ARM64 only. */
+    @JvmStatic
+    external fun report(path: String, kind: String): String
+
+    /** Comment lines with the callers, callees and strings of the function at the address, each line starts with `comment`. */
+    @JvmStatic
+    external fun xrefs(path: String, address: Long, comment: String): String
 }

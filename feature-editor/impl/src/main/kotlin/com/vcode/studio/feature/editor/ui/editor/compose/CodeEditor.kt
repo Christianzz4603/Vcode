@@ -32,6 +32,7 @@ import com.vcode.studio.feature.editor.ui.editor.model.EditorSettings
 import com.vcode.studio.feature.editor.ui.editor.view.CodeEditor
 import com.vcode.studio.feature.editor.ui.editor.view.SoraEditorApi
 import com.vcode.studio.feature.editor.ui.editor.view.VcodeScheme
+import com.vcode.studio.feature.editor.data.model.LanguageScope
 import com.vcode.studio.feature.editor.ui.editor.view.createFromRegistry
 import com.vcode.studio.feature.editor.ui.editor.view.deleteLine
 import com.vcode.studio.feature.editor.ui.editor.view.endOfLine
@@ -47,6 +48,9 @@ import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.util.regex.RegexBackrefGrammar
 import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
 import io.github.rosemoe.sora.widget.subscribeAlways
+
+/** Files longer than this get no syntax highlighting, word wrap or bracket and block lines, so that they open. */
+private const val LARGE_FILE_CHARS = 5_000_000
 
 @Composable
 internal fun CodeEditor(
@@ -106,14 +110,15 @@ internal fun CodeEditor(
     AndroidView(
         factory = { view },
         update = { editor ->
+            val large = content.length > LARGE_FILE_CHARS
             editor.setTextSize(settings.fontSize)
-            editor.isWordwrap = settings.wordWrap
+            editor.isWordwrap = settings.wordWrap && !large
             editor.props.stickyScroll = settings.stickyScroll
             editor.isScalable = settings.pinchZoom
             editor.isLineNumberEnabled = settings.lineNumbers
             editor.isHighlightCurrentLine = settings.highlightCurrentLine
-            editor.isHighlightBracketPair = settings.highlightMatchingDelimiters
-            editor.isBlockLineEnabled = settings.highlightCodeBlocks
+            editor.isHighlightBracketPair = settings.highlightMatchingDelimiters && !large
+            editor.isBlockLineEnabled = settings.highlightCodeBlocks && !large
             editor.isEditable = !settings.readOnly
             editor.tabWidth = settings.tabWidth
             editor.typefaceText = settings.fontType
@@ -125,8 +130,8 @@ internal fun CodeEditor(
             editor.isLigatureEnabled = settings.fontLigatures
 
             val editorLanguage = editor.createFromRegistry(
-                language = language,
-                codeCompletion = settings.codeCompletion,
+                language = if (large) LanguageScope.TEXT else language,
+                codeCompletion = settings.codeCompletion && !large,
                 autoIndentation = settings.autoIndentation,
                 autoClosePairs = settings.autoClosePairs,
                 useTab = !settings.useSpacesInsteadOfTabs,

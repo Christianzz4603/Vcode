@@ -121,3 +121,30 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_deco
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
     run(&mut env, || crate::decompile::decompile(&path, address as u64))
 }
+
+/// A report about the whole library: `imports`, `exports`, `xrefs` or `callgraph`.
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_report<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    kind: JString<'local>,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    let Some(kind) = read_path(&mut env, &kind) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::analysis::report(&path, &kind))
+}
+
+/// Comment lines with the callers, callees and strings of the function at the address.
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_xrefs<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    address: jlong,
+    comment: JString<'local>,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    let Some(comment) = read_path(&mut env, &comment) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::analysis::function_header(&path, address as u64, &comment))
+}

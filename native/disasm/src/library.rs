@@ -48,7 +48,7 @@ impl Library {
         Ok(Library { data })
     }
 
-    fn file(&self) -> Result<object::File<'_>, String> {
+    pub(crate) fn file(&self) -> Result<object::File<'_>, String> {
         object::File::parse(&*self.data).map_err(|e| e.to_string())
     }
 
@@ -233,7 +233,7 @@ fn is_text_byte(b: u8) -> bool {
     (0x20..0x7f).contains(&b) || b == b'\t'
 }
 
-fn symbolize(labels: &BTreeMap<u64, Func>, target: u64) -> Option<String> {
+pub(crate) fn symbolize(labels: &BTreeMap<u64, Func>, target: u64) -> Option<String> {
     let (addr, func) = labels.range(..=target).next_back()?;
     let offset = target - addr;
     if offset == 0 {
@@ -245,7 +245,7 @@ fn symbolize(labels: &BTreeMap<u64, Func>, target: u64) -> Option<String> {
     }
 }
 
-fn functions_of(file: &object::File<'_>) -> Vec<Func> {
+pub(crate) fn functions_of(file: &object::File<'_>) -> Vec<Func> {
     let mut map: BTreeMap<u64, Func> = BTreeMap::new();
     for sym in file.symbols().chain(file.dynamic_symbols()) {
         if sym.kind() != SymbolKind::Text || sym.is_undefined() {
