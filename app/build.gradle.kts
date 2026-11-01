@@ -32,11 +32,12 @@ android {
 
     defaultConfig {
         applicationId = if (toolz) "com.software.toolz" else "com.vcode.studio"
-        versionCode = 10048
-        versionName = "2.0.0"
+        versionCode = 10049
+        versionName = "2.0.1"
         manifestPlaceholders["appLabel"] = if (toolz) "Software Toolz" else "Vcode"
         manifestPlaceholders["appIcon"] = if (toolz) "@mipmap/ic_launcher_toolz" else "@mipmap/ic_launcher"
         manifestPlaceholders["appRoundIcon"] = if (toolz) "@mipmap/ic_launcher_toolz_round" else "@mipmap/ic_launcher_round"
+        manifestPlaceholders["appTheme"] = if (toolz) "@style/SplashThemeToolz" else "@style/SplashTheme"
         buildConfigField("boolean", "TOOLZ", toolz.toString())
     }
     compileOptions {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SplashThemeToolz" parent="SplashTheme">
+        <item name="windowSplashScreenBackground">@color/toolz_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/toolz_splash_icon</item>
+    </style>
+</resources>
