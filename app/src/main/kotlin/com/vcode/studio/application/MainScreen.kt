@@ -40,7 +40,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import com.vcode.studio.BuildConfig
 import com.vcode.studio.application.extensions.toComposeColors
+import com.vcode.studio.application.toolz.ToolzShell
 import com.vcode.studio.application.splash.SplashScreen
 import com.vcode.studio.application.update.KEY_INSTALL_UPDATE
 import com.vcode.studio.application.update.rememberInAppUpdate
@@ -72,6 +74,7 @@ internal fun MainScreen(
         Surface(color = VcodeTheme.colors.colorBackgroundPrimary) {
             val dialogStrategy = remember { DialogSceneStrategy<NavKey>() }
 
+            val navContent: @Composable () -> Unit = {
             NavDisplay(
                 backStack = navigator.backStack,
                 onBack = { navigator.goBack() },
@@ -95,6 +98,12 @@ internal fun MainScreen(
                 },
                 modifier = Modifier.fillMaxSize()
             )
+            }
+            if (BuildConfig.TOOLZ) {
+                ToolzShell(onOpenInEditor = viewModel::openFile, vcodeContent = navContent)
+            } else {
+                navContent()
+            }
         }
     }
 

@@ -17,6 +17,7 @@
 package com.vcode.studio.application
 
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -72,6 +74,12 @@ internal class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val fileUri = intent.data ?: return@launch
             editorInteractor.openFileUri(fileUri)
+        }
+    }
+
+    fun openFile(file: File) {
+        viewModelScope.launch {
+            editorInteractor.openFileUri(Uri.fromFile(file))
         }
     }
 

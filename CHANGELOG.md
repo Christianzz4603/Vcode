@@ -6,6 +6,13 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.0.0 (10048)
+
+* Software Toolz: a second app, built from the same code, with the application id com.software.toolz. It has a bottom bar with Files, Vcode, Disassembler and Decompiler. Vcode itself stays a separate app (com.vcode.studio).
+* Files is a file manager: browse, select, copy, cut, paste, rename, delete, compress to ZIP and extract. The tools menu of a file opens text files in the Vcode tab, sends .so libraries and APKs to the Disassembler and Decompiler tabs, and signs APKs.
+* The Disassembler and Decompiler tabs list the functions of a library (or of the libraries inside an APK) with search, show the disassembly or the pseudocode, and show info, symbols, strings, imports, exports, xrefs and the call graph.
+* Every release has two APKs: Software-Toolz.apk (shown as Software Toolz.apk) and Vcode-foss.apk (shown as Vcode Foss.apk).
+
 ## 1.17.0 (10047)
 
 * Cross references and call graph for native ARM64 libraries: new files imports.txt, exports.txt, xrefs.txt (who calls every function and who points to every string) and callgraph.txt, and every function in functions/ and pseudocode/ starts with comment lines for its callers, the functions it calls and the strings it uses.

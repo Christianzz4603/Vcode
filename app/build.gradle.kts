@@ -24,13 +24,20 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// The same code is built as two apps: Vcode (default) and Software Toolz (-Pedition=toolz)
+val toolz = providers.gradleProperty("edition").orNull == "toolz"
+
 android {
     namespace = "com.vcode.studio"
 
     defaultConfig {
-        applicationId = "com.vcode.studio"
-        versionCode = 10047
-        versionName = "1.17.0"
+        applicationId = if (toolz) "com.software.toolz" else "com.vcode.studio"
+        versionCode = 10048
+        versionName = "2.0.0"
+        manifestPlaceholders["appLabel"] = if (toolz) "Software Toolz" else "Vcode"
+        manifestPlaceholders["appIcon"] = if (toolz) "@mipmap/ic_launcher_toolz" else "@mipmap/ic_launcher"
+        manifestPlaceholders["appRoundIcon"] = if (toolz) "@mipmap/ic_launcher_toolz_round" else "@mipmap/ic_launcher_round"
+        buildConfigField("boolean", "TOOLZ", toolz.toString())
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -43,6 +50,7 @@ android {
         }
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     // Keep the APK free of Google-signed dependency metadata and git info, so that it can be rebuilt
@@ -93,6 +101,9 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
 
     coreLibraryDesugaring(libs.android.tools.desugaring)
+
+    implementation(libs.google.apksig)
+    implementation(libs.bouncycastle.bcpkix)
 
     implementation(libs.google.dagger)
     ksp(libs.google.dagger.compiler)
