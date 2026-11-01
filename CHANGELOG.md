@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 1.16.0 (10046)
+
+* Pseudocode is easier to read: the Ghidra type names become C types (uint4 is uint32_t, xunknown8 is uint64_t), calls through the GOT are plain calls (calloc(1,0xb8) instead of (*calloc@got)(1,0xb8)), constants that point to a string get a comment with the text, and the "Removing unreachable block" warnings are one line. Quoted text and comments of the decompiler are never changed.
+
 ## 1.15.0 (10045)
 
 * Pseudocode: the library viewer has a new pseudocode folder with a .c file for every function, made by the pure Rust port of the Ghidra decompiler (github.com/Christianzz4603/ghidra-decompiler, Apache-2.0) for ARM64 and ARM libraries. The last opened library is kept in memory so the next function opens faster, and the decompiler runs on a thread with a large stack.

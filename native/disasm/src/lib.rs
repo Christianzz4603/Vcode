@@ -5,6 +5,7 @@
 pub mod arm64;
 pub mod decompile;
 pub mod library;
+pub mod pseudo;
 mod jni_api;
 
 pub use library::Library;

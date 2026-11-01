@@ -1,0 +1,1 @@
+- Pseudocode: C types, plain calls through the GOT, comments with strings, fewer warnings
