@@ -59,10 +59,13 @@ jobs:
             echo "=== $kind: $(wc -l < /tmp/report-$kind.txt) lines"
             head -25 "/tmp/report-$kind.txt"
           done
-          ADDR=$(grep -m1 '^cs_open  ' /tmp/report-xrefs.txt | awk '{print $2}')
-          echo "=== header of cs_open at $ADDR"
+          ADDR=$(sed -n 2p /tmp/report-xrefs.txt | awk '{print $NF}')
+          echo "=== header of the first function in xrefs.txt at $ADDR"
           cargo run --release --example dump -- "$LIB" xrefs "$ADDR" > /tmp/header.txt
           cat /tmp/header.txt
+          ADDR=$(grep -m1 '^cs_disasm  ' /tmp/report-xrefs.txt | awk '{print $NF}')
+          echo "=== header of cs_disasm at $ADDR"
+          if [ -n "$ADDR" ]; then cargo run --release --example dump -- "$LIB" xrefs "$ADDR"; fi
 
       - name: Compare the instructions with Capstone
         working-directory: native/disasm

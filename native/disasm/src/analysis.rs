@@ -58,6 +58,8 @@ pub struct Analysis {
     imports: Vec<String>,
     /// Address, size, name and kind.
     exports: Vec<(u64, u64, String, String)>,
+    /// The GOT slots of the imported functions by address.
+    got: BTreeMap<u64, String>,
 }
 
 fn sext(value: u32, bits: u32) -> i64 {
@@ -136,12 +138,13 @@ impl Analysis {
         strings: Strings,
         imports: Vec<String>,
         exports: Vec<(u64, u64, String, String)>,
+        got: BTreeMap<u64, String>,
     ) -> Analysis {
         refs.sort_by_key(|r| (r.to, r.from));
         refs.dedup();
         let mut from_index: Vec<u32> = (0..refs.len() as u32).collect();
         from_index.sort_by_key(|&i| refs[i as usize].from);
-        Analysis { labels, refs, from_index, strings, imports, exports }
+        Analysis { labels, refs, from_index, strings, imports, exports, got }
     }
 
     /// The references to an address.
@@ -171,13 +174,35 @@ impl Analysis {
         }
     }
 
-    /// The functions that a function calls or jumps to.
+    /// Whether an address is in a stub of the PLT.
+    fn in_plt(&self, address: u64) -> bool {
+        matches!(
+            self.labels.range(..=address).next_back(),
+            Some((_, f)) if f.name.ends_with("@plt") && address < f.addr + f.size.max(1)
+        )
+    }
+
+    /// How often the code outside of the PLT points to a GOT slot.
+    fn got_uses(&self, address: u64) -> usize {
+        self.refs_to(address).iter().filter(|r| !self.in_plt(r.from)).count()
+    }
+
+    /// The functions that a function calls or jumps to. Imported functions that are reached through
+    /// the GOT are included.
     fn callees(&self, func: &Func) -> Vec<String> {
+        if func.name.ends_with("@plt") {
+            return Vec::new();
+        }
         let end = func.addr + func.size;
         let mut seen = HashSet::new();
         let mut names = Vec::new();
         for r in self.refs_from(func.addr, end) {
             if r.kind == Kind::Data {
+                if let Some(name) = self.got.get(&r.to) {
+                    if seen.insert(name.clone()) {
+                        names.push(name.clone());
+                    }
+                }
                 continue;
             }
             if r.kind == Kind::Jump && (!self.labels.contains_key(&r.to) || (r.to >= func.addr && r.to < end)) {
@@ -264,12 +289,17 @@ impl Analysis {
                 plt.insert(base, f.addr);
             }
         }
+        let mut got_used: HashMap<&str, usize> = HashMap::new();
+        for (address, name) in &self.got {
+            *got_used.entry(name.as_str()).or_insert(0) += self.got_uses(*address);
+        }
         let mut names = self.imports.clone();
         names.sort();
         names.dedup();
         let mut out = String::new();
         for name in &names {
-            let used = plt.get(name.as_str()).map(|a| self.refs_to(*a).len()).unwrap_or(0);
+            let used = plt.get(name.as_str()).map(|a| self.refs_to(*a).len()).unwrap_or(0)
+                + got_used.get(name.as_str()).copied().unwrap_or(0);
             let readable = demangle(name);
             let shown = if readable != *name { format!("{}  ({})", name, readable) } else { name.clone() };
             if used > 0 {
@@ -403,8 +433,26 @@ impl Library {
                 exports.push((sym.address(), sym.size(), name.to_string(), format!("{:?}", sym.kind()).to_lowercase()));
             }
         }
+        let mut symbol_names: HashMap<usize, String> = HashMap::new();
+        for sym in file.dynamic_symbols() {
+            if let Ok(name) = sym.name() {
+                symbol_names.insert(sym.index().0, name.to_string());
+            }
+        }
+        let mut got = BTreeMap::new();
+        if let Some(relocations) = file.dynamic_relocations() {
+            for (offset, relocation) in relocations {
+                if let object::RelocationTarget::Symbol(index) = relocation.target() {
+                    if let Some(name) = symbol_names.get(&index.0) {
+                        if !name.is_empty() {
+                            got.insert(offset, name.clone());
+                        }
+                    }
+                }
+            }
+        }
         let strings = string_table(&self.strings_text()?);
-        Ok(Analysis::new(labels, refs, strings, imports, exports))
+        Ok(Analysis::new(labels, refs, strings, imports, exports, got))
     }
 }
 
@@ -497,31 +545,34 @@ mod tests {
         let refs = vec![
             Xref { from: 0x1008, to: 0x2000, kind: Kind::Call },
             Xref { from: 0x1010, to: 0x5000, kind: Kind::Data },
+            Xref { from: 0x1018, to: 0x6000, kind: Kind::Data },
         ];
         let mut strings = Strings::new();
         strings.insert(0x5000, "hello".to_string());
         let exports = vec![(0x2000, 0x10, "callee".to_string(), "text".to_string())];
-        Analysis::new(labels, refs, strings, vec!["malloc".to_string()], exports)
+        let mut got = BTreeMap::new();
+        got.insert(0x6000, "malloc".to_string());
+        Analysis::new(labels, refs, strings, vec!["malloc".to_string()], exports, got)
     }
 
     #[test]
     fn function_headers() {
         let a = sample();
         assert_eq!(a.function_header(0x2000, "// "), "// xrefs to this function (1): caller\n");
-        assert_eq!(a.function_header(0x1000, "; "), "; calls (1): callee\n; strings (1): \"hello\"\n");
+        assert_eq!(a.function_header(0x1000, "; "), "; calls (2): callee, malloc\n; strings (1): \"hello\"\n");
         assert_eq!(a.function_header(0x3000, "; "), "");
     }
 
     #[test]
     fn reports() {
         let a = sample();
-        assert_eq!(a.report("imports").unwrap(), "malloc\n");
+        assert_eq!(a.report("imports").unwrap(), "malloc  [1 references]\n");
         assert!(a.report("exports").unwrap().contains("callee"));
         let xrefs = a.report("xrefs").unwrap();
         assert!(xrefs.contains("callee  2000"), "{}", xrefs);
         assert!(xrefs.contains("  from caller+0x8  call"), "{}", xrefs);
         assert!(xrefs.contains("5000  \"hello\""), "{}", xrefs);
-        assert_eq!(a.report("callgraph").unwrap(), "caller -> callee\n");
+        assert_eq!(a.report("callgraph").unwrap(), "caller -> callee, malloc\n");
         assert!(a.report("nothing").is_err());
     }
 }
