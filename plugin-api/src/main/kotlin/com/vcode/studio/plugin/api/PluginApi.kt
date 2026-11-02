@@ -22,7 +22,7 @@ import android.content.Context
  * Version of the plugin API. A plugin declares the version it was built for with `apiVersion`
  * in its plugin.json, and Vcode refuses plugins that need a newer version than it supports.
  */
-const val PLUGIN_API_VERSION = 1
+const val PLUGIN_API_VERSION = 2
 
 /**
  * Entry point of a Kotlin plugin. The class named in `code.main` of plugin.json has to extend
@@ -49,6 +49,9 @@ object PluginPermissions {
     const val EDITOR_WRITE = "editor.write"
     const val KEYWORDS = "keywords"
     const val FILE_TYPES = "file.types"
+    const val FILE_ACTIONS = "file.actions"
+    const val LIBRARY_TOOLS = "library.tools"
+    const val LIBRARY_READ = "library.read"
 
     val ALL: List<String> = listOf(
         COMMANDS,
@@ -58,6 +61,9 @@ object PluginPermissions {
         EDITOR_WRITE,
         KEYWORDS,
         FILE_TYPES,
+        FILE_ACTIONS,
+        LIBRARY_TOOLS,
+        LIBRARY_READ,
     )
 
     fun describe(permission: String): String {
@@ -69,6 +75,9 @@ object PluginPermissions {
             EDITOR_WRITE -> "Change the text of the open file"
             KEYWORDS -> "Add code completion keywords"
             FILE_TYPES -> "Link file extensions to languages"
+            FILE_ACTIONS -> "Add actions to the tools menu of files"
+            LIBRARY_TOOLS -> "Add tools to the disassembler and decompiler"
+            LIBRARY_READ -> "Read native libraries (functions, disassembly, pseudocode, reports)"
             else -> permission
         }
     }
@@ -88,6 +97,37 @@ fun interface ConfirmCallback {
     fun onResult(accepted: Boolean)
 }
 
+fun interface FileActionHandler {
+    /**
+     * Runs the action for the file at [path]. Called on a background thread, it may take a while.
+     * Returns the text to show to the user, or null to show only a short "Done".
+     */
+    fun run(path: String): String?
+}
+
+fun interface LibraryToolHandler {
+    /**
+     * Runs the tool for the native library at [libraryPath]. Called on a background thread, it may take a while.
+     * Returns the text that is shown in the disassembler or decompiler tab.
+     */
+    fun run(libraryPath: String): String
+}
+
+/** Reads native libraries (ELF files with ARM64 code). Needs [PluginPermissions.LIBRARY_READ]. All calls block. */
+interface LibraryApi {
+    fun isLibrary(path: String): Boolean
+
+    /** Names of the functions of the library. */
+    fun functions(path: String): List<String>
+
+    fun disassembly(path: String, function: String): String
+
+    fun pseudocode(path: String, function: String): String
+
+    /** One of info.txt, symbols.txt, strings.txt, imports.txt, exports.txt, xrefs.txt and callgraph.txt. */
+    fun report(path: String, name: String): String
+}
+
 interface PluginHost {
     /** Version of the plugin API of this Vcode. */
     val apiVersion: Int
@@ -102,6 +142,9 @@ interface PluginHost {
 
     val ui: UiApi
 
+    /** Native libraries. Needs [PluginPermissions.LIBRARY_READ]. */
+    val library: LibraryApi
+
     fun hasPermission(permission: String): Boolean
 
     /** Adds an entry to the command palette. Needs [PluginPermissions.COMMANDS]. */
@@ -115,6 +158,15 @@ interface PluginHost {
 
     /** Links a file extension such as ".foo" to a language name. Needs [PluginPermissions.FILE_TYPES]. */
     fun registerFileExtension(extension: String, language: String)
+
+    /**
+     * Adds an action to the tools menu of files in the file manager of Toolix. [extensions] are file
+     * extensions without the dot, an empty list or "*" means every file. Needs [PluginPermissions.FILE_ACTIONS].
+     */
+    fun registerFileAction(id: String, title: String, extensions: List<String>, handler: FileActionHandler)
+
+    /** Adds a button to the disassembler and decompiler tabs of Toolix. Needs [PluginPermissions.LIBRARY_TOOLS]. */
+    fun registerLibraryTool(id: String, title: String, handler: LibraryToolHandler)
 
     fun log(message: String)
 }

@@ -16,6 +16,8 @@
 
 package com.vcode.studio.sample
 
+import com.vcode.studio.plugin.api.FileActionHandler
+import com.vcode.studio.plugin.api.LibraryToolHandler
 import com.vcode.studio.plugin.api.PluginHost
 import com.vcode.studio.plugin.api.TextProvider
 import com.vcode.studio.plugin.api.VcodePlugin
@@ -45,6 +47,24 @@ class HelloPlugin : VcodePlugin() {
             }
         })
         host.registerStatusItem("hello", TextProvider { "Hello plugin" })
+        // API 2: an action in the tools menu of text files in the Toolix file manager
+        host.registerFileAction(
+            "line-count",
+            "Count lines",
+            listOf("txt", "md", "kt", "java", "py", "c", "cpp", "json"),
+            FileActionHandler { path ->
+                val file = java.io.File(path)
+                file.useLines { it.count() }.toString() + " lines in " + file.name
+            },
+        )
+        // API 2: a button in the disassembler and decompiler tabs of Toolix
+        host.registerLibraryTool(
+            "function-count",
+            "Function count",
+            LibraryToolHandler { path ->
+                "The library has " + host.library.functions(path).size + " functions"
+            },
+        )
         host.log("Loaded")
     }
 }

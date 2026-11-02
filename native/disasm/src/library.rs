@@ -4,6 +4,8 @@
 
 use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write;
+use std::sync::{Arc, Mutex, OnceLock};
+use std::time::SystemTime;
 
 use object::{Architecture, Object, ObjectSection, ObjectSymbol, SectionKind, SymbolKind};
 
@@ -22,7 +24,22 @@ pub struct Func {
 
 pub struct Library {
     data: Vec<u8>,
+    /// The functions are read from the symbols once and kept.
+    functions: OnceLock<Vec<Func>>,
 }
+
+/// The library that was opened last, so that the next call does not read the whole file again.
+struct OpenLibrary {
+    path: String,
+    length: u64,
+    modified: Option<SystemTime>,
+    library: Arc<Library>,
+}
+
+static OPEN: Mutex<Option<OpenLibrary>> = Mutex::new(None);
+
+/// Libraries bigger than this are read again for every call, so that they do not stay in memory.
+const MAX_CACHED: u64 = 128 * 1024 * 1024;
 
 /// The readable form of a symbol name.
 pub fn demangle(name: &str) -> String {
@@ -38,14 +55,29 @@ pub fn demangle(name: &str) -> String {
 }
 
 impl Library {
-    pub fn open(path: &str) -> Result<Library, String> {
-        let size = std::fs::metadata(path).map_err(|e| format!("Cannot read {}: {}", path, e))?.len();
+    pub fn open(path: &str) -> Result<Arc<Library>, String> {
+        let meta = std::fs::metadata(path).map_err(|e| format!("Cannot read {}: {}", path, e))?;
+        let size = meta.len();
+        let modified = meta.modified().ok();
         if size > MAX_FILE {
             return Err("The library is too big".to_string());
         }
+        {
+            let guard = OPEN.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+            if let Some(open) = guard.as_ref() {
+                if open.path == path && open.length == size && open.modified == modified {
+                    return Ok(open.library.clone());
+                }
+            }
+        }
         let data = std::fs::read(path).map_err(|e| format!("Cannot read {}: {}", path, e))?;
         object::File::parse(&*data).map_err(|e| format!("This is not a supported library: {}", e))?;
-        Ok(Library { data })
+        let library = Arc::new(Library { data, functions: OnceLock::new() });
+        if size <= MAX_CACHED {
+            let mut guard = OPEN.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+            *guard = Some(OpenLibrary { path: path.to_string(), length: size, modified, library: library.clone() });
+        }
+        Ok(library)
     }
 
     pub(crate) fn file(&self) -> Result<object::File<'_>, String> {
@@ -96,8 +128,12 @@ impl Library {
     }
 
     pub fn functions(&self) -> Result<Vec<Func>, String> {
+        if let Some(list) = self.functions.get() {
+            return Ok(list.clone());
+        }
         let file = self.file()?;
-        Ok(functions_of(&file))
+        let list = functions_of(&file);
+        Ok(self.functions.get_or_init(|| list).clone())
     }
 
     /// One line per symbol.

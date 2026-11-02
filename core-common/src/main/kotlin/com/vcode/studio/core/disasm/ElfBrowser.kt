@@ -129,7 +129,26 @@ internal object ElfBrowser {
         return clean.toString().take(150)
     }
 
+    private class FunctionCache(val path: String, val length: Long, val modified: Long, val list: List<Function>)
+
+    @Volatile
+    private var functionCache: FunctionCache? = null
+
+    /** The functions of the library, read from the native code once and kept until the file changes. */
     private fun functions(library: File): List<Function> {
+        val path = library.absolutePath
+        val length = library.length()
+        val modified = library.lastModified()
+        val cached = functionCache
+        if (cached != null && cached.path == path && cached.length == length && cached.modified == modified) {
+            return cached.list
+        }
+        val list = readFunctions(library)
+        functionCache = FunctionCache(path, length, modified, list)
+        return list
+    }
+
+    private fun readFunctions(library: File): List<Function> {
         val used = HashSet<String>()
         val result = ArrayList<Function>()
         for (line in NativeDisassembler.functions(library.absolutePath).lineSequence()) {

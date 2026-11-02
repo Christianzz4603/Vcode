@@ -20,8 +20,13 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import com.vcode.studio.core.disasm.NativeFunction
+import com.vcode.studio.core.disasm.NativeLibraries
 import com.vcode.studio.plugin.api.ConfirmCallback
 import com.vcode.studio.plugin.api.EditorApi
+import com.vcode.studio.plugin.api.FileActionHandler
+import com.vcode.studio.plugin.api.LibraryApi
+import com.vcode.studio.plugin.api.LibraryToolHandler
 import com.vcode.studio.plugin.api.PLUGIN_API_VERSION
 import com.vcode.studio.plugin.api.PluginHost
 import com.vcode.studio.plugin.api.PluginPermissions
@@ -57,6 +62,27 @@ data class PluginStatusItem(
     val provider: TextProvider,
 )
 
+data class PluginFileAction(
+    val pluginId: String,
+    val id: String,
+    val title: String,
+    /** Lower case extensions without the dot, empty or "*" for every file. */
+    val extensions: Set<String>,
+    val handler: FileActionHandler,
+) {
+    fun matches(fileName: String): Boolean {
+        if (extensions.isEmpty() || "*" in extensions) return true
+        return fileName.substringAfterLast('.', "").lowercase() in extensions
+    }
+}
+
+data class PluginLibraryTool(
+    val pluginId: String,
+    val id: String,
+    val title: String,
+    val handler: LibraryToolHandler,
+)
+
 sealed interface PluginDialog {
     data class Alert(val title: String, val message: String) : PluginDialog
 
@@ -83,6 +109,12 @@ object PluginRegistry {
     private val _statusItems = MutableStateFlow<List<PluginStatusItem>>(emptyList())
     val statusItems: StateFlow<List<PluginStatusItem>> = _statusItems.asStateFlow()
 
+    private val _fileActions = MutableStateFlow<List<PluginFileAction>>(emptyList())
+    val fileActions: StateFlow<List<PluginFileAction>> = _fileActions.asStateFlow()
+
+    private val _libraryTools = MutableStateFlow<List<PluginLibraryTool>>(emptyList())
+    val libraryTools: StateFlow<List<PluginLibraryTool>> = _libraryTools.asStateFlow()
+
     private val _dialog = MutableStateFlow<PluginDialog?>(null)
     val dialog: StateFlow<PluginDialog?> = _dialog.asStateFlow()
 
@@ -102,9 +134,49 @@ object PluginRegistry {
         }
     }
 
+    internal fun addFileAction(action: PluginFileAction) {
+        _fileActions.update { list ->
+            list.filterNot { it.pluginId == action.pluginId && it.id == action.id } + action
+        }
+    }
+
+    internal fun addLibraryTool(tool: PluginLibraryTool) {
+        _libraryTools.update { list ->
+            list.filterNot { it.pluginId == tool.pluginId && it.id == tool.id } + tool
+        }
+    }
+
     internal fun clearPlugin(pluginId: String) {
         _commands.update { list -> list.filterNot { it.pluginId == pluginId } }
         _statusItems.update { list -> list.filterNot { it.pluginId == pluginId } }
+        _fileActions.update { list -> list.filterNot { it.pluginId == pluginId } }
+        _libraryTools.update { list -> list.filterNot { it.pluginId == pluginId } }
+    }
+
+    /**
+     * Runs a file action of a plugin on the current thread, which should not be the main thread.
+     * A crash inside the plugin becomes an IllegalStateException that names the plugin.
+     */
+    fun runFileAction(action: PluginFileAction, path: String): String? {
+        return try {
+            action.handler.run(path)
+        } catch (t: Throwable) {
+            throw failure(action.pluginId, t)
+        }
+    }
+
+    /** Runs a library tool of a plugin, see [runFileAction]. */
+    fun runLibraryTool(tool: PluginLibraryTool, path: String): String {
+        return try {
+            tool.handler.run(path)
+        } catch (t: Throwable) {
+            throw failure(tool.pluginId, t)
+        }
+    }
+
+    private fun failure(pluginId: String, throwable: Throwable): IllegalStateException {
+        Timber.e(throwable, "Plugin %s failed", pluginId)
+        return IllegalStateException("Plugin " + pluginId + ": " + (throwable.message ?: throwable.javaClass.simpleName))
     }
 
     internal fun showDialog(dialog: PluginDialog) {
@@ -260,6 +332,8 @@ object PluginRuntime {
 
         override val ui: UiApi = GatedUi(this, context)
 
+        override val library: LibraryApi = GatedLibrary(this)
+
         override fun hasPermission(permission: String): Boolean = permission in granted
 
         fun require(permission: String) {
@@ -286,6 +360,22 @@ object PluginRuntime {
         override fun registerFileExtension(extension: String, language: String) {
             require(PluginPermissions.FILE_TYPES)
             PluginManager.addRuntimeExtension(context, extension, language)
+        }
+
+        override fun registerFileAction(
+            id: String,
+            title: String,
+            extensions: List<String>,
+            handler: FileActionHandler,
+        ) {
+            require(PluginPermissions.FILE_ACTIONS)
+            val clean = extensions.map { it.trim().trimStart('.').lowercase() }.filter { it.isNotEmpty() }.toSet()
+            PluginRegistry.addFileAction(PluginFileAction(pluginId, id, title, clean, handler))
+        }
+
+        override fun registerLibraryTool(id: String, title: String, handler: LibraryToolHandler) {
+            require(PluginPermissions.LIBRARY_TOOLS)
+            PluginRegistry.addLibraryTool(PluginLibraryTool(pluginId, id, title, handler))
         }
 
         override fun log(message: String) {
@@ -348,6 +438,42 @@ object PluginRuntime {
         override fun replaceAll(text: String) {
             host.require(PluginPermissions.EDITOR_WRITE)
             target?.replaceAll(text)
+        }
+    }
+
+    private class GatedLibrary(private val host: HostImpl) : LibraryApi {
+
+        private fun find(path: String, name: String): Pair<File, NativeFunction> {
+            host.require(PluginPermissions.LIBRARY_READ)
+            val file = File(path)
+            val function = NativeLibraries.functions(file).firstOrNull { it.name == name }
+                ?: throw IllegalArgumentException("Function not found: $name")
+            return file to function
+        }
+
+        override fun isLibrary(path: String): Boolean {
+            host.require(PluginPermissions.LIBRARY_READ)
+            return NativeLibraries.isLibrary(File(path))
+        }
+
+        override fun functions(path: String): List<String> {
+            host.require(PluginPermissions.LIBRARY_READ)
+            return NativeLibraries.functions(File(path)).map { it.name }
+        }
+
+        override fun disassembly(path: String, function: String): String {
+            val (file, found) = find(path, function)
+            return NativeLibraries.disassembly(file, found)
+        }
+
+        override fun pseudocode(path: String, function: String): String {
+            val (file, found) = find(path, function)
+            return NativeLibraries.pseudocode(file, found)
+        }
+
+        override fun report(path: String, name: String): String {
+            host.require(PluginPermissions.LIBRARY_READ)
+            return NativeLibraries.report(File(path), name)
         }
     }
 

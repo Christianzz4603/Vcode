@@ -152,6 +152,23 @@ Plugins cannot add their own screens or Compose UI, new TextMate grammars (new l
 highlighting), themes from code (a plugin file can still contain theme files) or settings screens.
 These are planned for later API versions.
 
+## Plugin API 2: files and libraries (Toolix)
+
+Plugins with `"apiVersion": 2` can reach the file manager and the disassembler and decompiler tabs of Toolix.
+Plugins with `"apiVersion": 1` keep working.
+
+New permissions:
+
+| Permission | What it allows |
+| --- | --- |
+| `file.actions` | `host.registerFileAction(id, title, extensions, handler)`: an entry in the tools menu of files whose extension is in the list (an empty list or `"*"` means every file). The handler gets the path of the file, runs on a background thread and returns the text to show (or `null`). |
+| `library.tools` | `host.registerLibraryTool(id, title, handler)`: a button next to Info, Symbols, Strings and the other reports in the disassembler and decompiler tabs. The handler gets the path of the library and returns the text to show. |
+| `library.read` | `host.library`: `isLibrary(path)`, `functions(path)`, `disassembly(path, function)`, `pseudocode(path, function)` and `report(path, name)`. These calls block, use them from a file action or a library tool. |
+
+An error in a handler is shown as a message with the id of the plugin, it never closes the app.
+A `.zip` or `plugin.json` file can be installed from the tools menu of the file manager ("Install as plugin").
+The sample plugin in `plugin-sample` shows a file action and a library tool.
+
 ## Limits
 
 * Up to 8 MB per plugin and up to 200 files in a `.zip`.

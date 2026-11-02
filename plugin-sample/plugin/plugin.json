@@ -3,9 +3,9 @@
   "name": "Hello (Kotlin)",
   "version": "1.0.0",
   "author": "Vcode",
-  "description": "Sample Kotlin plugin: commands, status bar text, dialogs and editor access",
-  "apiVersion": 1,
-  "permissions": ["commands", "status.bar", "ui", "editor.read", "editor.write"],
+  "description": "Sample Kotlin plugin: commands, status bar text, dialogs, editor access, file actions and library tools",
+  "apiVersion": 2,
+  "permissions": ["commands", "status.bar", "ui", "editor.read", "editor.write", "file.actions", "library.tools", "library.read"],
   "code": {
     "dex": "classes.dex",
     "main": "com.vcode.studio.sample.HelloPlugin"

@@ -79,7 +79,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import com.vcode.studio.core.plugins.PluginFileAction
+import com.vcode.studio.core.plugins.PluginManager
+import com.vcode.studio.core.plugins.PluginRegistry
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.vcode.studio.R
 import com.vcode.studio.core.disasm.NativeLibraries
@@ -177,6 +186,8 @@ internal fun FileManagerScreen(
     var busy by remember { mutableStateOf<String?>(null) }
     var menu by remember { mutableStateOf(false) }
     var allowed by remember { mutableStateOf(hasStorageAccess(context)) }
+    var pluginResult by remember { mutableStateOf<Pair<String, String>?>(null) }
+    val pluginActions by PluginRegistry.fileActions.collectAsState()
 
     LifecycleResumeEffect(Unit) {
         allowed = hasStorageAccess(context)
@@ -233,6 +244,42 @@ internal fun FileManagerScreen(
         val output = FileOperations.uniqueFile(dir, name)
         selected = emptySet()
         runTask("Compressing…", "Created " + output.name) { FileOperations.zip(files, output) }
+    }
+
+    fun runPluginAction(action: PluginFileAction, file: File) {
+        scope.launch {
+            busy = action.title + "…"
+            try {
+                val text = withContext(Dispatchers.IO) { PluginRegistry.runFileAction(action, file.absolutePath) }
+                if (text.isNullOrBlank()) toast("Done") else pluginResult = action.title to text
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                toast("Failed: " + (e.message ?: e.javaClass.simpleName))
+            } finally {
+                busy = null
+                reload += 1
+            }
+        }
+    }
+
+    fun installPlugin(file: File) {
+        scope.launch {
+            busy = "Installing…"
+            try {
+                val info = withContext(Dispatchers.IO) {
+                    PluginManager.install(context, Uri.fromFile(file)).getOrThrow()
+                }
+                pluginResult = "Plugin installed" to (info.name + " " + info.version + "\n" + info.description)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                toast("Failed: " + (e.message ?: e.javaClass.simpleName))
+            } finally {
+                busy = null
+                reload += 1
+            }
+        }
     }
 
     Column(
@@ -434,6 +481,15 @@ internal fun FileManagerScreen(
                     },
                 )
             }
+            if (!tools.isDirectory) {
+                pluginActions.filter { it.matches(tools.name) }.forEach { action ->
+                    add(ToolAction(action.title, R.drawable.toolz_ic_wrench) { runPluginAction(action, tools) })
+                }
+                val extension = tools.extension.lowercase()
+                if (extension == "zip" || extension == "json") {
+                    add(ToolAction("Install as plugin", R.drawable.toolz_ic_wrench) { installPlugin(tools) })
+                }
+            }
             add(ToolAction("Compress to ZIP", R.drawable.toolz_ic_archive) { compress(listOf(tools)) })
             add(ToolAction("Copy", R.drawable.toolz_ic_copy) { clipboard = listOf(tools) to false })
             add(ToolAction("Cut", R.drawable.toolz_ic_cut) { clipboard = listOf(tools) to true })
@@ -518,6 +574,34 @@ internal fun FileManagerScreen(
                 )
             },
             confirmButton = { TextButton(onClick = { infoFor = null }) { Text("Close") } },
+        )
+    }
+
+    val result = pluginResult
+    if (result != null) {
+        val clipboard = LocalClipboardManager.current
+        AlertDialog(
+            onDismissRequest = { pluginResult = null },
+            title = { Text(result.first) },
+            text = {
+                Box(
+                    Modifier
+                        .heightIn(max = 360.dp)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    Text(
+                        text = result.second,
+                        style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, lineHeight = 17.sp),
+                    )
+                }
+            },
+            confirmButton = { TextButton(onClick = { pluginResult = null }) { Text("Close") } },
+            dismissButton = {
+                TextButton(onClick = {
+                    clipboard.setText(AnnotatedString(result.second))
+                    toast("Copied")
+                }) { Text("Copy") }
+            },
         )
     }
 

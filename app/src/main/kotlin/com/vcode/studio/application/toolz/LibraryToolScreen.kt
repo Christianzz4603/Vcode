@@ -43,6 +43,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -65,7 +66,9 @@ import com.vcode.studio.R
 import com.vcode.studio.core.disasm.NativeFunction
 import com.vcode.studio.core.disasm.NativeLibraries
 import com.vcode.studio.ds.VcodeTheme
+import com.vcode.studio.core.plugins.PluginRegistry
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -203,6 +206,7 @@ private fun FunctionBrowser(mode: ToolMode, library: File) {
     var open by remember(library) { mutableStateOf<TextSource?>(null) }
     var query by remember(library) { mutableStateOf("") }
     val shown = open
+    val pluginTools by PluginRegistry.libraryTools.collectAsState()
 
     if (shown != null) {
         BackHandler { open = null }
@@ -229,14 +233,17 @@ private fun FunctionBrowser(mode: ToolMode, library: File) {
                 .padding(horizontal = 12.dp, vertical = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            REPORTS.forEach { (label, file) ->
+            val tools: List<Pair<String, () -> String>> =
+                REPORTS.map { (label, file) -> label to { NativeLibraries.report(library, file) } } +
+                    pluginTools.map { tool -> tool.title to { PluginRegistry.runLibraryTool(tool, library.absolutePath) } }
+            tools.forEach { (label, load) ->
                 Text(
                     text = label,
                     style = type.text14Medium,
                     color = colors.colorPrimary,
                     modifier = Modifier
                         .background(colors.colorBackgroundTertiary, RoundedCornerShape(50))
-                        .clickable { open = TextSource(label) { NativeLibraries.report(library, file) } }
+                        .clickable { open = TextSource(label, load) }
                         .padding(horizontal = 14.dp, vertical = 8.dp),
                 )
             }
@@ -255,8 +262,16 @@ private fun FunctionBrowser(mode: ToolMode, library: File) {
             result.isFailure -> Message(result.exceptionOrNull()?.message ?: "Cannot read the library")
             else -> {
                 val all = result.getOrDefault(emptyList())
-                val filtered = remember(all, query) {
-                    if (query.isBlank()) all else all.filter { it.name.contains(query, ignoreCase = true) }
+                // The search runs in the background, so that typing stays smooth in libraries with many functions
+                val filtered by produceState(all, all, query) {
+                    if (query.isBlank()) {
+                        value = all
+                    } else {
+                        delay(150)
+                        value = withContext(Dispatchers.Default) {
+                            all.filter { it.name.contains(query, ignoreCase = true) }
+                        }
+                    }
                 }
                 if (filtered.isEmpty()) {
                     Message("No functions found")
