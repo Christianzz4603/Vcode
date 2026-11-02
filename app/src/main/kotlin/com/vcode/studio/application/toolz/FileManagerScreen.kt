@@ -366,7 +366,7 @@ internal fun FileManagerScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Software Toolz needs access to your files to show them here.",
+                    text = "Toolix needs access to your files to show them here.",
                     style = type.text16Regular,
                     color = colors.colorTextAndIconSecondary,
                     textAlign = TextAlign.Center,

@@ -22,7 +22,7 @@ import com.vcode.studio.ds.Colors
 import com.vcode.studio.feature.themes.api.model.ColorScheme
 import com.vcode.studio.feature.themes.api.model.ThemeType
 
-/** Software Toolz palette: black and green, matching the robot-and-toolbox icon. */
+/** Toolix palette: black and green, matching the robot-and-toolbox icon. */
 private fun toolzColors() = Colors.dynamicColors(
     colorPrimary = Color(0xFF5CF53F),
     colorOutline = Color(0xFF1F3A1F),

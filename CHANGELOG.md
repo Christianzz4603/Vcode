@@ -6,6 +6,11 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.1.0 (10051)
+
+* Software Toolz is now Toolix (`app.toolix`, installs next to the old Software Toolz app)
+* Toolix: Settings tab with the same settings as in Vcode
+
 ## 2.0.2 (10050)
 
 * Software Toolz: robot-and-toolbox launcher icon and black/green color theme

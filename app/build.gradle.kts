@@ -31,10 +31,10 @@ android {
     namespace = "com.vcode.studio"
 
     defaultConfig {
-        applicationId = if (toolz) "com.software.toolz" else "com.vcode.studio"
-        versionCode = 10050
-        versionName = "2.0.2"
-        manifestPlaceholders["appLabel"] = if (toolz) "Software Toolz" else "Vcode"
+        applicationId = if (toolz) "app.toolix" else "com.vcode.studio"
+        versionCode = 10051
+        versionName = "2.1.0"
+        manifestPlaceholders["appLabel"] = if (toolz) "Toolix" else "Vcode"
         manifestPlaceholders["appIcon"] = if (toolz) "@mipmap/ic_launcher_toolz" else "@mipmap/ic_launcher"
         manifestPlaceholders["appRoundIcon"] = if (toolz) "@mipmap/ic_launcher_toolz_round" else "@mipmap/ic_launcher_round"
         manifestPlaceholders["appTheme"] = if (toolz) "@style/SplashThemeToolz" else "@style/SplashTheme"

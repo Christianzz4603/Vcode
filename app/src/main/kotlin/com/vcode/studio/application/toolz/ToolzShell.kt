@@ -28,6 +28,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.vcode.studio.R
 import com.vcode.studio.ds.VcodeTheme
+import com.vcode.studio.feature.settings.api.navigation.HeaderListRoute
+import com.vcode.studio.navigation.api.Navigator
 import java.io.File
 
 internal enum class ToolzTab(val label: String, val icon: Int) {
@@ -45,14 +48,16 @@ internal enum class ToolzTab(val label: String, val icon: Int) {
     Vcode("Vcode", R.drawable.toolz_ic_code),
     Disassembler("Disassembler", R.drawable.toolz_ic_chip),
     Decompiler("Decompiler", R.drawable.toolz_ic_doc),
+    Settings("Settings", R.drawable.toolz_ic_settings),
 }
 
 /**
- * The screen of Software Toolz: a bottom bar with the file manager, the Vcode editor, the disassembler and
- * the decompiler. [vcodeContent] is the whole Vcode app, it stays in the composition so that open files are kept.
+ * The screen of Toolix: a bottom bar with the file manager, the Vcode editor, the disassembler, the decompiler
+ * and the settings (the same settings screens as in Vcode, shown on the [navigator] back stack). [vcodeContent] is the whole Vcode app, it stays in the composition so that open files are kept.
  */
 @Composable
 internal fun ToolzShell(
+    navigator: Navigator,
     onOpenInEditor: (File) -> Unit,
     vcodeContent: @Composable () -> Unit,
 ) {
@@ -60,10 +65,37 @@ internal fun ToolzShell(
     var directory by rememberSaveable { mutableStateOf<String?>(null) }
     var disassemblePath by rememberSaveable { mutableStateOf<String?>(null) }
     var decompilePath by rememberSaveable { mutableStateOf<String?>(null) }
+    var settingsBase by rememberSaveable { mutableIntStateOf(0) }
     val colors = VcodeTheme.colors
+    val isNavTab = tab == ToolzTab.Vcode.ordinal || tab == ToolzTab.Settings.ordinal
 
-    BackHandler(enabled = tab != ToolzTab.Files.ordinal && tab != ToolzTab.Vcode.ordinal) {
+    BackHandler(enabled = !isNavTab && tab != ToolzTab.Files.ordinal) {
         tab = ToolzTab.Files.ordinal
+    }
+
+    // The settings were closed with the back button of their toolbar: go back to the editor tab
+    val stackSize = navigator.backStack.size
+    LaunchedEffect(tab, stackSize) {
+        if (tab == ToolzTab.Settings.ordinal && stackSize <= settingsBase) {
+            tab = ToolzTab.Vcode.ordinal
+        }
+    }
+
+    fun select(item: ToolzTab) {
+        if (item == ToolzTab.Settings) {
+            if (tab != item.ordinal) {
+                settingsBase = navigator.backStack.size
+                navigator.navigate(HeaderListRoute)
+                tab = item.ordinal
+            }
+            return
+        }
+        if (tab == ToolzTab.Settings.ordinal) {
+            while (navigator.backStack.size > settingsBase && navigator.backStack.size > 1) {
+                navigator.goBack()
+            }
+        }
+        tab = item.ordinal
     }
 
     Scaffold(
@@ -76,7 +108,7 @@ internal fun ToolzShell(
                 ToolzTab.entries.forEach { item ->
                     BottomNavigationItem(
                         selected = tab == item.ordinal,
-                        onClick = { tab = item.ordinal },
+                        onClick = { select(item) },
                         icon = {
                             Icon(
                                 painter = painterResource(item.icon),
@@ -104,7 +136,7 @@ internal fun ToolzShell(
                 .consumeWindowInsets(padding)
                 .fillMaxSize(),
         ) {
-            Box(if (tab == ToolzTab.Vcode.ordinal) Modifier.fillMaxSize() else Modifier.size(0.dp)) {
+            Box(if (isNavTab) Modifier.fillMaxSize() else Modifier.size(0.dp)) {
                 vcodeContent()
             }
             when (ToolzTab.entries[tab]) {
@@ -126,7 +158,7 @@ internal fun ToolzShell(
                 )
                 ToolzTab.Disassembler -> LibraryToolScreen(ToolMode.Disassemble, disassemblePath)
                 ToolzTab.Decompiler -> LibraryToolScreen(ToolMode.Decompile, decompilePath)
-                ToolzTab.Vcode -> Unit
+                ToolzTab.Vcode, ToolzTab.Settings -> Unit
             }
         }
     }

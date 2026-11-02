@@ -74,6 +74,6 @@
 # Vcode: the library viewer calls into Rust
 -keep class com.vcode.studio.core.disasm.NativeDisassembler { *; }
 
-# Software Toolz: APK signing
+# Toolix: APK signing
 -dontwarn org.bouncycastle.**
 -dontwarn com.android.apksig.**

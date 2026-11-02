@@ -48,7 +48,7 @@ internal object ApkSigning {
             val generator = KeyPairGenerator.getInstance("RSA")
             generator.initialize(2048)
             val pair = generator.generateKeyPair()
-            val name = X500Name("CN=Software Toolz")
+            val name = X500Name("CN=Toolix")
             val now = System.currentTimeMillis()
             val builder = JcaX509v3CertificateBuilder(
                 name,

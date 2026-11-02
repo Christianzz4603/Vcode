@@ -100,7 +100,7 @@ internal fun MainScreen(
             )
             }
             if (BuildConfig.TOOLZ) {
-                ToolzShell(onOpenInEditor = viewModel::openFile, vcodeContent = navContent)
+                ToolzShell(navigator = navigator, onOpenInEditor = viewModel::openFile, vcodeContent = navContent)
             } else {
                 navContent()
             }
