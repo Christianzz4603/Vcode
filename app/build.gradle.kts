@@ -32,8 +32,8 @@ android {
 
     defaultConfig {
         applicationId = if (toolz) "app.toolix" else "com.vcode.studio"
-        versionCode = 10054
-        versionName = "2.3.0"
+        versionCode = 10055
+        versionName = "2.3.1"
         manifestPlaceholders["appLabel"] = if (toolz) "Toolix" else "Vcode"
         manifestPlaceholders["appIcon"] = if (toolz) "@mipmap/ic_launcher_toolz" else "@mipmap/ic_launcher"
         manifestPlaceholders["appRoundIcon"] = if (toolz) "@mipmap/ic_launcher_toolz_round" else "@mipmap/ic_launcher_round"
