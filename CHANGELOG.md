@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.3.0 (10054)
+
+* Toolix is now the only app: the default build and the release are Toolix (`app.toolix`), the Vcode editor stays inside it as the Vcode tab. The separate Vcode APK (`com.vcode.studio`) is no longer built, `-Pedition=vcode` still builds it locally.
+
 ## 2.2.1 (10053)
 
 * Toolix: the settings show the name and the icon of Toolix instead of Vcode (About and the other texts)

@@ -28,7 +28,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  APK_NAME: Vcode-foss.apk
   TOOLZ_APK_NAME: Toolix.apk
 
 jobs:
@@ -92,15 +91,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Vcode FOSS release APK
-        run: ./gradlew :app:assembleFossRelease --no-configuration-cache
-
-      - name: Rename Vcode APK
-        run: |
-          APK=app/build/outputs/apk/foss/release/app-foss-release.apk
-          test -f "$APK"
-          cp "$APK" "$APK_NAME"
-
       - name: Build Toolix release APK
         run: ./gradlew :app:assembleFossRelease -Pedition=toolz --no-configuration-cache
 
@@ -122,16 +112,16 @@ jobs:
           if [ "$TAG" = "foss-latest" ]; then
             # Rolling release: replace the previous one so the tag points at this commit
             gh release delete "$TAG" --cleanup-tag --yes || true
-            gh release create "$TAG" "$APK_NAME#Vcode Foss.apk" "$TOOLZ_APK_NAME#Toolix.apk" \
-              --title "Toolix and Vcode - latest FOSS build" \
+            gh release create "$TAG" "$TOOLZ_APK_NAME#Toolix.apk" \
+              --title "Toolix - latest FOSS build" \
               --notes "Automatic build of commit ${GITHUB_SHA::7}: $SUBJECT" \
               --target "$GITHUB_SHA" \
               $FLAGS
           elif gh release view "$TAG" > /dev/null 2>&1; then
-            gh release upload "$TAG" "$APK_NAME#Vcode Foss.apk" "$TOOLZ_APK_NAME#Toolix.apk" --clobber
+            gh release upload "$TAG" "$TOOLZ_APK_NAME#Toolix.apk" --clobber
           else
-            gh release create "$TAG" "$APK_NAME#Vcode Foss.apk" "$TOOLZ_APK_NAME#Toolix.apk" \
-              --title "Toolix and Vcode $TAG (FOSS)" \
+            gh release create "$TAG" "$TOOLZ_APK_NAME#Toolix.apk" \
+              --title "Toolix $TAG (FOSS)" \
               --generate-notes \
               --target "$GITHUB_SHA" \
               $FLAGS

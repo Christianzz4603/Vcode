@@ -24,16 +24,16 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-// The same code is built as two apps: Vcode (default) and Software Toolz (-Pedition=toolz)
-val toolz = providers.gradleProperty("edition").orNull == "toolz"
+// Toolix is the only app (Vcode is its Vcode tab). -Pedition=vcode still builds the old standalone Vcode app
+val toolz = providers.gradleProperty("edition").orNull != "vcode"
 
 android {
     namespace = "com.vcode.studio"
 
     defaultConfig {
         applicationId = if (toolz) "app.toolix" else "com.vcode.studio"
-        versionCode = 10053
-        versionName = "2.2.1"
+        versionCode = 10054
+        versionName = "2.3.0"
         manifestPlaceholders["appLabel"] = if (toolz) "Toolix" else "Vcode"
         manifestPlaceholders["appIcon"] = if (toolz) "@mipmap/ic_launcher_toolz" else "@mipmap/ic_launcher"
         manifestPlaceholders["appRoundIcon"] = if (toolz) "@mipmap/ic_launcher_toolz_round" else "@mipmap/ic_launcher_round"
