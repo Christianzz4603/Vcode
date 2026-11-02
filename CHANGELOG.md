@@ -6,6 +6,11 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.4.0 (10056)
+
+* Cross references and the call graph now come from the Rust Ghidra engine, so the Xrefs and Callgraph reports and the caller and callee comments in the decompiler work for every architecture the engine reads, not only ARM64.
+* The engine is pinned to its latest version, which builds for Android again.
+
 ## 2.3.1 (10055)
 
 * The Rust Ghidra engine (ghidra-rust-engine) is updated to its latest version: file size guard in every loader, a shared cache budget for the decompiler workers and a check for oversized instructions.

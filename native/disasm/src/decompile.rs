@@ -6,7 +6,7 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
 
-use ghidra_decompiler::Program;
+use ghidra_decompiler::{CallEdge, Program};
 
 use crate::library::Library;
 use crate::pseudo::{self, Strings};
@@ -17,12 +17,20 @@ const STACK: usize = 64 * 1024 * 1024;
 /// Libraries bigger than this get no comments with strings, because reading them a second time takes too long.
 const MAX_STRING_SCAN: u64 = 64 * 1024 * 1024;
 
-struct Cached {
+/// Who calls whom in a library, found by the engine. Works for every architecture the engine reads.
+pub struct Graph {
+    pub edges: Vec<CallEdge>,
+    /// Name of the function by its address.
+    pub names: std::collections::BTreeMap<u64, String>,
+}
+
+pub struct Cached {
     path: String,
     length: u64,
     modified: Option<SystemTime>,
-    program: Program,
+    pub program: Program,
     strings: Strings,
+    pub graph: Option<Graph>,
 }
 
 /// The last library that was opened, so that the next function of it is decompiled without reading it again.
@@ -49,7 +57,8 @@ fn read_strings(path: &str, length: u64) -> Strings {
     }
 }
 
-pub fn decompile(path: &str, address: u64) -> Result<String, String> {
+/// Runs `work` with the library at `path`, which stays open for the next call.
+pub fn with_cached<T>(path: &str, work: impl FnOnce(&mut Cached) -> Result<T, String>) -> Result<T, String> {
     let meta = std::fs::metadata(path).map_err(|e| format!("Cannot read {}: {}", path, e))?;
     let length = meta.len();
     let modified = meta.modified().ok();
@@ -59,16 +68,39 @@ pub fn decompile(path: &str, address: u64) -> Result<String, String> {
         *guard = None;
         let program = in_big_stack(|| Program::open(Path::new(path), None).map_err(|e| e.to_string()))??;
         let strings = read_strings(path, length);
-        *guard = Some(Cached { path: path.to_string(), length, modified, program, strings });
+        *guard = Some(Cached { path: path.to_string(), length, modified, program, strings, graph: None });
     }
     let cached = guard.as_mut().ok_or_else(|| "No library is open".to_string())?;
-    let result = in_big_stack(|| cached.program.decompile(address).map_err(|e| e.to_string()));
-    let improved = result.map(|inner| inner.map(|text| pseudo::improve(&text, &cached.strings)));
-    match improved {
-        Ok(inner) => inner,
-        Err(message) => {
-            *guard = None;
-            Err(message)
-        }
+    let result = work(cached);
+    if result.is_err() {
+        *guard = None;
     }
+    result
+}
+
+/// The call graph of the library, built on the first use and kept while the library stays open.
+pub fn graph_of(cached: &mut Cached) -> Result<&Graph, String> {
+    if cached.graph.is_none() {
+        let program = &mut cached.program;
+        let (edges, names) = in_big_stack(|| {
+            let edges = program.call_graph().map_err(|e| e.to_string())?;
+            let names = program
+                .functions()
+                .map_err(|e| e.to_string())?
+                .into_iter()
+                .map(|f| (f.address, f.name))
+                .collect();
+            Ok::<_, String>((edges, names))
+        })??;
+        cached.graph = Some(Graph { edges, names });
+    }
+    cached.graph.as_ref().ok_or_else(|| "No call graph".to_string())
+}
+
+pub fn decompile(path: &str, address: u64) -> Result<String, String> {
+    with_cached(path, |cached| {
+        let program = &mut cached.program;
+        let text = in_big_stack(|| program.decompile(address).map_err(|e| e.to_string()))??;
+        Ok(pseudo::improve(&text, &cached.strings))
+    })
 }

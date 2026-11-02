@@ -483,12 +483,24 @@ fn with<T>(path: &str, work: impl FnOnce(&Analysis) -> T) -> Result<T, String> {
 
 /// A report about the library at `path`, see [`Analysis::report`].
 pub fn report(path: &str, kind: &str) -> Result<String, String> {
-    with(path, |analysis| analysis.report(kind))?
+    match with(path, |analysis| analysis.report(kind)) {
+        Ok(result) => result,
+        // Imports and exports are only read for ARM64, the call graph and xrefs come from the engine otherwise
+        Err(e) if is_unsupported(&e) && matches!(kind, "xrefs" | "callgraph") => crate::engine::report(path, kind),
+        Err(e) => Err(e),
+    }
+}
+
+fn is_unsupported(message: &str) -> bool {
+    message.contains("is not supported yet")
 }
 
 /// Comment lines for the function at `address`, see [`Analysis::function_header`].
 pub fn function_header(path: &str, address: u64, comment: &str) -> Result<String, String> {
-    with(path, |analysis| analysis.function_header(address, comment))
+    match with(path, |analysis| analysis.function_header(address, comment)) {
+        Err(e) if is_unsupported(&e) => crate::engine::function_header(path, address, comment),
+        other => other,
+    }
 }
 
 #[cfg(test)]
