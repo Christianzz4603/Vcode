@@ -16,6 +16,7 @@
 
 package com.vcode.studio.feature.settings.ui.application
 
+import com.vcode.studio.feature.settings.data.brand
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -112,7 +113,7 @@ private fun AppHeaderScreen(
             )
             SwitchPreference(
                 title = stringResource(R.string.settings_confirm_exit_title),
-                subtitle = stringResource(R.string.settings_confirm_exit_subtitle),
+                subtitle = LocalContext.current.brand(stringResource(R.string.settings_confirm_exit_subtitle)),
                 checked = viewState.confirmExit,
                 onCheckedChange = onConfirmExitChanged,
             )

@@ -1,0 +1,1 @@
+- Toolix: settings show the Toolix name and icon

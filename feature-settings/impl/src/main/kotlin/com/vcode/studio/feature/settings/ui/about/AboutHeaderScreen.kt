@@ -16,6 +16,7 @@
 
 package com.vcode.studio.feature.settings.ui.about
 
+import com.vcode.studio.feature.settings.data.brand
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
@@ -119,14 +120,16 @@ private fun AboutHeaderScreen(
             )
             Preference(
                 title = LocalContext.current.applicationName,
-                subtitle = stringResource(
-                    R.string.settings_about_subtitle,
-                    LocalContext.current.appVersionName(),
-                    LocalContext.current.versionCode,
+                subtitle = LocalContext.current.brand(
+                    stringResource(
+                        R.string.settings_about_subtitle,
+                        LocalContext.current.appVersionName(),
+                        LocalContext.current.versionCode,
+                    )
                 ),
                 leadingContent = {
                     Image(
-                        painter = adaptiveIconPainterResource(UiR.mipmap.ic_launcher),
+                        painter = adaptiveIconPainterResource(LocalContext.current.applicationInfo.icon),
                         contentDescription = null,
                         modifier = Modifier.size(56.dp)
                     )

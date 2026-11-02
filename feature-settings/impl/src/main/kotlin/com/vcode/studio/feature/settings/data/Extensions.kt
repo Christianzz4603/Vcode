@@ -40,3 +40,5 @@ internal val Context.versionCode: Long
     } catch (e: Exception) {
         -1L
     }
+/** Replaces the name Vcode in a text with the name of this app, so that Toolix does not show the Vcode name. */
+internal fun Context.brand(text: String): String = text.replace("Vcode", applicationName)

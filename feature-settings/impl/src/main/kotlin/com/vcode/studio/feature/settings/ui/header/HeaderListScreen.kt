@@ -16,6 +16,8 @@
 
 package com.vcode.studio.feature.settings.ui.header
 
+import com.vcode.studio.feature.settings.data.brand
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -135,7 +137,7 @@ private fun HeaderListScreen(
             )
             PreferenceHeader(
                 title = stringResource(R.string.settings_header_about_title),
-                subtitle = stringResource(R.string.settings_header_about_subtitle),
+                subtitle = LocalContext.current.brand(stringResource(R.string.settings_header_about_subtitle)),
                 onClick = { onHeaderClicked(AboutHeaderRoute) },
             )
         }

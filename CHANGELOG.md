@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.2.1 (10053)
+
+* Toolix: the settings show the name and the icon of Toolix instead of Vcode (About and the other texts)
+
 ## 2.2.0 (10052)
 
 * Plugin API 2: plugins can add actions to the tools menu of files in the file manager (`file.actions`), add buttons to the disassembler and decompiler tabs (`library.tools`) and read native libraries (`library.read`). Errors in a plugin show a message with its id. A .zip or plugin.json can be installed from the tools menu of the file manager. See docs/PLUGINS.md.
