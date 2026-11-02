@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.0.2 (10050)
+
+* Software Toolz: robot-and-toolbox launcher icon and black/green color theme
+
 ## 2.0.1 (10049)
 
 * Software Toolz: own splash screen with the toolbox logo (system and in-app splash)

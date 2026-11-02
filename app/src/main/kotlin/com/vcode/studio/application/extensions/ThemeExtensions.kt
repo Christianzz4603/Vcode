@@ -17,11 +17,30 @@
 package com.vcode.studio.application.extensions
 
 import androidx.compose.ui.graphics.Color
+import com.vcode.studio.BuildConfig
 import com.vcode.studio.ds.Colors
 import com.vcode.studio.feature.themes.api.model.ColorScheme
 import com.vcode.studio.feature.themes.api.model.ThemeType
 
+/** Software Toolz palette: black and green, matching the robot-and-toolbox icon. */
+private fun toolzColors() = Colors.dynamicColors(
+    colorPrimary = Color(0xFF5CF53F),
+    colorOutline = Color(0xFF1F3A1F),
+    colorBackgroundPrimary = Color(0xFF000000),
+    colorBackgroundSecondary = Color(0xFF0A120A),
+    colorBackgroundTertiary = Color(0xFF142014),
+    colorTextAndIconPrimary = Color(0xFFE8FFE8),
+    colorTextAndIconPrimaryInverse = Color(0xFF000000),
+    colorTextAndIconSecondary = Color(0xFF8FB08F),
+    colorTextAndIconDisabled = Color(0xFF4F664F),
+    colorTextAndIconAdditional = Color(0xFF3DDC84),
+    colorTextAndIconSuccess = Color(0xFF5CF53F),
+    colorTextAndIconError = Color(0xFFFF6B7A),
+    isDark = true,
+)
+
 internal fun toComposeColors(colorScheme: ColorScheme?): Colors {
+    if (BuildConfig.TOOLZ) return toolzColors()
     val defaultTheme = when (colorScheme?.type) {
         ThemeType.LIGHT -> Colors.lightColors()
         ThemeType.DARK -> Colors.darkColors()
