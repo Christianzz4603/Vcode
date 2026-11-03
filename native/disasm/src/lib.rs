@@ -5,6 +5,7 @@
 pub mod analysis;
 pub mod arm64;
 pub mod decompile;
+pub mod dwarf;
 pub mod engine;
 pub mod windows;
 pub mod library;

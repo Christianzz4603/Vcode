@@ -94,6 +94,8 @@ private val REPORTS = listOf(
     "Fingerprints" to "fingerprints.txt",
     "Signatures" to "signatures.txt",
     "PDB symbols" to "pdb.txt",
+    "Debug symbols" to "debug.txt",
+    "Source lines" to "lines.txt",
 )
 
 /** Writes `text` next to the library as `<library>.<suffix>` and tells where it went. */
@@ -125,6 +127,11 @@ private fun exportTools(library: File): List<Pair<String, () -> String>> {
         },
         "Export strings" to {
             export(library, "strings", "strings.txt") { com.vcode.studio.core.disasm.NativeDisassembler.strings(path) }
+        },
+        "Export debug symbols" to {
+            export(library, "debug symbols", "debug.txt") {
+                com.vcode.studio.core.disasm.NativeDisassembler.engineReport(path, "debug")
+            }
         },
         "Export signatures" to {
             export(library, "signatures", "signatures.txt") {

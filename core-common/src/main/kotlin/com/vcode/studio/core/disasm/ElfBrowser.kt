@@ -59,6 +59,8 @@ internal object ElfBrowser {
                 ElfEntry("fingerprints.txt", false),
                 ElfEntry("signatures.txt", false),
                 ElfEntry("pdb.txt", false),
+                ElfEntry("debug.txt", false),
+                ElfEntry("lines.txt", false),
                 ElfEntry("functions", true),
                 ElfEntry("pseudocode", true),
                 ElfEntry("code", true),
@@ -87,6 +89,8 @@ internal object ElfBrowser {
             inner == "fingerprints.txt" -> NativeDisassembler.engineReport(path, "fingerprints")
             inner == "signatures.txt" -> NativeDisassembler.engineReport(path, "signatures")
             inner == "pdb.txt" -> NativeDisassembler.engineReport(path, "pdb")
+            inner == "debug.txt" -> NativeDisassembler.engineReport(path, "debug")
+            inner == "lines.txt" -> NativeDisassembler.engineReport(path, "lines")
             inner.startsWith("functions/") -> {
                 val fileName = inner.removePrefix("functions/")
                 val function = functions(library).firstOrNull { it.fileName == fileName }

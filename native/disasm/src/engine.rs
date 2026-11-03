@@ -141,12 +141,16 @@ const MIN_SIMILAR_INSTRUCTIONS: usize = 8;
 const MIN_SIMILARITY: f64 = 0.95;
 const MAX_SIMILAR: usize = 3;
 
-/// A report of the engine: `analysis`, `prototypes`, `cfg`, `fingerprints`, `signatures`, `sigexport` or `pdb`.
+/// A report of the engine: `analysis`, `prototypes`, `cfg`, `fingerprints`, `signatures`, `sigexport`, `pdb`, `debug` or `lines`.
 pub fn engine_report(path: &str, kind: &str) -> Result<String, String> {
     match kind {
         "signatures" => flirt_report(path),
         "sigexport" => signature_export(path),
         "pdb" => pdb_report(path),
+        // The debug symbols of a Windows library are in its .pdb file, those of other libraries are DWARF
+        "debug" if windows::image_base(Path::new(path)).is_some() => pdb_report(path),
+        "debug" => crate::dwarf::report(path),
+        "lines" => crate::dwarf::lines(path),
         _ => intelligence_report(path, kind),
     }
 }

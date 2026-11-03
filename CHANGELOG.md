@@ -6,6 +6,12 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.7.0 (10059)
+
+* Debug symbols reader: the Debug symbols report shows the DWARF debug information of a library (compilation units, functions with their address, size and line in the source, and global variables). When the debug symbols are in a separate file, put it next to the library as `<name>.debug` or `<name>.dbg`. For Windows libraries the report shows the symbols of the `.pdb` file.
+* Source lines report: the table that maps addresses of the code to lines of the source files.
+* Export debug symbols saves the report next to the library.
+
 ## 2.6.0 (10058)
 
 * Windows libraries (`.dll` and `.exe`) open in the Disassembler and Decompiler tabs. The Rust Ghidra engine reads them, and it also reads the code of other architectures than ARM64.
