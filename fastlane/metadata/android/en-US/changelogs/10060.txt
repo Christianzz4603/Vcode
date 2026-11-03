@@ -1,0 +1,1 @@
+- New viewer for files of any type and size: hex, text and pictures, with file type detection, go to and find

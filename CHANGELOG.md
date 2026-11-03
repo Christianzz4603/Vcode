@@ -6,6 +6,12 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.8.0 (10060)
+
+* New file viewer in Files: it shows any file, of any type and any size, as a hex dump or as text. It reads only the part that is on the screen, so files of many gigabytes open at once. It has Go to (an offset such as `0x1f00`) and Find (text, or `hex:` followed by bytes), which searches the whole file.
+* The viewer tells what kind of file it is from its first bytes (images, ELF, Windows executables, DEX, ZIP and APK, gzip, PDF, SQLite, audio and video, and more) and shows images as pictures that can be zoomed, however big they are.
+* A tap on a file that is not text, a library, an APK or an archive opens the viewer. Text files bigger than 8 MB open in the viewer instead of the editor. The viewer is also in the menu of every file as View.
+
 ## 2.7.0 (10059)
 
 * Debug symbols reader: the Debug symbols report shows the DWARF debug information of a library (compilation units, functions with their address, size and line in the source, and global variables). When the debug symbols are in a separate file, put it next to the library as `<name>.debug` or `<name>.dbg`. For Windows libraries the report shows the symbols of the `.pdb` file.

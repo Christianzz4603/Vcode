@@ -65,6 +65,7 @@ internal fun ToolzShell(
     var directory by rememberSaveable { mutableStateOf<String?>(null) }
     var disassemblePath by rememberSaveable { mutableStateOf<String?>(null) }
     var decompilePath by rememberSaveable { mutableStateOf<String?>(null) }
+    var viewerPath by rememberSaveable { mutableStateOf<String?>(null) }
     var settingsBase by rememberSaveable { mutableIntStateOf(0) }
     val colors = VcodeTheme.colors
     val isNavTab = tab == ToolzTab.Vcode.ordinal || tab == ToolzTab.Settings.ordinal
@@ -155,10 +156,14 @@ internal fun ToolzShell(
                         decompilePath = it.absolutePath
                         tab = ToolzTab.Decompiler.ordinal
                     },
+                    onView = { viewerPath = it.absolutePath },
                 )
                 ToolzTab.Disassembler -> LibraryToolScreen(ToolMode.Disassemble, disassemblePath)
                 ToolzTab.Decompiler -> LibraryToolScreen(ToolMode.Decompile, decompilePath)
                 ToolzTab.Vcode, ToolzTab.Settings -> Unit
+            }
+            viewerPath?.let { path ->
+                FileViewerScreen(File(path)) { viewerPath = null }
             }
         }
     }

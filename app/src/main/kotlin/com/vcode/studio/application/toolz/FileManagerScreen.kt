@@ -116,6 +116,13 @@ private fun loadRows(dir: File): Pair<List<FileRow>, String?> {
     return rows to null
 }
 
+/** Text files bigger than this are not loaded into the editor, the viewer shows them instead. */
+private const val EDITOR_LIMIT = 8L * 1024 * 1024
+
+/** Files that have tools in the menu of the file: libraries, APKs and archives. */
+private fun isToolFile(file: File): Boolean =
+    NativeLibraries.isLibrary(file) || file.name.endsWith(".apk", ignoreCase = true) || FileOperations.isArchive(file)
+
 private fun hasStorageAccess(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         Environment.isExternalStorageManager()
@@ -164,6 +171,7 @@ internal fun FileManagerScreen(
     onOpenInEditor: (File) -> Unit,
     onDisassemble: (File) -> Unit,
     onDecompile: (File) -> Unit,
+    onView: (File) -> Unit,
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
@@ -436,8 +444,11 @@ internal fun FileManagerScreen(
                             when {
                                 selected.isNotEmpty() -> selected = if (path in selected) selected - path else selected + path
                                 row.isDir -> onDirectoryChange(path)
-                                FileOperations.isText(row.file) -> onOpenInEditor(row.file)
-                                else -> toolsFor = row.file
+                                // The editor loads the whole file, so big files are shown by the viewer, which does not
+                                FileOperations.isText(row.file) && row.size <= EDITOR_LIMIT -> onOpenInEditor(row.file)
+                                FileOperations.isText(row.file) -> onView(row.file)
+                                isToolFile(row.file) -> toolsFor = row.file
+                                else -> onView(row.file)
                             }
                         },
                         onLongClick = { selected = selected + path },
@@ -456,6 +467,7 @@ internal fun FileManagerScreen(
         val parent = tools.parentFile ?: dir
         val actions = buildList {
             if (!tools.isDirectory) add(ToolAction("Open in Vcode", R.drawable.toolz_ic_code) { onOpenInEditor(tools) })
+            if (!tools.isDirectory) add(ToolAction("View (hex, text or picture)", R.drawable.toolz_ic_doc) { onView(tools) })
             if (isLibrary || isApk) {
                 add(ToolAction("Disassemble", R.drawable.toolz_ic_chip) { onDisassemble(tools) })
                 add(ToolAction("Decompile", R.drawable.toolz_ic_doc) { onDecompile(tools) })
