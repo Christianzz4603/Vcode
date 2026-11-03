@@ -6,6 +6,12 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.5.0 (10057)
+
+* New reports from the full analysis of the Rust Ghidra engine: Analysis (a summary and the functions that could not be analyzed), Prototypes (parameter registers and return size of every function), CFG (basic blocks and edges) and Fingerprints (functions with the same code).
+* After the Analysis report was made for a library, every function shows its prototype, its control flow size and similar functions (matched by their fingerprints) in the comments at the top.
+* Libraries bigger than 32 MB are not analyzed in full, because that would take too long on a phone.
+
 ## 2.4.0 (10056)
 
 * Cross references and the call graph now come from the Rust Ghidra engine, so the Xrefs and Callgraph reports and the caller and callee comments in the decompiler work for every architecture the engine reads, not only ARM64.

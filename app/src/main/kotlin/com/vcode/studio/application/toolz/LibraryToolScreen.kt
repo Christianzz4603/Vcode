@@ -88,6 +88,10 @@ private val REPORTS = listOf(
     "Exports" to "exports.txt",
     "Xrefs" to "xrefs.txt",
     "Call graph" to "callgraph.txt",
+    "Analysis" to "analysis.txt",
+    "Prototypes" to "prototypes.txt",
+    "CFG" to "cfg.txt",
+    "Fingerprints" to "fingerprints.txt",
 )
 
 /** The disassembler and the decompiler tabs: functions of a native library and what the engine makes of them. */

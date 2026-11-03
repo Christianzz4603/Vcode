@@ -1,0 +1,1 @@
+- New Analysis, Prototypes, CFG and Fingerprints reports from the Rust Ghidra engine, and similar functions shown in every function

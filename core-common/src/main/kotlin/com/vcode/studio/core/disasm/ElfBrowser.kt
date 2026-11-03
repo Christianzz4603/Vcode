@@ -53,6 +53,10 @@ internal object ElfBrowser {
                 ElfEntry("exports.txt", false),
                 ElfEntry("xrefs.txt", false),
                 ElfEntry("callgraph.txt", false),
+                ElfEntry("analysis.txt", false),
+                ElfEntry("prototypes.txt", false),
+                ElfEntry("cfg.txt", false),
+                ElfEntry("fingerprints.txt", false),
                 ElfEntry("functions", true),
                 ElfEntry("pseudocode", true),
                 ElfEntry("code", true),
@@ -75,6 +79,10 @@ internal object ElfBrowser {
             inner == "exports.txt" -> NativeDisassembler.report(path, "exports")
             inner == "xrefs.txt" -> NativeDisassembler.report(path, "xrefs")
             inner == "callgraph.txt" -> NativeDisassembler.report(path, "callgraph")
+            inner == "analysis.txt" -> NativeDisassembler.engineReport(path, "analysis")
+            inner == "prototypes.txt" -> NativeDisassembler.engineReport(path, "prototypes")
+            inner == "cfg.txt" -> NativeDisassembler.engineReport(path, "cfg")
+            inner == "fingerprints.txt" -> NativeDisassembler.engineReport(path, "fingerprints")
             inner.startsWith("functions/") -> {
                 val fileName = inner.removePrefix("functions/")
                 val function = functions(library).firstOrNull { it.fileName == fileName }
@@ -114,11 +122,17 @@ internal object ElfBrowser {
 
     /** Callers, callees and strings of a function as comment lines, empty when they are not available. */
     private fun references(path: String, address: Long, comment: String): String {
-        return try {
+        val references = try {
             NativeDisassembler.xrefs(path, address, comment)
         } catch (e: Exception) {
             ""
         }
+        val insights = try {
+            NativeDisassembler.insights(path, address, comment)
+        } catch (e: Exception) {
+            ""
+        }
+        return references + insights
     }
 
     private fun sanitize(name: String): String {

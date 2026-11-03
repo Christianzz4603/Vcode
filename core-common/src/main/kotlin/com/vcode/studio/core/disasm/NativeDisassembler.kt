@@ -58,6 +58,17 @@ object NativeDisassembler {
     @JvmStatic
     external fun report(path: String, kind: String): String
 
+    /** A report of the full analysis by the engine: `analysis`, `prototypes`, `cfg` or `fingerprints`. */
+    @JvmStatic
+    external fun engineReport(path: String, kind: String): String
+
+    /**
+     * Comment lines with the prototype, control flow and similar functions of the function at the address. They are
+     * empty until the `analysis` report was made for the library.
+     */
+    @JvmStatic
+    external fun insights(path: String, address: Long, comment: String): String
+
     /** Comment lines with the callers, callees and strings of the function at the address, each line starts with `comment`. */
     @JvmStatic
     external fun xrefs(path: String, address: Long, comment: String): String

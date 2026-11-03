@@ -6,13 +6,16 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
 
-use ghidra_decompiler::{CallEdge, Program};
+use ghidra_decompiler::{BinaryIntelligence, CallEdge, IntelligenceReport, Program};
 
 use crate::library::Library;
 use crate::pseudo::{self, Strings};
 
 /// The decompiler goes deep into recursion for big functions, so it runs on a thread with a big stack.
 const STACK: usize = 64 * 1024 * 1024;
+
+/// Libraries bigger than this are not analyzed in full, the analysis reads every function and would take too long.
+const MAX_FULL_ANALYSIS: u64 = 32 * 1024 * 1024;
 
 /// Libraries bigger than this get no comments with strings, because reading them a second time takes too long.
 const MAX_STRING_SCAN: u64 = 64 * 1024 * 1024;
@@ -31,6 +34,9 @@ pub struct Cached {
     pub program: Program,
     strings: Strings,
     pub graph: Option<Graph>,
+    /// The result of the full analysis, made on request and kept while the library stays open.
+    pub intelligence: Option<IntelligenceReport>,
+    length_cap: bool,
 }
 
 /// The last library that was opened, so that the next function of it is decompiled without reading it again.
@@ -68,7 +74,7 @@ pub fn with_cached<T>(path: &str, work: impl FnOnce(&mut Cached) -> Result<T, St
         *guard = None;
         let program = in_big_stack(|| Program::open(Path::new(path), None).map_err(|e| e.to_string()))??;
         let strings = read_strings(path, length);
-        *guard = Some(Cached { path: path.to_string(), length, modified, program, strings, graph: None });
+        *guard = Some(Cached { path: path.to_string(), length, modified, program, strings, graph: None, intelligence: None, length_cap: length > MAX_FULL_ANALYSIS });
     }
     let cached = guard.as_mut().ok_or_else(|| "No library is open".to_string())?;
     let result = work(cached);
@@ -95,6 +101,33 @@ pub fn graph_of(cached: &mut Cached) -> Result<&Graph, String> {
         cached.graph = Some(Graph { edges, names });
     }
     cached.graph.as_ref().ok_or_else(|| "No call graph".to_string())
+}
+
+/// Runs `work` only when the library at `path` is already open, so that nothing new has to be read.
+pub fn with_open<T>(path: &str, work: impl FnOnce(&mut Cached) -> T) -> Option<T> {
+    let meta = std::fs::metadata(path).ok()?;
+    let modified = meta.modified().ok();
+    let mut guard = CACHE.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    match guard.as_mut() {
+        Some(c) if c.path == path && c.length == meta.len() && c.modified == modified => Some(work(c)),
+        _ => None,
+    }
+}
+
+/// The full analysis of the library: references, control flow, prototypes and fingerprints of every function.
+pub fn intelligence_of(cached: &mut Cached) -> Result<&IntelligenceReport, String> {
+    if cached.intelligence.is_none() {
+        if cached.length_cap {
+            return Err(format!(
+                "The library is bigger than {} MB, the full analysis would take too long on a phone",
+                MAX_FULL_ANALYSIS / (1024 * 1024)
+            ));
+        }
+        let program = &mut cached.program;
+        let report = in_big_stack(|| BinaryIntelligence::new(program).analyze_all().map_err(|e| e.to_string()))??;
+        cached.intelligence = Some(report);
+    }
+    cached.intelligence.as_ref().ok_or_else(|| "No analysis".to_string())
 }
 
 pub fn decompile(path: &str, address: u64) -> Result<String, String> {

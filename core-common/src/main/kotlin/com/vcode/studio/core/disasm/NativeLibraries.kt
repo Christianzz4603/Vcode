@@ -69,7 +69,7 @@ object NativeLibraries {
         return ElfBrowser.read(file, "pseudocode/" + function.pseudoFile)
     }
 
-    /** One of info.txt, symbols.txt, strings.txt, imports.txt, exports.txt, xrefs.txt and callgraph.txt. */
+    /** One of info.txt, symbols.txt, strings.txt, imports.txt, exports.txt, xrefs.txt, callgraph.txt, analysis.txt, prototypes.txt, cfg.txt and fingerprints.txt. */
     fun report(file: File, name: String): String {
         return ElfBrowser.read(file, name)
     }

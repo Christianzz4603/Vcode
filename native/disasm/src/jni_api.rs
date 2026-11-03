@@ -148,3 +148,30 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_xref
     let Some(comment) = read_path(&mut env, &comment) else { return std::ptr::null_mut() };
     run(&mut env, || crate::analysis::function_header(&path, address as u64, &comment))
 }
+
+/// A report of the full analysis by the engine: `analysis`, `prototypes`, `cfg` or `fingerprints`.
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_engineReport<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    kind: JString<'local>,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    let Some(kind) = read_path(&mut env, &kind) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::engine::engine_report(&path, &kind))
+}
+
+/// Comment lines with the prototype, control flow and similar functions of the function at the address.
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_insights<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    address: jlong,
+    comment: JString<'local>,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    let Some(comment) = read_path(&mut env, &comment) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::engine::insights(&path, address as u64, &comment))
+}
