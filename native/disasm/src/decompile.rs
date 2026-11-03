@@ -39,10 +39,17 @@ pub struct Cached {
     length_cap: bool,
 }
 
+impl Cached {
+    /// Whether the library is too big for the full analysis.
+    pub fn too_big(&self) -> bool {
+        self.length_cap
+    }
+}
+
 /// The last library that was opened, so that the next function of it is decompiled without reading it again.
 static CACHE: Mutex<Option<Cached>> = Mutex::new(None);
 
-fn in_big_stack<T: Send>(work: impl FnOnce() -> T + Send) -> Result<T, String> {
+pub fn in_big_stack<T: Send>(work: impl FnOnce() -> T + Send) -> Result<T, String> {
     std::thread::scope(|scope| {
         let handle = std::thread::Builder::new()
             .stack_size(STACK)
@@ -72,7 +79,12 @@ pub fn with_cached<T>(path: &str, work: impl FnOnce(&mut Cached) -> Result<T, St
     let fresh = matches!(&*guard, Some(c) if c.path == path && c.length == length && c.modified == modified);
     if !fresh {
         *guard = None;
-        let program = in_big_stack(|| Program::open(Path::new(path), None).map_err(|e| e.to_string()))??;
+        let program = in_big_stack(|| {
+            let mut program = Program::open(Path::new(path), None).map_err(|e| e.to_string())?;
+            // The names of the .pdb file next to a Windows library
+            crate::engine::apply_pdb(path, &mut program);
+            Ok::<_, String>(program)
+        })??;
         let strings = read_strings(path, length);
         *guard = Some(Cached { path: path.to_string(), length, modified, program, strings, graph: None, intelligence: None, length_cap: length > MAX_FULL_ANALYSIS });
     }

@@ -1,0 +1,1 @@
+- Windows libraries and .pdb symbols, FLIRT signature matching, and export of functions, symbols, strings and signatures

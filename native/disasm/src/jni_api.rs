@@ -10,6 +10,15 @@ use jni::JNIEnv;
 
 use crate::library::{demangle, Library};
 
+/// Reads the library with the engine when the ARM64 viewer cannot, for Windows libraries and other architectures.
+fn fallback(error: String, engine: impl FnOnce() -> Result<String, String>) -> Result<String, String> {
+    if crate::engine::needs_engine(&error) {
+        engine()
+    } else {
+        Err(error)
+    }
+}
+
 fn read_path(env: &mut JNIEnv, path: &JString) -> Option<String> {
     env.get_string(path).ok().map(|s| s.into())
 }
@@ -42,7 +51,7 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_info
     path: JString<'local>,
 ) -> jstring {
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
-    run(&mut env, || Library::open(&path)?.info())
+    run(&mut env, || Library::open(&path).and_then(|l| l.info()).or_else(|e| fallback(e, || crate::engine::info(&path))))
 }
 
 #[no_mangle]
@@ -52,7 +61,9 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_symb
     path: JString<'local>,
 ) -> jstring {
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
-    run(&mut env, || Library::open(&path)?.symbols_text())
+    run(&mut env, || {
+        Library::open(&path).and_then(|l| l.symbols_text()).or_else(|e| fallback(e, || crate::engine::symbols_text(&path)))
+    })
 }
 
 #[no_mangle]
@@ -62,7 +73,9 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_stri
     path: JString<'local>,
 ) -> jstring {
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
-    run(&mut env, || Library::open(&path)?.strings_text())
+    run(&mut env, || {
+        Library::open(&path).and_then(|l| l.strings_text()).or_else(|e| fallback(e, || crate::engine::strings_text(&path)))
+    })
 }
 
 /// Lines of `address<TAB>size<TAB>name<TAB>readable name`.
@@ -74,8 +87,12 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_func
 ) -> jstring {
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
     run(&mut env, || {
+        let found = match Library::open(&path).and_then(|l| l.functions()) {
+            Ok(list) => list,
+            Err(e) => return fallback(e, || crate::engine::functions_text(&path)),
+        };
         let mut out = String::new();
-        for f in Library::open(&path)?.functions()? {
+        for f in found {
             out.push_str(&format!("{:x}\t{:x}\t{}\t{}\n", f.addr, f.size, f.name, demangle(&f.name)));
         }
         Ok(out)
@@ -91,8 +108,12 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_chun
 ) -> jstring {
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
     run(&mut env, || {
+        let found = match Library::open(&path).and_then(|l| l.chunks()) {
+            Ok(list) => list,
+            Err(e) => return fallback(e, || crate::engine::chunks_text(&path)),
+        };
         let mut out = String::new();
-        for (start, end, name) in Library::open(&path)?.chunks()? {
+        for (start, end, name) in found {
             out.push_str(&format!("{:x}\t{:x}\t{}\n", start, end, name));
         }
         Ok(out)
@@ -108,7 +129,11 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_disa
     end: jlong,
 ) -> jstring {
     let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
-    run(&mut env, || Library::open(&path)?.disassemble(start as u64, end as u64))
+    run(&mut env, || {
+        Library::open(&path)
+            .and_then(|l| l.disassemble(start as u64, end as u64))
+            .or_else(|e| fallback(e, || crate::engine::disassemble_text(&path, start as u64, end as u64)))
+    })
 }
 
 #[no_mangle]

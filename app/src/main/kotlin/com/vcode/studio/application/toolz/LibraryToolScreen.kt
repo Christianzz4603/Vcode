@@ -92,7 +92,47 @@ private val REPORTS = listOf(
     "Prototypes" to "prototypes.txt",
     "CFG" to "cfg.txt",
     "Fingerprints" to "fingerprints.txt",
+    "Signatures" to "signatures.txt",
+    "PDB symbols" to "pdb.txt",
 )
+
+/** Writes `text` next to the library as `<library>.<suffix>` and tells where it went. */
+private fun export(library: File, what: String, suffix: String, text: () -> String): String {
+    val target = File(library.parentFile, library.name + "." + suffix)
+    target.writeText(text())
+    return "The $what were saved to\n${target.absolutePath}"
+}
+
+private fun csv(value: String): String =
+    if (value.any { it == ',' || it == '"' || it == '\n' }) "\"" + value.replace("\"", "\"\"") + "\"" else value
+
+/** The buttons that save a list of the library to a file next to it. */
+private fun exportTools(library: File): List<Pair<String, () -> String>> {
+    val path = library.absolutePath
+    return listOf(
+        "Export functions" to {
+            export(library, "functions", "functions.csv") {
+                val rows = com.vcode.studio.core.disasm.NativeDisassembler.functions(path).lineSequence()
+                    .filter { it.isNotBlank() }
+                    .joinToString("\n") { line ->
+                        line.split('\t').mapIndexed { index, cell -> csv(if (index < 2) "0x$cell" else cell) }.joinToString(",")
+                    }
+                "address,size,name,readable name\n$rows\n"
+            }
+        },
+        "Export symbols" to {
+            export(library, "symbols", "symbols.txt") { com.vcode.studio.core.disasm.NativeDisassembler.symbols(path) }
+        },
+        "Export strings" to {
+            export(library, "strings", "strings.txt") { com.vcode.studio.core.disasm.NativeDisassembler.strings(path) }
+        },
+        "Export signatures" to {
+            export(library, "signatures", "signatures.txt") {
+                com.vcode.studio.core.disasm.NativeDisassembler.engineReport(path, "sigexport")
+            }
+        },
+    )
+}
 
 /** The disassembler and the decompiler tabs: functions of a native library and what the engine makes of them. */
 @Composable
@@ -239,6 +279,7 @@ private fun FunctionBrowser(mode: ToolMode, library: File) {
         ) {
             val tools: List<Pair<String, () -> String>> =
                 REPORTS.map { (label, file) -> label to { NativeLibraries.report(library, file) } } +
+                    exportTools(library) +
                     pluginTools.map { tool -> tool.title to { PluginRegistry.runLibraryTool(tool, library.absolutePath) } }
             tools.forEach { (label, load) ->
                 Text(

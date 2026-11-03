@@ -34,17 +34,22 @@ object NativeLibraries {
     val isAvailable: Boolean
         get() = NativeDisassembler.isAvailable
 
-    /** Whether the file starts with the ELF signature. */
+    /** Whether the file starts with the ELF signature of Android and Linux libraries, or `MZ` of Windows libraries. */
     fun isLibrary(file: File): Boolean {
         if (!file.isFile || file.length() < 64) return false
         return try {
             file.inputStream().use { input ->
                 val magic = ByteArray(4)
                 input.read(magic) == 4 &&
-                    magic[0] == 0x7f.toByte() &&
-                    magic[1] == 'E'.code.toByte() &&
-                    magic[2] == 'L'.code.toByte() &&
-                    magic[3] == 'F'.code.toByte()
+                    (
+                        (
+                            magic[0] == 0x7f.toByte() &&
+                                magic[1] == 'E'.code.toByte() &&
+                                magic[2] == 'L'.code.toByte() &&
+                                magic[3] == 'F'.code.toByte()
+                            ) ||
+                            (magic[0] == 'M'.code.toByte() && magic[1] == 'Z'.code.toByte())
+                        )
             }
         } catch (e: IOException) {
             false

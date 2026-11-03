@@ -58,7 +58,7 @@ object NativeDisassembler {
     @JvmStatic
     external fun report(path: String, kind: String): String
 
-    /** A report of the full analysis by the engine: `analysis`, `prototypes`, `cfg` or `fingerprints`. */
+    /** A report of the full analysis by the engine: `analysis`, `prototypes`, `cfg`, `fingerprints`, `signatures`, `sigexport` or `pdb`. */
     @JvmStatic
     external fun engineReport(path: String, kind: String): String
 

@@ -6,6 +6,13 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.6.0 (10058)
+
+* Windows libraries (`.dll` and `.exe`) open in the Disassembler and Decompiler tabs. The Rust Ghidra engine reads them, and it also reads the code of other architectures than ARM64.
+* Windows symbols: when the `.pdb` file of a Windows library is next to it, the engine names the functions after it. The new PDB symbols report lists them, and C++ names are made readable.
+* Signatures report: matches the functions against FLIRT signature files (`.sig`) in a folder called `signatures` next to the library.
+* Export functions (CSV), symbols, strings and signatures: each saves a file next to the library.
+
 ## 2.5.0 (10057)
 
 * New reports from the full analysis of the Rust Ghidra engine: Analysis (a summary and the functions that could not be analyzed), Prototypes (parameter registers and return size of every function), CFG (basic blocks and edges) and Fingerprints (functions with the same code).
