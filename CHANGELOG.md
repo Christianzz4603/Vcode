@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.11.1 (10064)
+
+* Fixed the Vcode tab showing a half black screen next to the editor after another tab was opened and the Vcode tab opened again.
+
 ## 2.11.0 (10063)
 
 * Faster start and fewer stops.

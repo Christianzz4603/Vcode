@@ -1,0 +1,1 @@
+- Fixed the half black screen in the Vcode tab after switching tabs

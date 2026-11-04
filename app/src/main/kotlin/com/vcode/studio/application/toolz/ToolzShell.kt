@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.vcode.studio.R
@@ -143,7 +144,20 @@ internal fun ToolzShell(
                 if (isNavTab) vcodeLoaded = true
             }
             if (vcodeLoaded || isNavTab) {
-                Box(if (isNavTab) Modifier.fillMaxSize() else Modifier.size(0.dp)) {
+                // The editor is always measured at the full size. Squeezing it to zero while another tab is shown left it
+                // with a wrong layout (half of the screen black) when the tab was opened again.
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .layout { measurable, constraints ->
+                            val placeable = measurable.measure(constraints)
+                            if (isNavTab) {
+                                layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+                            } else {
+                                layout(0, 0) {}
+                            }
+                        },
+                ) {
                     vcodeContent()
                 }
             }
