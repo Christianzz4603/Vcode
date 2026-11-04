@@ -22,7 +22,7 @@
     <string name="app_splash_loading">Loading…</string>
 
     <string name="app_update_dialog_title">Update available</string>
-    <string name="app_update_dialog_message">A new version of the app is available. You can install it now, or update later through the app store.</string>
+    <string name="app_update_dialog_message">A new version of the app is available on GitHub. You can download and install it now, or later.</string>
     <string name="app_update_dialog_button_install">Install</string>
     <string name="app_update_dialog_button_later">Later</string>
 

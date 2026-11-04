@@ -6,6 +6,11 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.12.0 (10065)
+
+* Update pop up: when a newer build is on the GitHub release (foss-latest) the Update available dialog is shown at start. Install downloads the APK and opens the Android installer, Later closes it. The first time Android asks to allow installing apps from this app.
+* The release notes now carry the version code of the build (`versionCode: N`), which is what the app compares. Builds made before this version have no such line, so the pop up starts with the builds after this one.
+
 ## 2.11.1 (10064)
 
 * Fixed the Vcode tab showing a half black screen next to the editor after another tab was opened and the Vcode tab opened again.
