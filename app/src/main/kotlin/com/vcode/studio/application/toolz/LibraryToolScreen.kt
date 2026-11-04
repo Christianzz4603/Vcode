@@ -421,9 +421,15 @@ private fun TextViewer(source: TextSource, onBack: () -> Unit) {
             current == null -> Progress()
             current.isFailure -> Message(current.exceptionOrNull()?.message ?: "Failed")
             else -> {
-                val lines = remember(current) { current.getOrDefault("").split('\n') }
+                // Long reports are split in the background, so that the screen does not stop
+                val split by produceState<List<String>?>(null, current) {
+                    value = withContext(Dispatchers.Default) { current.getOrDefault("").split('\n') }
+                }
+                val lines = split
                 val code = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, lineHeight = 17.sp)
-                LazyColumn(
+                if (lines == null) {
+                    Progress()
+                } else LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 12.dp),

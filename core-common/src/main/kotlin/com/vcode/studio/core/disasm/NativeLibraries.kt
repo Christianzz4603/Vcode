@@ -38,7 +38,15 @@ object NativeLibraries {
     val isAvailable: Boolean
         get() = NativeDisassembler.isAvailable
 
-    /** Whether the file starts with the ELF signature of Android and Linux libraries, or `MZ` of Windows libraries. */
+    /** The signatures of Mach-O files (macOS and iOS libraries) of 32 and 64 bits in both byte orders. */
+    private fun isMachO(magic: ByteArray): Boolean {
+        val value = ((magic[0].toInt() and 0xff) shl 24) or ((magic[1].toInt() and 0xff) shl 16) or
+            ((magic[2].toInt() and 0xff) shl 8) or (magic[3].toInt() and 0xff)
+        return value == 0xFEEDFACE.toInt() || value == 0xFEEDFACF.toInt() ||
+            value == 0xCEFAEDFE.toInt() || value == 0xCFFAEDFE.toInt()
+    }
+
+    /** Whether the file starts with the ELF signature of Android and Linux libraries, or `MZ` of Windows libraries (.dll, .exe, .sys) or the signature of Mach-O libraries (.dylib). */
     fun isLibrary(file: File): Boolean {
         if (!file.isFile || file.length() < 64) return false
         return try {
@@ -52,7 +60,8 @@ object NativeLibraries {
                                 magic[2] == 'L'.code.toByte() &&
                                 magic[3] == 'F'.code.toByte()
                             ) ||
-                            (magic[0] == 'M'.code.toByte() && magic[1] == 'Z'.code.toByte())
+                            (magic[0] == 'M'.code.toByte() && magic[1] == 'Z'.code.toByte()) ||
+                            isMachO(magic)
                         )
             }
         } catch (e: IOException) {

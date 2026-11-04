@@ -6,6 +6,17 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.11.0 (10063)
+
+* Faster start and fewer stops.
+  * The Vcode editor is loaded the first time its tab is opened, not at start.
+  * The first function of a library opens at once. The analysis of the whole library, which the callers and callees need, now runs in the background and the next functions get them.
+  * Long reports and listings are split into lines in the background, so that opening them does not stop the screen.
+  * The list of functions of a library is read once also when two screens ask for it at the same time.
+* Libraries for all processors: the engine is now built with every processor it has (x86, ARM, AArch64, MIPS, PowerPC, RISC-V, SPARC, SuperH, Xtensa, 68000, Z80, 6502, Hexagon, LoongArch, Dalvik, JVM and more) and not only x86, ARM and AArch64.
+* Mach-O libraries (.dylib, macOS and iOS) are recognised next to ELF (.so) and Windows PE (.dll, .exe, .sys) files and open in the Disassembler and Decompiler.
+* The app is bigger because of the additional processor definitions.
+
 ## 2.10.0 (10062)
 
 * The Vcode tab no longer has its own file browser: the menu button and the explorer drawer are gone, the Files tab is the only file browser.

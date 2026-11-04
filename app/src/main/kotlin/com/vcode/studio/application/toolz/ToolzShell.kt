@@ -137,8 +137,15 @@ internal fun ToolzShell(
                 .consumeWindowInsets(padding)
                 .fillMaxSize(),
         ) {
-            Box(if (isNavTab) Modifier.fillMaxSize() else Modifier.size(0.dp)) {
-                vcodeContent()
+            // The editor is composed when it is needed for the first time and then kept, so that the start is quick
+            var vcodeLoaded by rememberSaveable { mutableStateOf(false) }
+            LaunchedEffect(isNavTab) {
+                if (isNavTab) vcodeLoaded = true
+            }
+            if (vcodeLoaded || isNavTab) {
+                Box(if (isNavTab) Modifier.fillMaxSize() else Modifier.size(0.dp)) {
+                    vcodeContent()
+                }
             }
             when (ToolzTab.entries[tab]) {
                 ToolzTab.Files -> FileManagerScreen(

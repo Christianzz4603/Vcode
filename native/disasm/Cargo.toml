@@ -20,7 +20,7 @@ jni = "0.21"
 pdb = "0.8"
 gimli = { version = "0.31", default-features = false, features = ["read", "std"] }
 msvc-demangler = "0.10"
-ghidra-decompiler = { git = "https://github.com/Christianzz4603/ghidra-rust-engine", rev = "c95afa154d2768d3b507b2af95e7a6ce5879a5c9", default-features = false, features = ["mobile"] }
+ghidra-decompiler = { git = "https://github.com/Christianzz4603/ghidra-rust-engine", rev = "c95afa154d2768d3b507b2af95e7a6ce5879a5c9", default-features = false, features = ["demangle", "all-processors"] }
 
 [profile.release]
 opt-level = 2

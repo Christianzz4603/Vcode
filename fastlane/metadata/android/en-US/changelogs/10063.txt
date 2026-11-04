@@ -1,0 +1,2 @@
+- Faster start, library functions open at once, fewer stops
+- Libraries of all processors and Mach-O libraries

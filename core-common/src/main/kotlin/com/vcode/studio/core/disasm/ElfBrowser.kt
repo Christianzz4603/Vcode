@@ -149,7 +149,29 @@ internal object ElfBrowser {
     }
 
     /** Callers, callees and strings of a function as comment lines, empty when they are not available. */
+    private val warmed = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
+
     private fun references(path: String, address: Long, comment: String): String {
+        // The first function that is opened is shown at once. The analysis of the whole library that the references
+        // need runs in the background, the next functions get their references.
+        val key = path + ":" + File(path).lastModified()
+        if (warmed[key] != true) {
+            if (warmed.putIfAbsent(key, false) == null) {
+                Thread {
+                    try {
+                        NativeDisassembler.xrefs(path, 0L, comment)
+                        NativeDisassembler.insights(path, 0L, comment)
+                    } catch (t: Throwable) {
+                        // The references stay empty
+                    }
+                    warmed[key] = true
+                }.apply {
+                    isDaemon = true
+                    name = "analysis-warmup"
+                }.start()
+            }
+            return ""
+        }
         val references = try {
             NativeDisassembler.xrefs(path, address, comment)
         } catch (e: Exception) {
@@ -177,6 +199,7 @@ internal object ElfBrowser {
     private var functionCache: FunctionCache? = null
 
     /** The functions of the library, read from the native code once and kept until the file changes. */
+    @Synchronized
     private fun functions(library: File): List<Function> {
         val path = library.absolutePath
         val length = library.length()
