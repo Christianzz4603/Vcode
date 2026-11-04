@@ -1,0 +1,2 @@
+- Vcode tab without its own file browser
+- Dex: open a class as Java lines and edit them, changes are translated back to smali

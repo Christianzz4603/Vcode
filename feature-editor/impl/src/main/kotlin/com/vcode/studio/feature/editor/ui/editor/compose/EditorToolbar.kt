@@ -79,7 +79,7 @@ internal fun EditorToolbar(
     }
 
     Toolbar(
-        navigationIcon = UiR.drawable.ic_menu,
+        navigationIcon = if (com.vcode.studio.core.dex.ToolixMode.embedded) null else UiR.drawable.ic_menu,
         onNavigationClicked = onDrawerClicked,
         navigationActions = {
             IconButton(

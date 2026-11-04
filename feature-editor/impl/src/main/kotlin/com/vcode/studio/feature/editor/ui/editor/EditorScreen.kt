@@ -57,6 +57,7 @@ import com.vcode.studio.core.contract.MimeType
 import com.vcode.studio.core.contract.rememberCreateFileContract
 import com.vcode.studio.core.contract.rememberOpenFileContract
 import com.vcode.studio.core.dex.DexTools
+import com.vcode.studio.core.dex.ToolixMode
 import com.vcode.studio.core.effect.CleanupEffect
 import com.vcode.studio.core.effect.ResultEffect
 import com.vcode.studio.core.extensions.daggerViewModel
@@ -567,6 +568,7 @@ private fun EditorScreen(
     val dexContext = LocalContext.current
     val dexFileUri = viewState.currentDocument?.document?.fileUri
     var dexClasses by remember { mutableStateOf<List<String>?>(null) }
+    var dexAsJava by remember { mutableStateOf(false) }
     ScaffoldSuite(
         topBar = {
             EditorToolbar(
@@ -661,7 +663,9 @@ private fun EditorScreen(
             if (LocalInspectionMode.current) {
                 return@ScaffoldSuite
             }
-            DrawerExplorer(onDrawerClicked)
+            if (!ToolixMode.embedded) {
+                DrawerExplorer(onDrawerClicked)
+            }
         },
         modifier = Modifier.imePadding(),
     ) { contentPadding ->
@@ -787,7 +791,9 @@ private fun EditorScreen(
                 PaletteCommand("Run: Preview", action = onPreviewClicked),
                 PaletteCommand("View: Toggle Panel", action = onPanelClicked),
                 PaletteCommand("View: AI Assistant", action = onAiClicked),
+            ) + (if (ToolixMode.embedded) emptyList() else listOf(
                 PaletteCommand("View: Toggle Explorer", action = onDrawerClicked),
+            )) + listOf(
                 PaletteCommand("View: Open Terminal", action = onTerminalClicked),
                 PaletteCommand("Git: Fetch", action = onFetchClicked),
                 PaletteCommand("Git: Pull", action = onPullClicked),
@@ -800,6 +806,20 @@ private fun EditorScreen(
                     action = {
                         dexScope.launch {
                             try {
+                                dexAsJava = false
+                                dexClasses = withContext(Dispatchers.IO) { DexTools.listFor(dexContext, dexFileUri) }
+                            } catch (t: Throwable) {
+                                Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                ),
+                PaletteCommand(
+                    "Dex: Open Class as Java",
+                    action = {
+                        dexScope.launch {
+                            try {
+                                dexAsJava = true
                                 dexClasses = withContext(Dispatchers.IO) { DexTools.listFor(dexContext, dexFileUri) }
                             } catch (t: Throwable) {
                                 Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()
@@ -834,7 +854,13 @@ private fun EditorScreen(
                     action = {
                         dexScope.launch {
                             try {
-                                val file = withContext(Dispatchers.IO) { DexTools.exportFor(dexContext, dexFileUri, type) }
+                                val file = withContext(Dispatchers.IO) {
+                                    if (dexAsJava) {
+                                        DexTools.exportJavaFor(dexContext, dexFileUri, type)
+                                    } else {
+                                        DexTools.exportFor(dexContext, dexFileUri, type)
+                                    }
+                                }
                                 onOpenUri(Uri.fromFile(file))
                             } catch (t: Throwable) {
                                 Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()

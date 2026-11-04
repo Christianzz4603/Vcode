@@ -99,6 +99,7 @@ internal fun MainScreen(
                 modifier = Modifier.fillMaxSize()
             )
             }
+            com.vcode.studio.core.dex.ToolixMode.embedded = BuildConfig.TOOLZ
             if (BuildConfig.TOOLZ) {
                 ToolzShell(navigator = navigator, onOpenInEditor = viewModel::openFile, vcodeContent = navContent)
             } else {

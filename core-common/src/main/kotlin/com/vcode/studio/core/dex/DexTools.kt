@@ -81,6 +81,7 @@ object DexTools {
             .append(classes.size).append(" classes\n\n")
         out.append("To edit code: open the command palette (magnifier button in the toolbar) and run\n")
         out.append("  Dex: Open Class     to pick a class and open it as smali text\n")
+        out.append("  Dex: Open Class as Java     the same class as Java lines, an edited line is translated back to smali\n")
         out.append("  Dex: Apply Changes to DEX     to write the classes you edited and saved back into this file\n")
         out.append("The first time, a copy of the original is kept next to the file as ").append(dex.name).append(".orig.\n\n")
         out.append("Classes:\n")
@@ -97,6 +98,60 @@ object DexTools {
 
     fun exportFor(context: Context, fileUri: String?, type: String): File {
         return exportClass(context, resolve(context, fileUri), type)
+    }
+
+    /** Opens a class as Java text: a copy of its smali where every smali line is a line of Java, see [DexJava]. */
+    fun exportJavaFor(context: Context, fileUri: String?, type: String): File {
+        val dex = resolve(context, fileUri)
+        val smali = exportClass(context, dex, type)
+        val dir = sessionDir(context, dex)
+        val relative = type.removePrefix("L").removeSuffix(";") + ".smali"
+        val target = File(File(dir, "java"), relative.removeSuffix(".smali") + ".java")
+        require(target.canonicalPath.startsWith(File(dir, "java").canonicalPath + File.separator)) { "Invalid class name" }
+        if (target.isFile) return target
+        target.parentFile?.mkdirs()
+        target.writeText(DexJava.toJava(smali.readText()))
+        val session = readSession(dir) ?: throw IllegalStateException("The class was not exported")
+        javaRecords(session).put(relative, sha256(target))
+        writeSession(dir, session)
+        return target
+    }
+
+    private fun javaRecords(session: JSONObject): JSONObject {
+        return session.optJSONObject("java") ?: JSONObject().also { session.put("java", it) }
+    }
+
+    /** Translates the Java files that were edited back to their smali files. */
+    private fun syncJava(dir: File, session: JSONObject) {
+        val records = session.optJSONObject("java") ?: return
+        val keys = records.keys()
+        while (keys.hasNext()) {
+            val relative = keys.next()
+            val java = File(File(dir, "java"), relative.removeSuffix(".smali") + ".java")
+            val smali = File(File(dir, "smali"), relative)
+            if (!java.isFile || !smali.isFile || sha256(java) == records.getString(relative)) continue
+            val text = try {
+                DexJava.toSmali(java.readText(), smali.readText())
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException(relative.removeSuffix(".smali") + ".java: " + e.message)
+            }
+            smali.writeText(text)
+            records.put(relative, sha256(java))
+        }
+    }
+
+    /** Writes the Java text again for the smali files that were applied, so that the two stay equal. */
+    private fun refreshJava(dir: File, session: JSONObject, changed: List<String>) {
+        val records = session.optJSONObject("java") ?: return
+        for (relative in changed) {
+            if (!records.has(relative)) continue
+            val java = File(File(dir, "java"), relative.removeSuffix(".smali") + ".java")
+            val smali = File(File(dir, "smali"), relative)
+            if (!smali.isFile) continue
+            java.parentFile?.mkdirs()
+            java.writeText(DexJava.toJava(smali.readText()))
+            records.put(relative, sha256(java))
+        }
     }
 
     fun applyFor(context: Context, fileUri: String?): String {
@@ -177,6 +232,7 @@ object DexTools {
     fun applyChanges(context: Context, dex: File): String {
         val dir = sessionDir(context, dex)
         val session = readSession(dir) ?: return "No class was opened from this DEX file yet"
+        syncJava(dir, session)
         val files = session.getJSONObject("files")
         val changed = ArrayList<String>()
         val keys = files.keys()
@@ -210,6 +266,7 @@ object DexTools {
         for (relative in changed) {
             files.put(relative, sha256(File(File(dir, "smali"), relative)))
         }
+        refreshJava(dir, session, changed)
         writeSession(dir, session)
         edited.delete()
         merged.delete()
