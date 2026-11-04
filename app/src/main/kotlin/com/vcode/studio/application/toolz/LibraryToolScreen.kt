@@ -288,6 +288,19 @@ private fun FunctionBrowser(mode: ToolMode, library: File) {
                 REPORTS.map { (label, file) -> label to { NativeLibraries.report(library, file) } } +
                     exportTools(library) +
                     pluginTools.map { tool -> tool.title to { PluginRegistry.runLibraryTool(tool, library.absolutePath) } }
+            var idaStyle by remember { mutableStateOf(NativeLibraries.idaStyle) }
+            Text(
+                text = if (idaStyle) "IDA style: on" else "IDA style: off",
+                style = type.text14Medium,
+                color = if (idaStyle) colors.colorBackgroundPrimary else colors.colorPrimary,
+                modifier = Modifier
+                    .background(if (idaStyle) colors.colorPrimary else colors.colorBackgroundTertiary, RoundedCornerShape(50))
+                    .clickable {
+                        idaStyle = !idaStyle
+                        NativeLibraries.idaStyle = idaStyle
+                    }
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+            )
             tools.forEach { (label, load) ->
                 Text(
                     text = label,

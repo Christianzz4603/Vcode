@@ -30,6 +30,10 @@ class NativeFunction internal constructor(
 /** The library viewer for the other modules: ELF files with ARM64 code. */
 object NativeLibraries {
 
+    /** Whether the disassembly and the pseudocode are written in the style of IDA. */
+    @Volatile
+    var idaStyle: Boolean = true
+
     /** False when this build does not contain the native library. */
     val isAvailable: Boolean
         get() = NativeDisassembler.isAvailable

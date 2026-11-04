@@ -200,3 +200,28 @@ pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_insi
     let Some(comment) = read_path(&mut env, &comment) else { return std::ptr::null_mut() };
     run(&mut env, || crate::engine::insights(&path, address as u64, &comment))
 }
+
+/// A listing of the function at the address in the style of IDA.
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_idaDisassemble<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    address: jlong,
+    size: jlong,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::engine::ida_listing(&path, address as u64, size.max(0) as u64))
+}
+
+/// The pseudocode of the function at the address in the style of Hex-Rays.
+#[no_mangle]
+pub extern "system" fn Java_com_vcode_studio_core_disasm_NativeDisassembler_idaDecompile<'local>(
+    mut env: JNIEnv<'local>,
+    _class: JClass<'local>,
+    path: JString<'local>,
+    address: jlong,
+) -> jstring {
+    let Some(path) = read_path(&mut env, &path) else { return std::ptr::null_mut() };
+    run(&mut env, || crate::decompile::decompile_styled(&path, address as u64, true))
+}

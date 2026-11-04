@@ -7,7 +7,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write;
 use std::path::Path;
 
-use ghidra_decompiler::{FlirtAnalyzer, FlirtOptions, FunctionFingerprint, FunctionSignature, Program, SignatureSettings};
+use ghidra_decompiler::{
+    FlirtAnalyzer, FlirtOptions, FunctionFingerprint, FunctionSignature, FunctionSource, Program, SignatureSettings,
+};
 
 use crate::decompile::{graph_of, in_big_stack, intelligence_of, with_cached, with_open, Graph};
 use crate::windows;
@@ -539,5 +541,92 @@ fn signature_export(path: &str) -> Result<String, String> {
             }
             Ok::<_, String>(out)
         })?
+    })
+}
+
+/// Libraries bigger than this get the section name `.text` in the listing, because reading them again takes too long.
+const MAX_SECTION_LOOKUP: u64 = 64 * 1024 * 1024;
+
+/// The name of the section that contains the address, as IDA writes it in front of every line.
+fn section_name(path: &str, address: u64) -> String {
+    use object::{Object, ObjectSection};
+    let small = std::fs::metadata(path).map(|m| m.len() <= MAX_SECTION_LOOKUP).unwrap_or(false);
+    if small {
+        if let Ok(library) = crate::library::Library::open(path) {
+            if let Ok(file) = library.file() {
+                for section in file.sections() {
+                    if address >= section.address() && address < section.address() + section.size() {
+                        if let Ok(name) = section.name() {
+                            if !name.is_empty() {
+                                return name.to_string();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ".text".to_string()
+}
+
+/// A listing of the function at `address` in the style of IDA: banner, `proc near`, labels with the places that jump
+/// to them, named calls and `endp`.
+pub fn ida_listing(path: &str, address: u64, size: u64) -> Result<String, String> {
+    let section = section_name(path, address);
+    // The callers and the strings of ARM64 libraries come from the analysis of the library, which is cheap
+    let notes: Vec<String> = crate::analysis::function_header(path, address, "")
+        .map(|text| text.lines().map(|l| l.to_string()).collect())
+        .unwrap_or_default();
+    with_cached(path, |cached| {
+        let language = cached.program.language_id().to_ascii_lowercase();
+        let arm = language.starts_with("arm") || language.starts_with("aarch64");
+        let wide = language.contains(":64:") || language.starts_with("aarch64");
+        // Who calls the function, when the call graph of the library is known
+        let callers: Vec<crate::ida::Caller> = match &cached.graph {
+            Some(graph) => graph
+                .edges
+                .iter()
+                .filter(|edge| edge.callee == address)
+                .take(8)
+                .map(|edge| crate::ida::Caller {
+                    name: graph
+                        .names
+                        .get(&edge.caller)
+                        .map(|n| crate::ida::function_name(n))
+                        .unwrap_or_else(|| format!("sub_{:X}", edge.caller)),
+                    offset: edge.call_site.saturating_sub(edge.caller),
+                    address: edge.call_site,
+                    kind: 'p',
+                })
+                .collect(),
+            None => Vec::new(),
+        };
+        let program = &mut cached.program;
+        let functions = program.functions().map_err(|e| e.to_string())?;
+        let names: BTreeMap<u64, String> =
+            functions.iter().map(|f| (f.address, crate::ida::function_name(&f.name))).collect();
+        let entry = functions.iter().find(|f| f.address == address);
+        let name = entry.map(|f| crate::ida::function_name(&f.name)).unwrap_or_else(|| format!("sub_{:X}", address));
+        let public = entry.map(|f| matches!(f.source, FunctionSource::SymbolTable | FunctionSource::DynamicSymbol)).unwrap_or(false);
+        let length = size.max(4).min(MAX_DISASSEMBLY);
+        let instructions = program.disassemble_range(address, length).map_err(|e| e.to_string())?;
+        if instructions.is_empty() {
+            return Err("There are no instructions at this address".to_string());
+        }
+        let lines: Vec<crate::ida::Line> = instructions
+            .iter()
+            .map(|i| crate::ida::Line { address: i.address, mnemonic: i.mnemonic.clone(), operands: i.operands.clone() })
+            .collect();
+        Ok(crate::ida::listing(&crate::ida::Listing {
+            name: &name,
+            section: &section,
+            wide,
+            arm,
+            public,
+            lines: &lines,
+            names: &names,
+            callers: &callers,
+            notes: &notes,
+        }))
     })
 }

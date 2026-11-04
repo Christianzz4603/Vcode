@@ -96,6 +96,13 @@ internal object ElfBrowser {
                 val function = functions(library).firstOrNull { it.fileName == fileName }
                     ?: throw IllegalArgumentException("Function not found")
                 val length = minOf(maxOf(function.size, 4L), MAX_FUNCTION_BYTES)
+                if (NativeLibraries.idaStyle) {
+                    try {
+                        return NativeDisassembler.idaDisassemble(path, function.address, length)
+                    } catch (e: Exception) {
+                        // The plain listing below
+                    }
+                }
                 val header = StringBuilder()
                 header.append("; ").append(function.readable).append('\n')
                 if (function.readable != function.name) header.append("; ").append(function.name).append('\n')
@@ -109,6 +116,19 @@ internal object ElfBrowser {
                 val baseName = inner.removePrefix("pseudocode/").removeSuffix(".c")
                 val function = functions(library).firstOrNull { it.baseName == baseName }
                     ?: throw IllegalArgumentException("Function not found")
+                if (NativeLibraries.idaStyle) {
+                    try {
+                        val ida = StringBuilder()
+                        ida.append("// ").append(function.readable).append('\n')
+                        ida.append("// address 0x").append(java.lang.Long.toHexString(function.address))
+                            .append(", ").append(function.size).append(" bytes\n")
+                        ida.append(references(path, function.address, "// "))
+                        ida.append('\n')
+                        return ida.toString() + NativeDisassembler.idaDecompile(path, function.address)
+                    } catch (e: Exception) {
+                        // The plain text below
+                    }
+                }
                 val header = StringBuilder()
                 header.append("// ").append(function.readable).append('\n')
                 if (function.readable != function.name) header.append("// ").append(function.name).append('\n')

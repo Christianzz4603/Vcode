@@ -159,7 +159,8 @@ pub fn finish(text: &str) -> String {
     let mut lines: Vec<&str> = Vec::new();
     for line in text.lines() {
         let line = line.trim_end();
-        if line.trim_start().starts_with("/* WARNING: Removing unreachable block") {
+        let start = line.trim_start();
+        if start.starts_with("/* WARNING: Removing unreachable block") || start.starts_with("// WARNING: Removing unreachable block") {
             removed += 1;
             continue;
         }

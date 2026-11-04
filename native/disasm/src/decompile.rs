@@ -143,9 +143,28 @@ pub fn intelligence_of(cached: &mut Cached) -> Result<&IntelligenceReport, Strin
 }
 
 pub fn decompile(path: &str, address: u64) -> Result<String, String> {
+    decompile_styled(path, address, false)
+}
+
+/// The calling convention that IDA writes in the signature of a function.
+fn convention_of(language: &str) -> Option<&'static str> {
+    let language = language.to_ascii_lowercase();
+    if language.starts_with("x86") && language.contains(":32:") {
+        Some("__cdecl")
+    } else if language.starts_with("x86") || language.starts_with("aarch64") || language.starts_with("arm") {
+        Some("__fastcall")
+    } else {
+        None
+    }
+}
+
+/// The pseudocode of the function, in the style of Hex-Rays when `ida` is true.
+pub fn decompile_styled(path: &str, address: u64, ida: bool) -> Result<String, String> {
     with_cached(path, |cached| {
+        let convention = if ida { convention_of(cached.program.language_id()) } else { None };
         let program = &mut cached.program;
         let text = in_big_stack(|| program.decompile(address).map_err(|e| e.to_string()))??;
+        let text = if ida { crate::ida::hexrays(&text, convention) } else { text };
         Ok(pseudo::improve(&text, &cached.strings))
     })
 }

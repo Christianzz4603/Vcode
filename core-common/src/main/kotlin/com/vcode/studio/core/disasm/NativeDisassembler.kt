@@ -58,6 +58,14 @@ object NativeDisassembler {
     @JvmStatic
     external fun report(path: String, kind: String): String
 
+    /** A listing of the function at the address in the style of IDA: banner, labels, cross references and named calls. */
+    @JvmStatic
+    external fun idaDisassemble(path: String, address: Long, size: Long): String
+
+    /** The pseudocode of the function at the address in the style of Hex-Rays. */
+    @JvmStatic
+    external fun idaDecompile(path: String, address: Long): String
+
     /** A report of the full analysis by the engine: `analysis`, `prototypes`, `cfg`, `fingerprints`, `signatures`, `sigexport`, `pdb`, `debug` or `lines`. */
     @JvmStatic
     external fun engineReport(path: String, kind: String): String

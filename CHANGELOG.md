@@ -6,6 +6,13 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.9.0 (10061)
+
+* IDA style output, on by default and switched with the IDA style button in the Disassembler and Decompiler tabs.
+  * Disassembly is a listing as IDA writes it: `section:address` in front of every line, the S U B R O U T I N E banner, `proc near` and `endp`, labels such as `loc_1150` with `CODE XREF: sub_1139+C↑j` comments, named calls, `public` for exported functions, and registers and numbers in the form of IDA (`10h` on x86, upper case on ARM). It works for every architecture the engine reads.
+  * Pseudocode is written as Hex-Rays does: `__int64 __fastcall sub_101130(__int64 a1, int a2)`, `a1` for arguments and `v1` for variables with the stack place in a comment, `_DWORD *` and `_QWORD *` pointers, `if ( … )` with the braces under it, `else` on its own line, `LABEL_1` for labels and `//` comments.
+* This is the layout and the naming of IDA. The analysis behind it is still the one of the Ghidra engine, so types and variable names can differ from what Hex-Rays would find.
+
 ## 2.8.0 (10060)
 
 * New file viewer in Files: it shows any file, of any type and any size, as a hex dump or as text. It reads only the part that is on the screen, so files of many gigabytes open at once. It has Go to (an offset such as `0x1f00`) and Find (text, or `hex:` followed by bytes), which searches the whole file.
