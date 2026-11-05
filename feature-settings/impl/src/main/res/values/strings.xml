@@ -149,9 +149,12 @@
 
     <string name="settings_category_account">Account</string>
     <string name="settings_git_credentials_title">Git Credentials</string>
-    <string name="settings_git_credentials_subtitle">Credentials for accessing remote repositories</string>
+    <string name="settings_git_credentials_subtitle">Personal access token (PAT) for GitHub and other Git servers</string>
+    <string name="settings_category_dex">DEX files</string>
+    <string name="settings_dex_java_title">Java view for DEX classes</string>
+    <string name="settings_dex_java_subtitle">Dex: Open Class shows the class as Java lines. Turn it off to open the smali text. Edited lines are translated back to smali.</string>
     <string name="settings_git_credentials_input_username_label">Username</string>
-    <string name="settings_git_credentials_input_password_label">Password</string>
+    <string name="settings_git_credentials_input_password_label">Personal access token (PAT)</string>
     <string name="settings_git_user_title">Git User</string>
     <string name="settings_git_user_subtitle">User data that will appear in your Git commits</string>
     <string name="settings_git_user_input_name_label">Name</string>

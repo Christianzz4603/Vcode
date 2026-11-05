@@ -46,6 +46,7 @@ import java.io.File
 
 internal enum class ToolzTab(val label: String, val icon: Int) {
     Files("Files", R.drawable.toolz_ic_folder),
+    GitHub("GitHub", R.drawable.toolz_ic_github),
     Vcode("Vcode", R.drawable.toolz_ic_code),
     Disassembler("Disassembler", R.drawable.toolz_ic_chip),
     Decompiler("Decompiler", R.drawable.toolz_ic_doc),
@@ -179,6 +180,7 @@ internal fun ToolzShell(
                     },
                     onView = { viewerPath = it.absolutePath },
                 )
+                ToolzTab.GitHub -> GitHubScreen()
                 ToolzTab.Disassembler -> LibraryToolScreen(ToolMode.Disassemble, disassemblePath)
                 ToolzTab.Decompiler -> LibraryToolScreen(ToolMode.Decompile, decompilePath)
                 ToolzTab.Vcode, ToolzTab.Settings -> Unit

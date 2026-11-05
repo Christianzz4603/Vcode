@@ -97,6 +97,11 @@ internal class FilesHeaderViewModel @Inject constructor(
         }
     }
 
+    fun onDexJavaViewChanged(dexJavaView: Boolean) {
+        settingsManager.dexJavaView = dexJavaView
+        _viewState.value = updateViewState()
+    }
+
     fun onSortModeChanged(sortMode: String) {
         viewModelScope.launch {
             settingsManager.sortMode = sortMode
@@ -116,6 +121,7 @@ internal class FilesHeaderViewModel @Inject constructor(
             foldersOnTop = settingsManager.foldersOnTop,
             compactPackages = settingsManager.compactPackages,
             sortMode = settingsManager.sortMode,
+            dexJavaView = settingsManager.dexJavaView,
         )
     }
 

@@ -6,6 +6,17 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.13.0 (10066)
+
+* The Java view of DEX classes is on by default: Dex: Open Class opens the class as Java lines. Settings > Files > Java view for DEX classes turns it off (smali text). Dex: Open Class as Java and Dex: Open Class as Smali pick the view for one class.
+* Git login is a personal access token (PAT) only: Settings > Git > Git Credentials has one token box. The token is used by fetch, pull and push in the editor and by the new GitHub tab.
+* New GitHub tab.
+  * Repositories: all the repositories of your account and the ones you are a member or collaborator of, loaded page by page, with search and a Can edit filter. Tap one to clone it, open it on GitHub, copy its URL or use it for the commands.
+  * Git: buttons for init, clone, status, add, commit, restore, rm, clean, push, pull, fetch, remote, branch, checkout, merge, rebase, cherry-pick, revert, reset, stash, tag, log and diff. They run in the app (JGit) on a folder, and each one tells how to use it with an example.
+  * GitHub CLI: buttons for the gh commands (auth status, repo list/view/create/fork/edit/star/delete, issue and pr list/view/create/comment/close/merge, release, workflow and run commands, gist, label, ssh-key, search, and api for any endpoint). The gh program cannot run on Android, so the buttons call the same GitHub API.
+  * Help: how to make the token and how to use the buttons.
+* Not every git or gh command has a button: interactive ones (rebase -i, gh auth login) and rarely used ones are left out, the api button reaches the rest of the GitHub API.
+
 ## 2.12.0 (10065)
 
 * Update pop up: when a newer build is on the GitHub release (foss-latest) the Update available dialog is shown at start. Install downloads the APK and opens the Android installer, Later closes it. The first time Android asks to allow installing apps from this app.

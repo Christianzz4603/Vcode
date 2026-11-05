@@ -1,0 +1,3 @@
+- GitHub tab with your repositories, git and gh command buttons
+- Git login with a token only
+- Java view of DEX classes on by default, with a setting

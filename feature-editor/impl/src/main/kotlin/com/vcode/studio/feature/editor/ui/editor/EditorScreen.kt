@@ -806,6 +806,19 @@ private fun EditorScreen(
                     action = {
                         dexScope.launch {
                             try {
+                                dexAsJava = SettingsManager(dexContext).dexJavaView
+                                dexClasses = withContext(Dispatchers.IO) { DexTools.listFor(dexContext, dexFileUri) }
+                            } catch (t: Throwable) {
+                                Toast.makeText(dexContext, "Dex: " + (t.message ?: t.javaClass.simpleName), Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    },
+                ),
+                PaletteCommand(
+                    "Dex: Open Class as Smali",
+                    action = {
+                        dexScope.launch {
+                            try {
                                 dexAsJava = false
                                 dexClasses = withContext(Dispatchers.IO) { DexTools.listFor(dexContext, dexFileUri) }
                             } catch (t: Throwable) {

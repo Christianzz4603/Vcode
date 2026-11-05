@@ -100,6 +100,7 @@ class SettingsManager(private val context: Context) {
         const val KEY_GIT_USER_NAME = "git_user_name"
         const val KEY_GIT_SUBMODULES = "git_submodules"
         const val KEY_GIT_RECURSIVE_SUBMODULES = "git_recursive_submodules"
+        const val KEY_DEX_JAVA_VIEW = "dex_java_view"
     }
 
     private val fileName: String
@@ -269,6 +270,9 @@ class SettingsManager(private val context: Context) {
     var gitSubmodules: Boolean
         get() = sharedPreferences.getBoolean(KEY_GIT_SUBMODULES, true)
         set(value) = sharedPreferences.edit().putBoolean(KEY_GIT_SUBMODULES, value).apply()
+    var dexJavaView: Boolean
+        get() = sharedPreferences.getBoolean(KEY_DEX_JAVA_VIEW, true)
+        set(value) = sharedPreferences.edit().putBoolean(KEY_DEX_JAVA_VIEW, value).apply()
     var gitRecursiveSubmodules: Boolean
         get() = sharedPreferences.getBoolean(KEY_GIT_RECURSIVE_SUBMODULES, false)
         set(value) = sharedPreferences.edit().putBoolean(KEY_GIT_RECURSIVE_SUBMODULES, value).apply()

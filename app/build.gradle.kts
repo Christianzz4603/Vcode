@@ -32,8 +32,8 @@ android {
 
     defaultConfig {
         applicationId = if (toolz) "app.toolix" else "com.vcode.studio"
-        versionCode = 10065
-        versionName = "2.12.0"
+        versionCode = 10066
+        versionName = "2.13.0"
         manifestPlaceholders["appLabel"] = if (toolz) "Toolix" else "Vcode"
         manifestPlaceholders["appIcon"] = if (toolz) "@mipmap/ic_launcher_toolz" else "@mipmap/ic_launcher"
         manifestPlaceholders["appRoundIcon"] = if (toolz) "@mipmap/ic_launcher_toolz_round" else "@mipmap/ic_launcher_round"
@@ -97,6 +97,7 @@ dependencies {
     implementation(project(":feature-themes:impl"))
     baselineProfile(project(":benchmark"))
 
+    implementation(libs.eclipse.jgit)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.viewmodel.navigation)
     implementation(libs.androidx.profileinstaller)

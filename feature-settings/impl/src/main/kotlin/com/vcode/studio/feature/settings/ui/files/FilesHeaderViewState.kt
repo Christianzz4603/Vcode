@@ -30,4 +30,5 @@ internal data class FilesHeaderViewState(
     val compactPackages: Boolean,
     val foldersOnTop: Boolean,
     val sortMode: String,
+    val dexJavaView: Boolean = true,
 ) : ViewState

@@ -67,6 +67,7 @@ internal fun FilesHeaderScreen(
         onCompactPackagesChanged = viewModel::onCompactPackagesChanged,
         onFoldersOnTopChanged = viewModel::onFoldersOnTopChanged,
         onSortModeChanged = viewModel::onSortModeChanged,
+        onDexJavaViewChanged = viewModel::onDexJavaViewChanged,
     )
 
     LaunchedEffect(Unit) {
@@ -91,6 +92,7 @@ private fun FilesHeaderScreen(
     onCompactPackagesChanged: (Boolean) -> Unit = {},
     onFoldersOnTopChanged: (Boolean) -> Unit = {},
     onSortModeChanged: (String) -> Unit = {},
+    onDexJavaViewChanged: (Boolean) -> Unit = {},
 ) {
     ScaffoldSuite(
         topBar = {
@@ -184,6 +186,18 @@ private fun FilesHeaderScreen(
                 entryValues = stringArrayResource(R.array.sort_mode_values),
                 selectedValue = viewState.sortMode,
                 onValueSelected = onSortModeChanged,
+            )
+
+            HorizontalDivider()
+
+            PreferenceGroup(
+                title = stringResource(R.string.settings_category_dex)
+            )
+            SwitchPreference(
+                title = stringResource(R.string.settings_dex_java_title),
+                subtitle = stringResource(R.string.settings_dex_java_subtitle),
+                checked = viewState.dexJavaView,
+                onCheckedChange = onDexJavaViewChanged,
             )
         }
     }
