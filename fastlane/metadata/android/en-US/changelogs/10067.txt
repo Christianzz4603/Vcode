@@ -1,0 +1,3 @@
+- Material 3 look with a dark slate and lime theme
+- Terminal in the GitHub tab for git and gh commands
+- Browse, edit, rename, create and delete the files of a GitHub repository in the app

@@ -22,20 +22,20 @@ import com.vcode.studio.ds.Colors
 import com.vcode.studio.feature.themes.api.model.ColorScheme
 import com.vcode.studio.feature.themes.api.model.ThemeType
 
-/** Toolix palette: black and green, matching the robot-and-toolbox icon. */
+/** Toolix palette: Material 3 dark, slate and lime like Orion Store. */
 private fun toolzColors() = Colors.dynamicColors(
-    colorPrimary = Color(0xFF5CF53F),
-    colorOutline = Color(0xFF1F3A1F),
-    colorBackgroundPrimary = Color(0xFF000000),
-    colorBackgroundSecondary = Color(0xFF0A120A),
-    colorBackgroundTertiary = Color(0xFF142014),
-    colorTextAndIconPrimary = Color(0xFFE8FFE8),
-    colorTextAndIconPrimaryInverse = Color(0xFF000000),
-    colorTextAndIconSecondary = Color(0xFF8FB08F),
-    colorTextAndIconDisabled = Color(0xFF4F664F),
-    colorTextAndIconAdditional = Color(0xFF3DDC84),
-    colorTextAndIconSuccess = Color(0xFF5CF53F),
-    colorTextAndIconError = Color(0xFFFF6B7A),
+    colorPrimary = Color(0xFFA3E635),
+    colorOutline = Color(0xFF343C42),
+    colorBackgroundPrimary = Color(0xFF14181B),
+    colorBackgroundSecondary = Color(0xFF1E2327),
+    colorBackgroundTertiary = Color(0xFF2C3338),
+    colorTextAndIconPrimary = Color(0xFFE3E8EC),
+    colorTextAndIconPrimaryInverse = Color(0xFF1B2A00),
+    colorTextAndIconSecondary = Color(0xFFA9B4BB),
+    colorTextAndIconDisabled = Color(0xFF6B777E),
+    colorTextAndIconAdditional = Color(0xFFBDBDFF),
+    colorTextAndIconSuccess = Color(0xFFA3E635),
+    colorTextAndIconError = Color(0xFFFFB4AB),
     isDark = true,
 )
 

@@ -6,6 +6,12 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.14.0 (10067)
+
+* Material 3: the bottom bar, the GitHub tab buttons and chips and the new screens use Material 3. The colors are a dark slate and lime theme like Orion Store (dark is the default).
+* GitHub tab > Terminal: type git and gh commands (git status, git commit -am "msg", gh pr list, gh issue create --title ...), plus cd, ls, cat, pwd and help.
+* GitHub tab > Browse: open a repository like folders, switch branch, open and edit a text file and commit it, create files and folders, rename or move and delete files and folders, all as commits made through the GitHub API.
+
 ## 2.13.0 (10066)
 
 * The Java view of DEX classes is on by default: Dex: Open Class opens the class as Java lines. Settings > Files > Java view for DEX classes turns it off (smali text). Dex: Open Class as Java and Dex: Open Class as Smali pick the view for one class.

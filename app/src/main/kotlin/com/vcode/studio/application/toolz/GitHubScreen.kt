@@ -71,7 +71,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-private val SECTIONS = listOf("Repositories", "Git", "GitHub CLI", "Help")
+private val SECTIONS = listOf("Repositories", "Browse", "Terminal", "Git", "GitHub CLI", "Help")
 
 private const val HELP = """HOW TO USE
 
@@ -158,9 +158,10 @@ internal fun GitHubScreen() {
             }
         }
         when {
-            section == 3 -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
+            section == 5 -> Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
                 Text(HELP, style = type.text14Regular, color = colors.colorTextAndIconPrimary)
             }
+            section == 2 -> TerminalSection(env = { env() }, onFolder = { setFolder(it) }, onRepo = { setRepo(it) })
             token.isBlank() -> Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
                 Text(
                     "Add a personal access token to see your repositories and to use the commands. Tap Add token, and read Help to see which token to make.",
@@ -180,11 +181,26 @@ internal fun GitHubScreen() {
                     command = ToolCommands.gh.firstOrNull { it.title == title }
                 },
                 envFor = { env() },
+                onBrowse = { selected ->
+                    setRepo(selected.fullName)
+                    section = 1
+                },
             )
+            section == 1 -> if (repo.isBlank()) {
+                Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+                    Text(
+                        "Pick a repository in Repositories and tap Browse and edit files, or write it with: repo owner/name in the Terminal.",
+                        style = type.text16Regular,
+                        color = colors.colorTextAndIconSecondary,
+                    )
+                }
+            } else {
+                RepoBrowser(client, repo)
+            }
             else -> {
-                val list = if (section == 1) ToolCommands.git else ToolCommands.gh
+                val list = if (section == 3) ToolCommands.git else ToolCommands.gh
                 Column(Modifier.fillMaxSize()) {
-                    if (section == 1) {
+                    if (section == 3) {
                         OutlinedTextField(
                             value = folder,
                             onValueChange = { setFolder(it) },
@@ -226,15 +242,10 @@ internal fun GitHubScreen() {
 
 @Composable
 private fun Chip(label: String, selected: Boolean, onClick: () -> Unit) {
-    val colors = VcodeTheme.colors
-    Text(
-        text = label,
-        style = VcodeTheme.typography.text14Medium,
-        color = if (selected) colors.colorBackgroundPrimary else colors.colorPrimary,
-        modifier = Modifier
-            .background(if (selected) colors.colorPrimary else colors.colorBackgroundTertiary, RoundedCornerShape(50))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+    androidx.compose.material3.FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { androidx.compose.material3.Text(label) },
     )
 }
 
@@ -280,18 +291,13 @@ private fun CommandButtons(commands: List<ToolCommand>, onClick: (ToolCommand) -
             items(entries.chunked(2), key = { row -> group + row.first().title }) { row ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { command ->
-                        Text(
-                            text = command.title,
-                            style = type.text14Medium,
-                            color = colors.colorTextAndIconPrimary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .weight(1f)
-                                .background(colors.colorBackgroundTertiary, RoundedCornerShape(10.dp))
-                                .clickable { onClick(command) }
-                                .padding(horizontal = 14.dp, vertical = 12.dp),
-                        )
+                        androidx.compose.material3.FilledTonalButton(
+                            onClick = { onClick(command) },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(14.dp),
+                        ) {
+                            androidx.compose.material3.Text(command.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
                     }
                     if (row.size == 1) Spacer(Modifier.weight(1f))
                 }
@@ -386,6 +392,7 @@ private fun RepositoryList(
     onUse: (GitHubRepo, String?) -> Unit,
     onCommand: (GitHubRepo, String) -> Unit,
     envFor: () -> Env,
+    onBrowse: (GitHubRepo) -> Unit,
 ) {
     val colors = VcodeTheme.colors
     val type = VcodeTheme.typography
@@ -483,6 +490,10 @@ private fun RepositoryList(
             cloneRoot = cloneRoot,
             envFor = envFor,
             onUse = onUse,
+            onBrowse = {
+                selected = null
+                onBrowse(repo)
+            },
             onCommand = { title ->
                 selected = null
                 onCommand(repo, title)
@@ -500,6 +511,7 @@ private fun RepositoryDialog(
     cloneRoot: File,
     envFor: () -> Env,
     onUse: (GitHubRepo, String?) -> Unit,
+    onBrowse: () -> Unit,
     onCommand: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -524,6 +536,9 @@ private fun RepositoryDialog(
                 )
                 if (busy) CircularProgressIndicator(color = colors.colorPrimary)
                 message?.let { Text(it, style = VcodeTheme.typography.text14Regular) }
+                androidx.compose.material3.FilledTonalButton(onClick = onBrowse) {
+                    androidx.compose.material3.Text("Browse and edit files")
+                }
                 if (cloned) {
                     Text("Cloned in ${local.absolutePath}", style = VcodeTheme.typography.text12Regular)
                 } else {
