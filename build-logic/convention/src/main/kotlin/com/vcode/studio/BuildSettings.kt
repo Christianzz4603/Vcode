@@ -24,7 +24,7 @@ object BuildSettings {
     object Versions {
         const val MIN_SDK = 24
         const val TARGET_SDK = 36
-        const val COMPILE_SDK = 36
+        const val COMPILE_SDK = 37
 
         val JAVA = JavaVersion.VERSION_17
         val JVM_TARGET = JvmTarget.JVM_17

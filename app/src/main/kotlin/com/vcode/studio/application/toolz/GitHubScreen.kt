@@ -439,6 +439,7 @@ private fun RepositoryList(
             KField(
                 value = query,
                 onValueChange = { query = it },
+                label = "Search repositories",
                 singleLine = true,
                 modifier = Modifier.weight(1f),
             )
