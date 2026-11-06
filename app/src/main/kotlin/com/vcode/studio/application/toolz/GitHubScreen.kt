@@ -40,11 +40,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -92,7 +88,7 @@ Typical flow: clone a repository, edit files in the Files and Vcode tabs, then G
 Not available: commands that open an editor or a browser login (gh auth login), interactive rebase, and git commands that are not in the list. The token is kept in the settings of the app and is only sent to GitHub."""
 
 @Composable
-internal fun GitHubScreen() {
+internal fun GitHubScreen(style: UiStyle, onStyle: (UiStyle) -> Unit) {
     val context = LocalContext.current
     val colors = VcodeTheme.colors
     val type = VcodeTheme.typography
@@ -150,6 +146,16 @@ internal fun GitHubScreen() {
             }
         }
         Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()).padding(start = 12.dp, end = 12.dp, top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text("Style", style = type.text14Medium, color = colors.colorTextAndIconSecondary)
+            UiStyle.entries.forEach { option ->
+                FilterChip(selected = style == option, onClick = { onStyle(option) }, label = { Text(option.label) })
+            }
+        }
+        Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -201,18 +207,18 @@ internal fun GitHubScreen() {
                 val list = if (section == 3) ToolCommands.git else ToolCommands.gh
                 Column(Modifier.fillMaxSize()) {
                     if (section == 3) {
-                        OutlinedTextField(
+                        KField(
                             value = folder,
                             onValueChange = { setFolder(it) },
-                            label = { Text("Folder of the repository") },
+                            label = "Folder of the repository",
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                         )
                     } else {
-                        OutlinedTextField(
+                        KField(
                             value = repo,
                             onValueChange = { setRepo(it) },
-                            label = { Text("Repository (owner/name)") },
+                            label = "Repository (owner/name)",
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                         )
@@ -242,10 +248,10 @@ internal fun GitHubScreen() {
 
 @Composable
 private fun Chip(label: String, selected: Boolean, onClick: () -> Unit) {
-    androidx.compose.material3.FilterChip(
+    FilterChip(
         selected = selected,
         onClick = onClick,
-        label = { androidx.compose.material3.Text(label) },
+        label = { Text(label) },
     )
 }
 
@@ -259,11 +265,11 @@ private fun TokenDialog(initial: String, onSave: (String) -> Unit, onDismiss: ()
             Column {
                 Text("Paste a GitHub personal access token (PAT). Leave it empty and save to sign out.")
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
+                KField(
                     value = value,
                     onValueChange = { value = it },
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
+                    password = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -291,12 +297,12 @@ private fun CommandButtons(commands: List<ToolCommand>, onClick: (ToolCommand) -
             items(entries.chunked(2), key = { row -> group + row.first().title }) { row ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { command ->
-                        androidx.compose.material3.FilledTonalButton(
+                        FilledTonalButton(
                             onClick = { onClick(command) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(14.dp),
                         ) {
-                            androidx.compose.material3.Text(command.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(command.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     }
                     if (row.size == 1) Spacer(Modifier.weight(1f))
@@ -337,11 +343,10 @@ private fun CommandDialog(command: ToolCommand, env: Env, onRepo: (String) -> Un
                     )
                 }
                 command.fields.forEach { field ->
-                    OutlinedTextField(
+                    KField(
                         value = values[field.key].orEmpty(),
                         onValueChange = { values[field.key] = it },
-                        label = { Text(field.label) },
-                        placeholder = { if (field.hint.isNotEmpty()) Text(field.hint) },
+                        label = field.label,
                         singleLine = !field.multiline,
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     )
@@ -431,10 +436,9 @@ private fun RepositoryList(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            OutlinedTextField(
+            KField(
                 value = query,
                 onValueChange = { query = it },
-                placeholder = { Text("Search repositories") },
                 singleLine = true,
                 modifier = Modifier.weight(1f),
             )
@@ -536,8 +540,8 @@ private fun RepositoryDialog(
                 )
                 if (busy) CircularProgressIndicator(color = colors.colorPrimary)
                 message?.let { Text(it, style = VcodeTheme.typography.text14Regular) }
-                androidx.compose.material3.FilledTonalButton(onClick = onBrowse) {
-                    androidx.compose.material3.Text("Browse and edit files")
+                FilledTonalButton(onClick = onBrowse) {
+                    Text("Browse and edit files")
                 }
                 if (cloned) {
                     Text("Cloned in ${local.absolutePath}", style = VcodeTheme.typography.text12Regular)

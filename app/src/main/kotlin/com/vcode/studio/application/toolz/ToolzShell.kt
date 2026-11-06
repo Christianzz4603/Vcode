@@ -22,6 +22,10 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Scaffold as M2Scaffold
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -34,11 +38,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import top.yukonga.miuix.kmp.basic.NavigationBar as MiuixNavigationBar
+import top.yukonga.miuix.kmp.basic.NavigationBarItem as MiuixNavigationBarItem
+import top.yukonga.miuix.kmp.basic.Scaffold as MiuixScaffold
 import androidx.compose.ui.unit.dp
 import com.vcode.studio.R
 import com.vcode.studio.ds.VcodeTheme
@@ -72,6 +83,8 @@ internal fun ToolzShell(
     var viewerPath by rememberSaveable { mutableStateOf<String?>(null) }
     var settingsBase by rememberSaveable { mutableIntStateOf(0) }
     val colors = VcodeTheme.colors
+    val context = LocalContext.current
+    var style by remember { mutableStateOf(UiStyleStore.get(context)) }
     val isNavTab = tab == ToolzTab.Vcode.ordinal || tab == ToolzTab.Settings.ordinal
 
     BackHandler(enabled = !isNavTab && tab != ToolzTab.Files.ordinal) {
@@ -103,39 +116,8 @@ internal fun ToolzShell(
         tab = item.ordinal
     }
 
-    ToolixTheme {
-    Scaffold(
-        containerColor = colors.colorBackgroundPrimary,
-        bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
-                ToolzTab.entries.forEach { item ->
-                    NavigationBarItem(
-                        selected = tab == item.ordinal,
-                        onClick = { select(item) },
-                        icon = {
-                            Icon(
-                                painter = painterResource(item.icon),
-                                contentDescription = item.label,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = item.label,
-                                style = MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
-                            )
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                        ),
-                    )
-                }
-            }
-        },
-    ) { padding ->
+    ToolixStyle(style) {
+        val body: @Composable (PaddingValues) -> Unit = { padding ->
         Box(
             modifier = Modifier
                 .padding(padding)
@@ -183,7 +165,10 @@ internal fun ToolzShell(
                     },
                     onView = { viewerPath = it.absolutePath },
                 )
-                ToolzTab.GitHub -> GitHubScreen()
+                ToolzTab.GitHub -> GitHubScreen(style) { chosen ->
+                    style = chosen
+                    UiStyleStore.set(context, chosen)
+                }
                 ToolzTab.Disassembler -> LibraryToolScreen(ToolMode.Disassemble, disassemblePath)
                 ToolzTab.Decompiler -> LibraryToolScreen(ToolMode.Decompile, decompilePath)
                 ToolzTab.Vcode, ToolzTab.Settings -> Unit
@@ -192,6 +177,81 @@ internal fun ToolzShell(
                 FileViewerScreen(File(path)) { viewerPath = null }
             }
         }
-    }
+        }
+        when (style) {
+            UiStyle.Material3 -> Scaffold(
+                containerColor = colors.colorBackgroundPrimary,
+                bottomBar = {
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+                        ToolzTab.entries.forEach { item ->
+                            NavigationBarItem(
+                                selected = tab == item.ordinal,
+                                onClick = { select(item) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(item.icon),
+                                        contentDescription = item.label,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                },
+                                label = { Text(text = item.label, style = MaterialTheme.typography.labelSmall, maxLines = 1) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                ),
+                            )
+                        }
+                    }
+                },
+            ) { padding -> body(padding) }
+            UiStyle.Material2 -> M2Scaffold(
+                backgroundColor = colors.colorBackgroundPrimary,
+                bottomBar = {
+                    BottomNavigation(
+                        backgroundColor = colors.colorBackgroundSecondary,
+                        contentColor = colors.colorPrimary,
+                    ) {
+                        ToolzTab.entries.forEach { item ->
+                            BottomNavigationItem(
+                                selected = tab == item.ordinal,
+                                onClick = { select(item) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(item.icon),
+                                        contentDescription = item.label,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = item.label,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = if (tab == item.ordinal) colors.colorPrimary else colors.colorTextAndIconSecondary,
+                                        maxLines = 1,
+                                    )
+                                },
+                                selectedContentColor = colors.colorPrimary,
+                                unselectedContentColor = colors.colorTextAndIconSecondary,
+                            )
+                        }
+                    }
+                },
+            ) { padding -> body(padding) }
+            UiStyle.Miuix -> MiuixScaffold(
+                bottomBar = {
+                    MiuixNavigationBar {
+                        ToolzTab.entries.forEach { item ->
+                            MiuixNavigationBarItem(
+                                selected = tab == item.ordinal,
+                                onClick = { select(item) },
+                                icon = ImageVector.vectorResource(item.icon),
+                                label = item.label,
+                            )
+                        }
+                    }
+                },
+            ) { padding -> body(padding) }
+        }
     }
 }

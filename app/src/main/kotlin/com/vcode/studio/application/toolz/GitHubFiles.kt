@@ -32,23 +32,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -454,12 +447,12 @@ private fun ChangeDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (label != null) {
-                    OutlinedTextField(value = value, onValueChange = { value = it }, label = { Text(label) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    KField(value = value, onValueChange = { value = it }, label = label, singleLine = true, modifier = Modifier.fillMaxWidth())
                 }
-                OutlinedTextField(
+                KField(
                     value = shownMessage,
                     onValueChange = { message = it },
-                    label = { Text("Commit message") },
+                    label = "Commit message",
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
@@ -497,11 +490,11 @@ private fun FileEditor(editing: Editing, canPush: Boolean, onClose: () -> Unit, 
                     )
                     Button(enabled = canPush && text != editing.text, onClick = { asking = true }) { Text("Commit") }
                 }
-                OutlinedTextField(
+                KField(
                     value = text,
                     onValueChange = { text = it },
                     readOnly = !canPush,
-                    textStyle = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp, lineHeight = 18.sp),
+                    mono = true,
                     modifier = Modifier.fillMaxSize().padding(top = 8.dp),
                 )
             }

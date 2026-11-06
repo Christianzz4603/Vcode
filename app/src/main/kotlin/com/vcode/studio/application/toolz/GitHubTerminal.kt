@@ -30,9 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -371,17 +369,14 @@ internal fun TerminalSection(env: () -> Env, onFolder: (String) -> Unit, onRepo:
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OutlinedTextField(
+            KField(
                 value = input,
                 onValueChange = { input = it },
                 modifier = Modifier.weight(1f),
+                label = prompt,
                 singleLine = true,
-                textStyle = mono.copy(fontSize = 14.sp),
-                placeholder = { Text("git status, gh pr list, help") },
-                prefix = { Text(prompt, style = mono.copy(fontSize = 14.sp), color = MaterialTheme.colorScheme.primary) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = { submit() }),
-                shape = RoundedCornerShape(28.dp),
+                mono = true,
+                onSend = { submit() },
             )
             TextButton(onClick = {
                 if (typed.isNotEmpty()) {

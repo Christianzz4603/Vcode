@@ -6,6 +6,10 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.15.0 (10068)
+
+* UI switcher: GitHub tab > Style switches the app between Material 3, Material 2 and Miuix (miuix-ui 0.9.0). The bottom bar, the buttons, chips, text boxes and dialogs of the GitHub tab follow the choice. It is saved.
+
 ## 2.14.0 (10067)
 
 * Material 3: the bottom bar, the GitHub tab buttons and chips and the new screens use Material 3. The colors are a dark slate and lime theme like Orion Store (dark is the default).
