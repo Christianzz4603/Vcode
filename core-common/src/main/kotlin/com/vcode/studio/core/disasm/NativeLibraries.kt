@@ -16,6 +16,9 @@
 
 package com.vcode.studio.core.disasm
 
+import com.vcode.studio.core.plugins.EngineHooks
+import com.vcode.studio.plugin.api.EngineKind
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 
@@ -48,6 +51,7 @@ object NativeLibraries {
 
     /** Whether the file starts with the ELF signature of Android and Linux libraries, or `MZ` of Windows libraries (.dll, .exe, .sys) or the signature of Mach-O libraries (.dylib). */
     fun isLibrary(file: File): Boolean {
+        if (EngineHooks.provider(file.absolutePath) != null) return true
         if (!file.isFile || file.length() < 64) return false
         return try {
             file.inputStream().use { input ->
@@ -69,26 +73,63 @@ object NativeLibraries {
         }
     }
 
+    private const val PLUGIN_PREFIX = "plugin:"
+
+    private fun <T> guarded(block: () -> T?): T? {
+        return try {
+            block()
+        } catch (t: Throwable) {
+            Timber.e(t, "Engine plugin failed")
+            null
+        }
+    }
+
     fun functions(file: File): List<NativeFunction> {
+        val path = file.absolutePath
+        val provider = EngineHooks.provider(path)
+        val own = provider?.let { guarded { it.functions(path) } }
+        if (own != null) {
+            val shaped = own.map { NativeFunction(it, 0, PLUGIN_PREFIX + it, PLUGIN_PREFIX + it) }
+            return renamed(path, shaped)
+        }
         if (!isAvailable) return emptyList()
         val asm = ElfBrowser.list(file, "functions")
         val pseudo = ElfBrowser.list(file, "pseudocode")
-        return asm.mapIndexed { index, entry ->
+        val built = asm.mapIndexed { index, entry ->
             val name = entry.name.removeSuffix(".asm")
             NativeFunction(name, entry.size, entry.name, pseudo.getOrNull(index)?.name ?: "$name.c")
+        }
+        return renamed(path, built)
+    }
+
+    /** Lets the plugins with the functions hook rename the functions. Only a result with the same number of lines counts. */
+    private fun renamed(path: String, list: List<NativeFunction>): List<NativeFunction> {
+        val text = EngineHooks.rewrite(EngineKind.FUNCTIONS, path, "", list.joinToString("\n") { it.name })
+        val names = text.split('\n')
+        if (names.size != list.size) return list
+        return list.mapIndexed { index, function ->
+            if (names[index] == function.name) function else NativeFunction(names[index], function.size, function.asmFile, function.pseudoFile)
         }
     }
 
     fun disassembly(file: File, function: NativeFunction): String {
-        return ElfBrowser.read(file, "functions/" + function.asmFile)
+        val path = file.absolutePath
+        val own = EngineHooks.provider(path)?.let { provider -> guarded { provider.disassembly(path, function.name) } }
+        val text = own ?: if (function.asmFile.startsWith(PLUGIN_PREFIX)) "" else ElfBrowser.read(file, "functions/" + function.asmFile)
+        return EngineHooks.rewrite(EngineKind.DISASSEMBLY, path, function.name, text)
     }
 
     fun pseudocode(file: File, function: NativeFunction): String {
-        return ElfBrowser.read(file, "pseudocode/" + function.pseudoFile)
+        val path = file.absolutePath
+        val own = EngineHooks.provider(path)?.let { provider -> guarded { provider.pseudocode(path, function.name) } }
+        val text = own ?: if (function.pseudoFile.startsWith(PLUGIN_PREFIX)) "" else ElfBrowser.read(file, "pseudocode/" + function.pseudoFile)
+        return EngineHooks.rewrite(EngineKind.PSEUDOCODE, path, function.name, text)
     }
 
     /** One of info.txt, symbols.txt, strings.txt, imports.txt, exports.txt, xrefs.txt, callgraph.txt, analysis.txt, prototypes.txt, cfg.txt and fingerprints.txt. */
     fun report(file: File, name: String): String {
-        return ElfBrowser.read(file, name)
+        val path = file.absolutePath
+        val own = EngineHooks.provider(path)?.let { provider -> guarded { provider.report(path, name) } }
+        return EngineHooks.rewrite(EngineKind.REPORT, path, name, own ?: ElfBrowser.read(file, name))
     }
 }

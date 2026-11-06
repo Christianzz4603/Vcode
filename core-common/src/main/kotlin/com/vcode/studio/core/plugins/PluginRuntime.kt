@@ -34,6 +34,28 @@ import com.vcode.studio.plugin.api.PromptCallback
 import com.vcode.studio.plugin.api.TextProvider
 import com.vcode.studio.plugin.api.UiApi
 import com.vcode.studio.plugin.api.VcodePlugin
+import com.vcode.studio.plugin.api.AppApi
+import com.vcode.studio.plugin.api.ClipboardApi
+import com.vcode.studio.plugin.api.EngineHook
+import com.vcode.studio.plugin.api.EngineProvider
+import com.vcode.studio.plugin.api.EventListener
+import com.vcode.studio.plugin.api.FilesApi
+import com.vcode.studio.plugin.api.GitHubApi
+import com.vcode.studio.plugin.api.HttpResult
+import com.vcode.studio.plugin.api.NetworkApi
+import com.vcode.studio.plugin.api.SettingsApi
+import com.vcode.studio.plugin.api.ShellApi
+import com.vcode.studio.plugin.api.ShellResult
+import com.vcode.studio.plugin.api.StorageApi
+import com.vcode.studio.core.settings.SettingsManager
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Intent
+import android.net.Uri
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import dalvik.system.DexClassLoader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -122,6 +144,10 @@ object PluginRegistry {
     @Volatile
     var editor: EditorApi? = null
 
+    /** The screen of the app, set by the screen. Plugins with app.control use it. */
+    @Volatile
+    var appController: AppController? = null
+
     internal fun addCommand(command: PluginCommand) {
         _commands.update { list ->
             list.filterNot { it.pluginId == command.pluginId && it.id == command.id } + command
@@ -151,6 +177,8 @@ object PluginRegistry {
         _statusItems.update { list -> list.filterNot { it.pluginId == pluginId } }
         _fileActions.update { list -> list.filterNot { it.pluginId == pluginId } }
         _libraryTools.update { list -> list.filterNot { it.pluginId == pluginId } }
+        EngineHooks.clear(pluginId)
+        PluginEvents.clear(pluginId)
     }
 
     /**
@@ -334,6 +362,24 @@ object PluginRuntime {
 
         override val library: LibraryApi = GatedLibrary(this)
 
+        val appSettings: SettingsManager by lazy { SettingsManager(context) }
+
+        override val files: FilesApi = GatedFiles(this)
+
+        override val network: NetworkApi = GatedNetwork(this)
+
+        override val github: GitHubApi = GatedGitHub(this)
+
+        override val shell: ShellApi = GatedShell(this)
+
+        override val clipboard: ClipboardApi = GatedClipboard(this, context)
+
+        override val app: AppApi = GatedApp(this, context)
+
+        override val settings: SettingsApi = GatedSettings(this)
+
+        override val storage: StorageApi = PluginStorage(pluginId, context)
+
         override fun hasPermission(permission: String): Boolean = permission in granted
 
         fun require(permission: String) {
@@ -376,6 +422,21 @@ object PluginRuntime {
         override fun registerLibraryTool(id: String, title: String, handler: LibraryToolHandler) {
             require(PluginPermissions.LIBRARY_TOOLS)
             PluginRegistry.addLibraryTool(PluginLibraryTool(pluginId, id, title, handler))
+        }
+
+        override fun registerEngineHook(id: String, kind: String, hook: EngineHook) {
+            require(PluginPermissions.ENGINE_HOOKS)
+            EngineHooks.addHook(pluginId, id, kind, hook)
+        }
+
+        override fun registerEngineProvider(id: String, provider: EngineProvider) {
+            require(PluginPermissions.ENGINE_PROVIDER)
+            EngineHooks.addProvider(pluginId, id, provider)
+        }
+
+        override fun registerEventListener(id: String, listener: EventListener) {
+            require(PluginPermissions.EVENTS)
+            PluginEvents.add(pluginId, id, listener)
         }
 
         override fun log(message: String) {
@@ -502,6 +563,205 @@ object PluginRuntime {
         override fun confirm(title: String, message: String, callback: ConfirmCallback) {
             host.require(PluginPermissions.UI)
             PluginRegistry.showDialog(PluginDialog.Confirm(title, message, callback))
+        }
+    }
+
+    private class GatedFiles(private val host: HostImpl) : FilesApi {
+
+        private fun read(path: String): File {
+            host.require(PluginPermissions.FILES_READ)
+            return File(path)
+        }
+
+        private fun write(path: String): File {
+            host.require(PluginPermissions.FILES_WRITE)
+            return File(path)
+        }
+
+        override fun exists(path: String) = read(path).exists()
+
+        override fun isDirectory(path: String) = read(path).isDirectory
+
+        override fun length(path: String) = read(path).length()
+
+        override fun list(path: String): List<String> = read(path).list()?.sorted() ?: emptyList()
+
+        override fun readText(path: String) = read(path).readText()
+
+        override fun readBytes(path: String) = read(path).readBytes()
+
+        override fun writeText(path: String, text: String) {
+            val file = write(path)
+            file.parentFile?.mkdirs()
+            file.writeText(text)
+        }
+
+        override fun writeBytes(path: String, bytes: ByteArray) {
+            val file = write(path)
+            file.parentFile?.mkdirs()
+            file.writeBytes(bytes)
+        }
+
+        override fun mkdirs(path: String) = write(path).mkdirs()
+
+        override fun delete(path: String) = write(path).deleteRecursively()
+
+        override fun move(from: String, to: String): Boolean {
+            val source = write(from)
+            val target = write(to)
+            target.parentFile?.mkdirs()
+            return source.renameTo(target)
+        }
+    }
+
+    private fun send(
+        method: String,
+        url: String,
+        headers: Map<String, String>,
+        body: ByteArray?,
+    ): HttpResult {
+        val connection = URL(url).openConnection() as HttpURLConnection
+        connection.requestMethod = method
+        connection.connectTimeout = 15_000
+        connection.readTimeout = 60_000
+        connection.instanceFollowRedirects = true
+        for ((key, value) in headers) connection.setRequestProperty(key, value)
+        if (body != null) {
+            connection.doOutput = true
+            connection.outputStream.use { it.write(body) }
+        }
+        val code = connection.responseCode
+        val stream = if (code in 200..299) connection.inputStream else connection.errorStream
+        val bytes = stream?.use { it.readBytes() } ?: ByteArray(0)
+        val received = HashMap<String, String>()
+        for ((key, values) in connection.headerFields) {
+            if (key != null) received[key] = values.joinToString(",")
+        }
+        return HttpResult(code, bytes, received)
+    }
+
+    private class GatedNetwork(private val host: HostImpl) : NetworkApi {
+        override fun request(method: String, url: String, headers: Map<String, String>, body: ByteArray?): HttpResult {
+            host.require(PluginPermissions.NETWORK)
+            return send(method, url, headers, body)
+        }
+    }
+
+    private class GatedGitHub(private val host: HostImpl) : GitHubApi {
+        override fun request(method: String, path: String, body: String?): String {
+            host.require(PluginPermissions.GITHUB)
+            val token = host.appSettings.gitCredentialsPassword
+            check(token.isNotBlank()) { "No GitHub token. Add one in the GitHub tab." }
+            val url = if (path.startsWith("http")) path else "https://api.github.com$path"
+            val headers = mapOf(
+                "Accept" to "application/vnd.github+json",
+                "Authorization" to "Bearer $token",
+                "X-GitHub-Api-Version" to "2022-11-28",
+                "User-Agent" to "Toolix",
+                "Content-Type" to "application/json",
+            )
+            val result = send(method, url, headers, body?.toByteArray(Charsets.UTF_8))
+            if (result.status !in 200..299) {
+                throw java.io.IOException("HTTP " + result.status + " " + result.text().take(300))
+            }
+            return result.text()
+        }
+    }
+
+    private class GatedShell(private val host: HostImpl) : ShellApi {
+        override fun run(command: String, workingDirectory: String?, timeoutSeconds: Int): ShellResult {
+            host.require(PluginPermissions.SHELL)
+            val builder = ProcessBuilder("sh", "-c", command).redirectErrorStream(true)
+            if (workingDirectory != null) builder.directory(File(workingDirectory))
+            val process = builder.start()
+            val output = StringBuffer()
+            val reader = thread(isDaemon = true) {
+                process.inputStream.bufferedReader().forEachLine { output.append(it).append('\n') }
+            }
+            val finished = process.waitFor(timeoutSeconds.toLong().coerceIn(1L, 600L), TimeUnit.SECONDS)
+            if (!finished) {
+                process.destroyForcibly()
+                reader.join(1000)
+                return ShellResult(-1, output.toString() + "(stopped after the time limit)")
+            }
+            reader.join(2000)
+            return ShellResult(process.exitValue(), output.toString())
+        }
+    }
+
+    private class GatedClipboard(private val host: HostImpl, private val context: Context) : ClipboardApi {
+        private val manager: ClipboardManager
+            get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        override fun getText(): String? {
+            host.require(PluginPermissions.CLIPBOARD)
+            return manager.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(context)?.toString()
+        }
+
+        override fun setText(text: String) {
+            host.require(PluginPermissions.CLIPBOARD)
+            manager.setPrimaryClip(ClipData.newPlainText("plugin", text))
+        }
+    }
+
+    private class GatedApp(private val host: HostImpl, private val context: Context) : AppApi {
+
+        private fun controller(): AppController {
+            host.require(PluginPermissions.APP_CONTROL)
+            return PluginRegistry.appController ?: error("The app screen is not ready")
+        }
+
+        override val currentTab: String?
+            get() = controller().currentTab
+
+        override fun openFile(path: String) {
+            val target = controller()
+            mainHandler.post { target.openFile(path) }
+        }
+
+        override fun openTab(name: String) {
+            val target = controller()
+            mainHandler.post { target.openTab(name) }
+        }
+
+        override fun openUrl(url: String) {
+            host.require(PluginPermissions.APP_CONTROL)
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+
+        override fun runCommand(id: String): Boolean {
+            host.require(PluginPermissions.APP_CONTROL)
+            val command = PluginRegistry.commands.value.firstOrNull { it.id == id || it.pluginId + ":" + it.id == id }
+                ?: return false
+            mainHandler.post { PluginRegistry.run(command) }
+            return true
+        }
+    }
+
+    private class GatedSettings(private val host: HostImpl) : SettingsApi {
+        override fun get(key: String): String? {
+            host.require(PluginPermissions.APP_SETTINGS)
+            val missing = "\u0000"
+            return runCatching { host.appSettings.load(key, missing) }.getOrNull()?.takeIf { it != missing }
+        }
+
+        override fun set(key: String, value: String) {
+            host.require(PluginPermissions.APP_SETTINGS)
+            host.appSettings.update(key, value)
+        }
+    }
+
+    private class PluginStorage(pluginId: String, context: Context) : StorageApi {
+        private val prefs = context.getSharedPreferences("toolix_plugin_" + pluginId.replace(Regex("[^A-Za-z0-9_.-]"), "_"), Context.MODE_PRIVATE)
+
+        override fun get(key: String): String? = prefs.getString(key, null)
+
+        override fun set(key: String, value: String) {
+            prefs.edit().putString(key, value).apply()
+        }
+
+        override fun remove(key: String) {
+            prefs.edit().remove(key).apply()
         }
     }
 }

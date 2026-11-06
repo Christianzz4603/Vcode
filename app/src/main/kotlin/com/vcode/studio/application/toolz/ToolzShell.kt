@@ -34,7 +34,12 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import com.vcode.studio.core.plugins.AppController
+import com.vcode.studio.core.plugins.PluginEvents
+import com.vcode.studio.core.plugins.PluginRegistry
+import com.vcode.studio.plugin.api.AppEvents
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -84,7 +89,26 @@ internal fun ToolzShell(
     var settingsBase by rememberSaveable { mutableIntStateOf(0) }
     val colors = VcodeTheme.colors
     val context = LocalContext.current
-    var style by remember { mutableStateOf(UiStyleStore.get(context)) }
+    val style = ToolixUi.style
+    DisposableEffect(Unit) {
+        PluginRegistry.appController = object : AppController {
+            override val currentTab: String?
+                get() = ToolzTab.entries.getOrNull(tab)?.label
+
+            override fun openFile(path: String) {
+                onOpenInEditor(File(path))
+                tab = ToolzTab.Vcode.ordinal
+            }
+
+            override fun openTab(name: String) {
+                ToolzTab.entries.firstOrNull { it.label.equals(name, ignoreCase = true) }?.let { tab = it.ordinal }
+            }
+        }
+        onDispose { PluginRegistry.appController = null }
+    }
+    LaunchedEffect(tab) { PluginEvents.emit(AppEvents.TAB_CHANGED, ToolzTab.entries[tab].label) }
+    LaunchedEffect(disassemblePath) { disassemblePath?.let { PluginEvents.emit(AppEvents.LIBRARY_OPEN, it) } }
+    LaunchedEffect(decompilePath) { decompilePath?.let { PluginEvents.emit(AppEvents.LIBRARY_OPEN, it) } }
     val isNavTab = tab == ToolzTab.Vcode.ordinal || tab == ToolzTab.Settings.ordinal
 
     BackHandler(enabled = !isNavTab && tab != ToolzTab.Files.ordinal) {
@@ -152,6 +176,7 @@ internal fun ToolzShell(
                     directory = directory,
                     onDirectoryChange = { directory = it },
                     onOpenInEditor = {
+                        PluginEvents.emit(AppEvents.FILE_OPEN, it.absolutePath)
                         onOpenInEditor(it)
                         tab = ToolzTab.Vcode.ordinal
                     },
@@ -165,10 +190,7 @@ internal fun ToolzShell(
                     },
                     onView = { viewerPath = it.absolutePath },
                 )
-                ToolzTab.GitHub -> GitHubScreen(style) { chosen ->
-                    style = chosen
-                    UiStyleStore.set(context, chosen)
-                }
+                ToolzTab.GitHub -> GitHubScreen()
                 ToolzTab.Disassembler -> LibraryToolScreen(ToolMode.Disassemble, disassemblePath)
                 ToolzTab.Decompiler -> LibraryToolScreen(ToolMode.Decompile, decompilePath)
                 ToolzTab.Vcode, ToolzTab.Settings -> Unit

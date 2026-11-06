@@ -41,4 +41,16 @@
         <item>cr</item>
     </string-array>
 
+    <string-array name="ui_style_entries">
+        <item>Material 3</item>
+        <item>Material 2</item>
+        <item>Miuix</item>
+    </string-array>
+
+    <string-array name="ui_style_values">
+        <item>Material3</item>
+        <item>Material2</item>
+        <item>Miuix</item>
+    </string-array>
+
 </resources>

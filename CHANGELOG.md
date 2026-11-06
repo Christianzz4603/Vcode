@@ -6,6 +6,11 @@ Vcode uses one version per feature or update:
 * `versionName` is `1.<n>.0`, where `n` is `versionCode - 10028`.
 * A small fix without a new feature can bump only the patch number, for example `1.5.1` with `versionCode` 10034.
 
+## 2.16.0 (10069)
+
+* The UI style (Material 3, Material 2, Miuix) is chosen in Settings > Application > UI style, not in the GitHub tab. The Toolix colors are the colors of the chosen library (no green): Material 3 baseline purple, Material 2 purple, Miuix blue.
+* Plugin API 3: plugins can rewrite the engine output (`engine.hooks`), replace the engine for the files they support (`engine.provider`), read and write files, use the network and the GitHub API, run shell commands, use the clipboard, control the app (open files and tabs), read and change app settings and listen to events. See docs/PLUGINS.md.
+
 ## 2.15.0 (10068)
 
 * UI switcher: GitHub tab > Style switches the app between Material 3, Material 2 and Miuix (miuix-ui 0.9.0). The bottom bar, the buttons, chips, text boxes and dialogs of the GitHub tab follow the choice. It is saved.

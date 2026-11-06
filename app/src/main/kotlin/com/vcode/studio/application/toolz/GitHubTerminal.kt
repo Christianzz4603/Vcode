@@ -343,7 +343,7 @@ internal fun TerminalSection(env: () -> Env, onFolder: (String) -> Unit, onRepo:
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .background(Color(0xFF101417), RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest, RoundedCornerShape(16.dp))
                 .padding(12.dp),
         ) {
             if (history.isEmpty()) {

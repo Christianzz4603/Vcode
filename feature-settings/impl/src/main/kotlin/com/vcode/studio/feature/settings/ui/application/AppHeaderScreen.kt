@@ -37,6 +37,8 @@ import com.vcode.studio.ds.PreviewBackground
 import com.vcode.studio.ds.divider.HorizontalDivider
 import com.vcode.studio.ds.preference.Preference
 import com.vcode.studio.ds.preference.PreferenceGroup
+import androidx.compose.ui.res.stringArrayResource
+import com.vcode.studio.ds.preference.ListPreference
 import com.vcode.studio.ds.preference.SwitchPreference
 import com.vcode.studio.ds.scaffold.ScaffoldSuite
 import com.vcode.studio.ds.toolbar.Toolbar
@@ -58,6 +60,7 @@ internal fun AppHeaderScreen(
         onColorSchemeClicked = viewModel::onColorSchemeClicked,
         onFullscreenChanged = viewModel::onFullscreenChanged,
         onConfirmExitChanged = viewModel::onConfirmExitChanged,
+        onUiStyleChanged = viewModel::onUiStyleChanged,
     )
 
     val context = LocalContext.current
@@ -77,6 +80,7 @@ private fun AppHeaderScreen(
     onColorSchemeClicked: () -> Unit = {},
     onFullscreenChanged: (Boolean) -> Unit = {},
     onConfirmExitChanged: (Boolean) -> Unit = {},
+    onUiStyleChanged: (String) -> Unit = {},
 ) {
     ScaffoldSuite(
         topBar = {
@@ -106,6 +110,14 @@ private fun AppHeaderScreen(
                 subtitle = stringResource(R.string.settings_fullscreen_subtitle),
                 checked = viewState.fullscreenMode,
                 onCheckedChange = onFullscreenChanged,
+            )
+            ListPreference(
+                title = stringResource(R.string.settings_ui_style_title),
+                entryNameAsSubtitle = true,
+                entries = stringArrayResource(R.array.ui_style_entries),
+                entryValues = stringArrayResource(R.array.ui_style_values),
+                selectedValue = viewState.uiStyle,
+                onValueSelected = onUiStyleChanged,
             )
             HorizontalDivider()
             PreferenceGroup(

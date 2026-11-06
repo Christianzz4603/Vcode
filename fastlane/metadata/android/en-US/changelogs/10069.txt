@@ -1,0 +1,2 @@
+- UI style (Material 3, Material 2, Miuix) is now in Settings > Application, with each library's own colors
+- Plugin API 3: engine rewrite hooks and providers, files, network, GitHub, shell, clipboard, app control, settings and events

@@ -68,6 +68,14 @@ internal fun MainScreen(
     },
 ) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+    val appContext = androidx.compose.ui.platform.LocalContext.current
+    remember { com.vcode.studio.application.toolz.ToolixUi.refresh(appContext) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(300)
+            com.vcode.studio.application.toolz.ToolixUi.refresh(appContext)
+        }
+    }
     val colors = toComposeColors(viewState.colorScheme)
 
     VcodeTheme(colors = colors) {

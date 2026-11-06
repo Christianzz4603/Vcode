@@ -66,10 +66,18 @@ internal class AppHeaderViewModel @Inject constructor(
         }
     }
 
+    fun onUiStyleChanged(value: String) {
+        viewModelScope.launch {
+            settingsManager.uiStyle = value
+            _viewState.value = updateViewState()
+        }
+    }
+
     private fun updateViewState(): AppHeaderViewState {
         return AppHeaderViewState(
             fullscreenMode = settingsManager.fullScreenMode,
             confirmExit = settingsManager.confirmExit,
+            uiStyle = settingsManager.uiStyle,
         )
     }
 

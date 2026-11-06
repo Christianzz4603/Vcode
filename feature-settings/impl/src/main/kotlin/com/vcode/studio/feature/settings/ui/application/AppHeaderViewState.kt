@@ -23,4 +23,5 @@ import com.vcode.studio.core.mvi.ViewState
 internal data class AppHeaderViewState(
     val fullscreenMode: Boolean,
     val confirmExit: Boolean,
+    val uiStyle: String = "Material3",
 ) : ViewState

@@ -181,3 +181,25 @@ See [`examples/plugins`](../examples/plugins):
 
 * `web-extras.json`: a single-file plugin with keywords and file types
 * `neon-pack/`: a plugin with a theme. Zip the **contents** of the folder (so `plugin.json` is at the top) and install the `.zip`.
+
+## Plugin API 3: more control
+
+`apiVersion` 3 adds these permissions and members of `PluginHost`. A plugin that does not need them stays on 2.
+
+| Permission | What the plugin gets |
+| --- | --- |
+| `engine.hooks` | `registerEngineHook(id, kind, hook)`: rewrite what the engine makes. `kind` is `functions` (names, one per line, return the same number of lines to rename), `disassembly`, `pseudocode`, `report` or `*`. The hook gets the library path, the subject (function name or report name) and the text, and returns new text or null. |
+| `engine.provider` | `registerEngineProvider(id, provider)`: replace the engine for the files that `provider.supports(path)`. Override `functions`, `disassembly`, `pseudocode` and `report`; return null to use the built-in engine for that call. Hooks still run on the result. This makes the disassembler and decompiler tabs and `library.read` show what your engine makes. |
+| `files.read`, `files.write` | `files`: read, list, write, create folders, move and delete any file that the app can reach. |
+| `network` | `network.request(method, url, headers, body)`. |
+| `github` | `github.request(method, path, body)` with the token of the GitHub tab. |
+| `shell` | `shell.run(command, workingDirectory, timeoutSeconds)` runs `sh -c`. |
+| `clipboard` | `clipboard.getText()` and `setText()`. |
+| `app.control` | `app.openFile`, `openTab`, `openUrl`, `runCommand`, `currentTab`. |
+| `app.settings` | `settings.get(key)` and `set(key, value)` on the settings of the app. |
+| `events` | `registerEventListener(id, listener)`: `tab.changed`, `file.open`, `library.open`. |
+
+`storage` (a private key value store for the plugin) needs no permission.
+
+These permissions are powerful: a plugin with `shell` or `files.write` can do what the app can do. The
+user is shown the permissions of a plugin before it is turned on; turn on only plugins that you trust.

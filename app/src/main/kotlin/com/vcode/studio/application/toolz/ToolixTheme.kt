@@ -16,43 +16,66 @@
 
 package com.vcode.studio.application.toolz
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-/** The Material 3 colors of Toolix. Dark is the default, the colors follow the slate and lime of Orion Store. */
-internal val ToolixDarkScheme = darkColorScheme(
-    primary = Color(0xFFA3E635),
-    onPrimary = Color(0xFF1B2A00),
-    primaryContainer = Color(0xFF354F00),
-    onPrimaryContainer = Color(0xFFC8F36B),
-    secondary = Color(0xFFBDBDFF),
-    onSecondary = Color(0xFF1A1A7A),
-    secondaryContainer = Color(0xFF3F40C0),
-    onSecondaryContainer = Color(0xFFE2E0FF),
-    tertiary = Color(0xFFFF8FC7),
-    onTertiary = Color(0xFF560030),
-    tertiaryContainer = Color(0xFF7A1F50),
-    onTertiaryContainer = Color(0xFFFFD8EA),
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    background = Color(0xFF14181B),
-    onBackground = Color(0xFFE3E8EC),
-    surface = Color(0xFF1E2327),
-    onSurface = Color(0xFFE3E8EC),
-    surfaceVariant = Color(0xFF2C3338),
-    onSurfaceVariant = Color(0xFFA9B4BB),
-    surfaceContainerLowest = Color(0xFF101417),
-    surfaceContainerLow = Color(0xFF1A1F23),
-    surfaceContainer = Color(0xFF1E2327),
-    surfaceContainerHigh = Color(0xFF252B30),
-    surfaceContainerHighest = Color(0xFF2C3338),
-    outline = Color(0xFF6B777E),
-    outlineVariant = Color(0xFF343C42),
-)
+/** The dark Material 3 colors of a style: the baseline of Material 3, the dark colors of Material 2, the colors of Miuix. */
+internal fun toolixScheme(style: UiStyle): ColorScheme = when (style) {
+    UiStyle.Material3 -> darkColorScheme()
+    UiStyle.Material2 -> darkColorScheme(
+        primary = Color(0xFFBB86FC),
+        onPrimary = Color(0xFF000000),
+        primaryContainer = Color(0xFF3700B3),
+        onPrimaryContainer = Color(0xFFFFFFFF),
+        secondary = Color(0xFFBB86FC),
+        onSecondary = Color(0xFF000000),
+        secondaryContainer = Color(0xFF2C2C2C),
+        onSecondaryContainer = Color(0xFFFFFFFF),
+        background = Color(0xFF121212),
+        onBackground = Color(0xFFFFFFFF),
+        surface = Color(0xFF121212),
+        onSurface = Color(0xFFFFFFFF),
+        surfaceVariant = Color(0xFF2C2C2C),
+        onSurfaceVariant = Color(0xFFB3B3B3),
+        surfaceContainerLowest = Color(0xFF0A0A0A),
+        surfaceContainerLow = Color(0xFF181818),
+        surfaceContainer = Color(0xFF1E1E1E),
+        surfaceContainerHigh = Color(0xFF242424),
+        surfaceContainerHighest = Color(0xFF2C2C2C),
+        outline = Color(0xFF6B6B6B),
+        outlineVariant = Color(0xFF373737),
+        error = Color(0xFFCF6679),
+    )
+    UiStyle.Miuix -> darkColorScheme(
+        primary = Color(0xFF3482FF),
+        onPrimary = Color(0xFFFFFFFF),
+        primaryContainer = Color(0xFF1F4E99),
+        onPrimaryContainer = Color(0xFFD6E4FF),
+        secondary = Color(0xFF6AA8FF),
+        onSecondary = Color(0xFF000000),
+        secondaryContainer = Color(0xFF242424),
+        onSecondaryContainer = Color(0xFFE8E8E8),
+        background = Color(0xFF000000),
+        onBackground = Color(0xFFE8E8E8),
+        surface = Color(0xFF000000),
+        onSurface = Color(0xFFE8E8E8),
+        surfaceVariant = Color(0xFF242424),
+        onSurfaceVariant = Color(0xFF9A9A9A),
+        surfaceContainerLowest = Color(0xFF000000),
+        surfaceContainerLow = Color(0xFF0C0C0C),
+        surfaceContainer = Color(0xFF141414),
+        surfaceContainerHigh = Color(0xFF1C1C1C),
+        surfaceContainerHighest = Color(0xFF242424),
+        outline = Color(0xFF5C5C5C),
+        outlineVariant = Color(0xFF2E2E2E),
+        error = Color(0xFFF6685E),
+    )
+}
 
 @Composable
-internal fun ToolixTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = ToolixDarkScheme, content = content)
+internal fun ToolixTheme(style: UiStyle, content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = toolixScheme(style), content = content)
 }

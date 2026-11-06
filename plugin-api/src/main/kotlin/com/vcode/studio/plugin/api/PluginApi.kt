@@ -22,7 +22,7 @@ import android.content.Context
  * Version of the plugin API. A plugin declares the version it was built for with `apiVersion`
  * in its plugin.json, and Vcode refuses plugins that need a newer version than it supports.
  */
-const val PLUGIN_API_VERSION = 2
+const val PLUGIN_API_VERSION = 3
 
 /**
  * Entry point of a Kotlin plugin. The class named in `code.main` of plugin.json has to extend
@@ -52,6 +52,17 @@ object PluginPermissions {
     const val FILE_ACTIONS = "file.actions"
     const val LIBRARY_TOOLS = "library.tools"
     const val LIBRARY_READ = "library.read"
+    const val ENGINE_HOOKS = "engine.hooks"
+    const val ENGINE_PROVIDER = "engine.provider"
+    const val FILES_READ = "files.read"
+    const val FILES_WRITE = "files.write"
+    const val NETWORK = "network"
+    const val GITHUB = "github"
+    const val SHELL = "shell"
+    const val CLIPBOARD = "clipboard"
+    const val APP_CONTROL = "app.control"
+    const val APP_SETTINGS = "app.settings"
+    const val EVENTS = "events"
 
     val ALL: List<String> = listOf(
         COMMANDS,
@@ -64,6 +75,17 @@ object PluginPermissions {
         FILE_ACTIONS,
         LIBRARY_TOOLS,
         LIBRARY_READ,
+        ENGINE_HOOKS,
+        ENGINE_PROVIDER,
+        FILES_READ,
+        FILES_WRITE,
+        NETWORK,
+        GITHUB,
+        SHELL,
+        CLIPBOARD,
+        APP_CONTROL,
+        APP_SETTINGS,
+        EVENTS,
     )
 
     fun describe(permission: String): String {
@@ -78,6 +100,17 @@ object PluginPermissions {
             FILE_ACTIONS -> "Add actions to the tools menu of files"
             LIBRARY_TOOLS -> "Add tools to the disassembler and decompiler"
             LIBRARY_READ -> "Read native libraries (functions, disassembly, pseudocode, reports)"
+            ENGINE_HOOKS -> "Rewrite what the disassembler and decompiler engine produces (function names, disassembly, pseudocode, reports)"
+            ENGINE_PROVIDER -> "Replace the engine: give the functions, disassembly, pseudocode and reports of libraries it supports"
+            FILES_READ -> "Read any file on the device that the app can reach"
+            FILES_WRITE -> "Create, change, move and delete any file that the app can reach"
+            NETWORK -> "Use the internet (any HTTP request)"
+            GITHUB -> "Call the GitHub API with your token"
+            SHELL -> "Run shell commands"
+            CLIPBOARD -> "Read and write the clipboard"
+            APP_CONTROL -> "Open files, switch tabs, open links and run commands of other plugins"
+            APP_SETTINGS -> "Read and change the settings of the app"
+            EVENTS -> "Get told when tabs, files and libraries are opened"
             else -> permission
         }
     }
@@ -168,6 +201,39 @@ interface PluginHost {
     /** Adds a button to the disassembler and decompiler tabs of Toolix. Needs [PluginPermissions.LIBRARY_TOOLS]. */
     fun registerLibraryTool(id: String, title: String, handler: LibraryToolHandler)
 
+    /** Changes what the engine produces, see [EngineKind]. Needs [PluginPermissions.ENGINE_HOOKS]. */
+    fun registerEngineHook(id: String, kind: String, hook: EngineHook)
+
+    /** Replaces the engine for the libraries that [provider] supports. Needs [PluginPermissions.ENGINE_PROVIDER]. */
+    fun registerEngineProvider(id: String, provider: EngineProvider)
+
+    /** Gets told about events, see [AppEvents]. Needs [PluginPermissions.EVENTS]. */
+    fun registerEventListener(id: String, listener: EventListener)
+
+    /** Files of the device. Needs [PluginPermissions.FILES_READ] and [PluginPermissions.FILES_WRITE]. */
+    val files: FilesApi
+
+    /** Internet access. Needs [PluginPermissions.NETWORK]. */
+    val network: NetworkApi
+
+    /** The GitHub API with the token of the user. Needs [PluginPermissions.GITHUB]. */
+    val github: GitHubApi
+
+    /** Shell commands. Needs [PluginPermissions.SHELL]. */
+    val shell: ShellApi
+
+    /** The clipboard. Needs [PluginPermissions.CLIPBOARD]. */
+    val clipboard: ClipboardApi
+
+    /** Controls the app itself. Needs [PluginPermissions.APP_CONTROL]. */
+    val app: AppApi
+
+    /** The settings of the app. Needs [PluginPermissions.APP_SETTINGS]. */
+    val settings: SettingsApi
+
+    /** A small key value store that belongs to this plugin. Needs no permission. */
+    val storage: StorageApi
+
     fun log(message: String)
 }
 
@@ -207,4 +273,144 @@ interface UiApi {
     fun prompt(title: String, hint: String, initial: String, callback: PromptCallback)
 
     fun confirm(title: String, message: String, callback: ConfirmCallback)
+}
+
+/** What the engine makes. Used with [PluginHost.registerEngineHook]; "*" matches all kinds. */
+object EngineKind {
+    /** Text is the names of the functions, one per line. Return the same number of lines to rename them. */
+    const val FUNCTIONS = "functions"
+    const val DISASSEMBLY = "disassembly"
+    const val PSEUDOCODE = "pseudocode"
+
+    /** Subject is the name of the report, for example symbols.txt. */
+    const val REPORT = "report"
+    const val ALL = "*"
+}
+
+fun interface EngineHook {
+    /**
+     * Called after the engine made [text] for [subject] (a function name, or the name of a report) of the library at
+     * [libraryPath]. Returns the new text, or null to keep it. Runs on a background thread, keep it fast.
+     * Hooks of several plugins run one after the other.
+     */
+    fun rewrite(libraryPath: String, subject: String, text: String): String?
+}
+
+/**
+ * Replaces the engine for the libraries it supports. Every method may return null to use the built-in engine.
+ * Hooks still run on the text that a provider returns. All methods run on a background thread and may block.
+ */
+abstract class EngineProvider {
+    /** Whether this provider handles the file, for example by its signature or its extension. */
+    abstract fun supports(libraryPath: String): Boolean
+
+    /** Names of the functions. When this returns a list the built-in function list is not used. */
+    open fun functions(libraryPath: String): List<String>? = null
+
+    open fun disassembly(libraryPath: String, function: String): String? = null
+
+    open fun pseudocode(libraryPath: String, function: String): String? = null
+
+    open fun report(libraryPath: String, name: String): String? = null
+}
+
+/** Names of the events that [EventListener] gets. */
+object AppEvents {
+    /** Data is the label of the tab: Files, GitHub, Vcode, Disassembler, Decompiler or Settings. */
+    const val TAB_CHANGED = "tab.changed"
+
+    /** A file was opened in the editor, data is its path. */
+    const val FILE_OPEN = "file.open"
+
+    /** A library was sent to the disassembler or the decompiler, data is its path. */
+    const val LIBRARY_OPEN = "library.open"
+}
+
+fun interface EventListener {
+    fun onEvent(type: String, data: String?)
+}
+
+/** All calls block. Reading needs files.read, everything that changes files needs files.write. */
+interface FilesApi {
+    fun exists(path: String): Boolean
+
+    fun isDirectory(path: String): Boolean
+
+    fun length(path: String): Long
+
+    /** Names of the entries of a folder, sorted. */
+    fun list(path: String): List<String>
+
+    fun readText(path: String): String
+
+    fun readBytes(path: String): ByteArray
+
+    fun writeText(path: String, text: String)
+
+    fun writeBytes(path: String, bytes: ByteArray)
+
+    fun mkdirs(path: String): Boolean
+
+    /** Deletes a file or a folder with everything in it. */
+    fun delete(path: String): Boolean
+
+    fun move(from: String, to: String): Boolean
+}
+
+class HttpResult(val status: Int, val body: ByteArray, val headers: Map<String, String>) {
+    fun text(): String = String(body, Charsets.UTF_8)
+}
+
+interface NetworkApi {
+    /** Blocks. [headers] may be empty and [body] may be null. */
+    fun request(method: String, url: String, headers: Map<String, String>, body: ByteArray?): HttpResult
+}
+
+interface GitHubApi {
+    /** Calls api.github.com with the token of the user, for example request("GET", "/user", null). Returns the body. */
+    fun request(method: String, path: String, body: String?): String
+}
+
+class ShellResult(val exitCode: Int, val output: String)
+
+interface ShellApi {
+    /** Runs `sh -c command`, output and errors together. Waits at most [timeoutSeconds] (1 to 600). */
+    fun run(command: String, workingDirectory: String?, timeoutSeconds: Int): ShellResult
+}
+
+interface ClipboardApi {
+    fun getText(): String?
+
+    fun setText(text: String)
+}
+
+interface AppApi {
+    /** Label of the tab that is shown. */
+    val currentTab: String?
+
+    /** Opens a file in the editor. */
+    fun openFile(path: String)
+
+    /** Shows a tab by its label: Files, GitHub, Vcode, Disassembler, Decompiler or Settings. */
+    fun openTab(name: String)
+
+    fun openUrl(url: String)
+
+    /** Runs a command that a plugin has added to the command palette. [id] is the id or plugin:id. */
+    fun runCommand(id: String): Boolean
+}
+
+interface SettingsApi {
+    /** A setting of the app by its key, or null. */
+    fun get(key: String): String?
+
+    fun set(key: String, value: String)
+}
+
+interface StorageApi {
+    fun get(key: String): String?
+
+    fun set(key: String, value: String)
+
+    fun remove(key: String)
 }

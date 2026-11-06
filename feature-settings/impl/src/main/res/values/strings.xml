@@ -217,4 +217,5 @@
     <string name="settings_ai_models_subtitle" translatable="false">Opens openrouter.ai/models</string>
     <string name="settings_ai_privacy_title" translatable="false">What is sent</string>
     <string name="settings_ai_privacy_subtitle" translatable="false">Only when you ask a question, Vcode sends your question and the open file to OpenRouter.</string>
+    <string name="settings_ui_style_title">UI style (Material 3, Material 2, Miuix)</string>
 </resources>

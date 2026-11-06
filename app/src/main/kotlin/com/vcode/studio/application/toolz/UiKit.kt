@@ -29,7 +29,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.darkColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.vcode.studio.core.settings.SettingsManager
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -72,47 +76,69 @@ internal enum class UiStyle(val label: String) {
     Miuix("Miuix"),
 }
 
-internal object UiStyleStore {
-    private const val FILE = "toolix_ui"
-    private const val KEY = "style"
+/** The style that is chosen in Settings > Application. A state, so the screens change when it changes. */
+internal object ToolixUi {
+    var style by mutableStateOf(UiStyle.Material3)
+        private set
 
-    fun get(context: Context): UiStyle {
-        val name = context.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(KEY, null)
-        return UiStyle.entries.firstOrNull { it.name == name } ?: UiStyle.Material3
-    }
+    private var settings: SettingsManager? = null
 
-    fun set(context: Context, style: UiStyle) {
-        context.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY, style.name).apply()
+    fun refresh(context: Context) {
+        val manager = settings ?: SettingsManager(context.applicationContext).also { settings = it }
+        val value = UiStyle.entries.firstOrNull { it.name == manager.uiStyle } ?: UiStyle.Material3
+        if (value != style) style = value
     }
 }
 
 internal val LocalUiStyle = staticCompositionLocalOf { UiStyle.Material3 }
 
-internal val AccentColor = Color(0xFFA3E635)
-internal val TextColor = Color(0xFFE3E8EC)
-internal val MutedColor = Color(0xFFA9B4BB)
-private val OnAccent = Color(0xFF1B2A00)
-private val OnTonal = Color(0xFFE2E0FF)
+/** The colors of the three libraries, the ones that each of them uses itself. */
+internal object Palette {
+    val accent: Color
+        get() = when (ToolixUi.style) {
+            UiStyle.Material3 -> Color(0xFFD0BCFF)
+            UiStyle.Material2 -> Color(0xFFBB86FC)
+            UiStyle.Miuix -> Color(0xFF3482FF)
+        }
+    val onAccent: Color
+        get() = when (ToolixUi.style) {
+            UiStyle.Material3 -> Color(0xFF381E72)
+            UiStyle.Material2 -> Color(0xFF000000)
+            UiStyle.Miuix -> Color(0xFFFFFFFF)
+        }
+    val text: Color
+        get() = when (ToolixUi.style) {
+            UiStyle.Material3 -> Color(0xFFE6E0E9)
+            UiStyle.Material2 -> Color(0xFFFFFFFF)
+            UiStyle.Miuix -> Color(0xFFE8E8E8)
+        }
+    val muted: Color
+        get() = when (ToolixUi.style) {
+            UiStyle.Material3 -> Color(0xFFCAC4D0)
+            UiStyle.Material2 -> Color(0xFFB3B3B3)
+            UiStyle.Miuix -> Color(0xFF9A9A9A)
+        }
+    val onTonal: Color
+        get() = when (ToolixUi.style) {
+            UiStyle.Material3 -> Color(0xFFE8DEF8)
+            UiStyle.Material2 -> Color(0xFFBB86FC)
+            UiStyle.Miuix -> Color(0xFFE8E8E8)
+        }
+    val chipOff: Color
+        get() = when (ToolixUi.style) {
+            UiStyle.Material3 -> Color(0xFF4A4458)
+            UiStyle.Material2 -> Color(0xFF2C2C2C)
+            UiStyle.Miuix -> Color(0xFF2A2A2A)
+        }
+}
 
 /** Wraps the content in the themes of the three libraries, so that a screen can use any of them. */
 @Composable
 internal fun ToolixStyle(style: UiStyle, content: @Composable () -> Unit) {
     CompositionLocalProvider(LocalUiStyle provides style) {
-        ToolixTheme {
+        ToolixTheme(style) {
             M2Theme(
-                colors = darkColors(
-                    primary = AccentColor,
-                    primaryVariant = Color(0xFF354F00),
-                    secondary = Color(0xFFBDBDFF),
-                    background = Color(0xFF14181B),
-                    surface = Color(0xFF1E2327),
-                    error = Color(0xFFFFB4AB),
-                    onPrimary = OnAccent,
-                    onSecondary = Color(0xFF1A1A7A),
-                    onBackground = TextColor,
-                    onSurface = TextColor,
-                    onError = Color(0xFF690005),
-                ),
+                colors = darkColors(),
             ) {
                 MiuixTheme(colors = miuixDarkColorScheme()) {
                     content()
@@ -137,10 +163,10 @@ internal fun TextButton(
 ) {
     when (LocalUiStyle.current) {
         UiStyle.Material2 -> M2TextButton(onClick = onClick, modifier = modifier, enabled = enabled) {
-            WithContent(AccentColor) { content() }
+            WithContent(Palette.accent) { content() }
         }
         UiStyle.Material3 -> M3TextButton(onClick = onClick, modifier = modifier, enabled = enabled) {
-            WithContent(AccentColor) { content() }
+            WithContent(Palette.accent) { content() }
         }
         UiStyle.Miuix -> MiuixButton(
             onClick = onClick,
@@ -149,7 +175,7 @@ internal fun TextButton(
             minWidth = 0.dp,
             colors = MiuixButtonDefaults.buttonColors(color = Color.Transparent),
         ) {
-            WithContent(AccentColor) { content() }
+            WithContent(Palette.accent) { content() }
         }
     }
 }
@@ -163,10 +189,10 @@ internal fun Button(
 ) {
     when (LocalUiStyle.current) {
         UiStyle.Material2 -> M2Button(onClick = onClick, modifier = modifier, enabled = enabled) {
-            WithContent(OnAccent) { content() }
+            WithContent(Palette.onAccent) { content() }
         }
         UiStyle.Material3 -> M3Button(onClick = onClick, modifier = modifier, enabled = enabled) {
-            WithContent(OnAccent) { content() }
+            WithContent(Palette.onAccent) { content() }
         }
         UiStyle.Miuix -> MiuixButton(
             onClick = onClick,
@@ -189,15 +215,15 @@ internal fun FilledTonalButton(
 ) {
     when (LocalUiStyle.current) {
         UiStyle.Material2 -> M2OutlinedButton(onClick = onClick, modifier = modifier, enabled = enabled) {
-            WithContent(AccentColor) { content() }
+            WithContent(Palette.accent) { content() }
         }
         UiStyle.Material3 -> if (shape != null) {
             M3Tonal(onClick = onClick, modifier = modifier, enabled = enabled, shape = shape) {
-                WithContent(OnTonal) { content() }
+                WithContent(Palette.onTonal) { content() }
             }
         } else {
             M3Tonal(onClick = onClick, modifier = modifier, enabled = enabled) {
-                WithContent(OnTonal) { content() }
+                WithContent(Palette.onTonal) { content() }
             }
         }
         UiStyle.Miuix -> MiuixButton(
@@ -206,7 +232,7 @@ internal fun FilledTonalButton(
             enabled = enabled,
             colors = MiuixButtonDefaults.buttonColors(),
         ) {
-            WithContent(TextColor) { content() }
+            WithContent(Palette.text) { content() }
         }
     }
 }
@@ -223,16 +249,16 @@ internal fun FilterChip(
             selected = selected,
             onClick = onClick,
             modifier = modifier,
-            label = { WithContent(if (selected) OnTonal else TextColor) { label() } },
+            label = { WithContent(if (selected) Palette.onTonal else Palette.text) { label() } },
         )
         UiStyle.Material2 -> Box(
             modifier = modifier
                 .clip(RoundedCornerShape(50))
-                .background(if (selected) AccentColor else Color(0xFF2C3338))
+                .background(if (selected) Palette.accent else Palette.chipOff)
                 .clickable(onClick = onClick)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
         ) {
-            WithContent(if (selected) OnAccent else AccentColor) { label() }
+            WithContent(if (selected) Palette.onAccent else Palette.accent) { label() }
         }
         UiStyle.Miuix -> MiuixButton(
             onClick = onClick,
@@ -243,7 +269,7 @@ internal fun FilterChip(
             insideMargin = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
             colors = if (selected) MiuixButtonDefaults.buttonColorsPrimary() else MiuixButtonDefaults.buttonColors(),
         ) {
-            WithContent(if (selected) Color.White else TextColor) { label() }
+            WithContent(if (selected) Color.White else Palette.text) { label() }
         }
     }
 }
@@ -260,12 +286,12 @@ internal fun AlertDialog(
     val styledTitle: (@Composable () -> Unit)? = if (title == null) {
         null
     } else {
-        { WithContent(TextColor) { title() } }
+        { WithContent(Palette.text) { title() } }
     }
     val styledText: (@Composable () -> Unit)? = if (text == null) {
         null
     } else {
-        { WithContent(TextColor) { text() } }
+        { WithContent(Palette.text) { text() } }
     }
     if (LocalUiStyle.current == UiStyle.Material2) {
         M2AlertDialog(
@@ -289,7 +315,7 @@ internal fun AlertDialog(
 }
 
 @Composable
-internal fun CircularProgressIndicator(modifier: Modifier = Modifier, color: Color = AccentColor) {
+internal fun CircularProgressIndicator(modifier: Modifier = Modifier, color: Color = Palette.accent) {
     if (LocalUiStyle.current == UiStyle.Material2) {
         M2Progress(modifier = modifier, color = color)
     } else {
@@ -314,12 +340,12 @@ internal fun KField(
     val actions = KeyboardActions(onSend = { onSend?.invoke() })
     val transformation = if (password) PasswordVisualTransformation() else VisualTransformation.None
     val style = TextStyle(
-        color = TextColor,
+        color = Palette.text,
         fontFamily = if (mono) FontFamily.Monospace else FontFamily.Default,
         fontSize = if (mono) 13.sp else 15.sp,
     )
     when (LocalUiStyle.current) {
-        UiStyle.Material2 -> WithContent(TextColor) {
+        UiStyle.Material2 -> WithContent(Palette.text) {
             M2Field(
                 value = value,
                 onValueChange = onValueChange,

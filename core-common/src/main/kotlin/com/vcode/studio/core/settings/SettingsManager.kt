@@ -101,6 +101,7 @@ class SettingsManager(private val context: Context) {
         const val KEY_GIT_SUBMODULES = "git_submodules"
         const val KEY_GIT_RECURSIVE_SUBMODULES = "git_recursive_submodules"
         const val KEY_DEX_JAVA_VIEW = "dex_java_view"
+        const val KEY_UI_STYLE = "ui_style"
     }
 
     private val fileName: String
@@ -273,6 +274,10 @@ class SettingsManager(private val context: Context) {
     var dexJavaView: Boolean
         get() = sharedPreferences.getBoolean(KEY_DEX_JAVA_VIEW, true)
         set(value) = sharedPreferences.edit().putBoolean(KEY_DEX_JAVA_VIEW, value).apply()
+    /** The UI library of the Toolix screens: Material3, Material2 or Miuix. */
+    var uiStyle: String
+        get() = sharedPreferences.getString(KEY_UI_STYLE, "Material3") ?: "Material3"
+        set(value) = sharedPreferences.edit().putString(KEY_UI_STYLE, value).apply()
     var gitRecursiveSubmodules: Boolean
         get() = sharedPreferences.getBoolean(KEY_GIT_RECURSIVE_SUBMODULES, false)
         set(value) = sharedPreferences.edit().putBoolean(KEY_GIT_RECURSIVE_SUBMODULES, value).apply()

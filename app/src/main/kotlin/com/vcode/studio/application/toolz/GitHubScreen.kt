@@ -88,7 +88,7 @@ Typical flow: clone a repository, edit files in the Files and Vcode tabs, then G
 Not available: commands that open an editor or a browser login (gh auth login), interactive rebase, and git commands that are not in the list. The token is kept in the settings of the app and is only sent to GitHub."""
 
 @Composable
-internal fun GitHubScreen(style: UiStyle, onStyle: (UiStyle) -> Unit) {
+internal fun GitHubScreen() {
     val context = LocalContext.current
     val colors = VcodeTheme.colors
     val type = VcodeTheme.typography
@@ -143,16 +143,6 @@ internal fun GitHubScreen(style: UiStyle, onStyle: (UiStyle) -> Unit) {
             }
             TextButton(onClick = { tokenDialog = true }) {
                 Text(if (token.isBlank()) "Add token" else "Change token", color = colors.colorPrimary)
-            }
-        }
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()).padding(start = 12.dp, end = 12.dp, top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text("Style", style = type.text14Medium, color = colors.colorTextAndIconSecondary)
-            UiStyle.entries.forEach { option ->
-                FilterChip(selected = style == option, onClick = { onStyle(option) }, label = { Text(option.label) })
             }
         }
         Row(
