@@ -16,12 +16,13 @@
 
 package com.vcode.studio.application.toolz
 
-import com.strobel.assembler.metadata.JarTypeLoader
-import com.strobel.decompiler.Decompiler
-import com.strobel.decompiler.DecompilerSettings
-import com.strobel.decompiler.PlainTextOutput
+import org.benf.cfr.reader.api.CfrDriver
+import org.benf.cfr.reader.api.OutputSinkFactory
+import org.benf.cfr.reader.api.OutputSinkFactory.Sink
+import org.benf.cfr.reader.api.OutputSinkFactory.SinkClass
+import org.benf.cfr.reader.api.OutputSinkFactory.SinkType
+import org.benf.cfr.reader.api.SinkReturns
 import java.io.File
-import java.io.StringWriter
 import java.util.jar.JarFile
 
 internal data class DecompiledSource(val relativePath: String, val file: File)
@@ -33,10 +34,6 @@ internal data class DecompilerResult(
     val failedClasses: Int,
 )
 
-/**
- * A language-specific backend. New engines can be registered here without changing the Decompiler tab.
- * Implementations must write only below [outputDirectory].
- */
 internal interface DecompilerEngine {
     val displayName: String
     fun supports(file: File): Boolean
@@ -49,9 +46,9 @@ internal object DecompilerRegistry {
     fun find(file: File): DecompilerEngine? = engines.firstOrNull { it.supports(file) }
 }
 
-/** Java bytecode backend powered by Procyon. Handles standalone .class files and .jar archives. */
+/** CFR backend for standalone .class files and .jar archives. */
 internal object JavaDecompiler : DecompilerEngine {
-    override val displayName: String = "Procyon Java decompiler"
+    override val displayName: String = "CFR Java decompiler"
 
     private const val MAX_CLASSES = 5_000
     private const val MAX_CLASS_BYTES = 16L * 1024L * 1024L
@@ -60,75 +57,114 @@ internal object JavaDecompiler : DecompilerEngine {
         file.isFile && file.extension.lowercase() in setOf("jar", "class")
 
     override fun decompile(input: File, outputDirectory: File): DecompilerResult {
-        require(supports(input)) { "Procyon supports .jar and .class files" }
-        if (outputDirectory.exists() && !outputDirectory.deleteRecursively()) {
-            throw IllegalStateException("Could not clear the previous decompilation output")
-        }
-        check(outputDirectory.mkdirs() || outputDirectory.isDirectory) { "Could not create the source output directory" }
+        require(supports(input)) { "CFR supports .jar and .class files" }
 
-        val sources = mutableListOf<DecompiledSource>()
-        var skipped = 0
-        var failed = 0
+        if (outputDirectory.exists() && !outputDirectory.deleteRecursively()) {
+            throw IllegalStateException("Could not clear previous decompilation output")
+        }
+        check(outputDirectory.mkdirs() || outputDirectory.isDirectory) {
+            "Could not create the source output directory"
+        }
 
         if (input.extension.equals("class", ignoreCase = true)) {
-            val target = File(outputDirectory, input.nameWithoutExtension + ".java")
-            val writer = target.writer(Charsets.UTF_8)
-            try {
-                Decompiler.decompile(input.absolutePath, PlainTextOutput(writer), DecompilerSettings.javaDefaults())
-            } finally {
-                writer.close()
+            require(input.length() <= MAX_CLASS_BYTES) {
+                "This class file exceeds the 16 MiB safety limit"
             }
-            sources += DecompiledSource(target.name, target)
         } else {
-            JarFile(input).use { jar ->
-                val classEntries = jar.entries().asSequence()
-                    .filter { !it.isDirectory && it.name.endsWith(".class", ignoreCase = true) }
-                    .filterNot { it.name.startsWith("META-INF/versions/") || it.name == "module-info.class" }
-                    .toList()
+            validateArchive(input)
+        }
 
-                if (classEntries.size > MAX_CLASSES) {
-                    throw IllegalArgumentException("This archive contains ${classEntries.size} classes; the current safe limit is $MAX_CLASSES")
+        val sources = mutableListOf<DecompiledSource>()
+        var failed = 0
+        val root = outputDirectory.canonicalFile
+
+        val sinkFactory = object : OutputSinkFactory {
+            override fun getSupportedSinks(
+                sinkType: SinkType,
+                available: Collection<SinkClass>,
+            ): List<SinkClass> {
+                return if (
+                    sinkType == SinkType.JAVA &&
+                    available.contains(SinkClass.DECOMPILED)
+                ) {
+                    listOf(SinkClass.DECOMPILED, SinkClass.STRING)
+                } else {
+                    listOf(SinkClass.STRING)
                 }
+            }
 
-                val settings = DecompilerSettings.javaDefaults()
-                settings.setTypeLoader(JarTypeLoader(jar))
-                for (entry in classEntries) {
-                    if (entry.size > MAX_CLASS_BYTES) {
-                        skipped++
-                        continue
-                    }
-                    val relative = entry.name.removeSuffix(".class") + ".java"
-                    val target = File(outputDirectory, relative)
-                    val root = outputDirectory.canonicalFile
-                    if (!target.canonicalPath.startsWith(root.path + File.separator)) {
-                        skipped++
-                        continue
-                    }
-                    try {
-                        target.parentFile?.mkdirs()
-                        val writer = target.writer(Charsets.UTF_8)
-                        try {
-                            Decompiler.decompile(entry.name.removeSuffix(".class"), PlainTextOutput(writer), settings)
-                        } finally {
-                            writer.close()
+            override fun <T> getSink(sinkType: SinkType, sinkClass: SinkClass): Sink<T> {
+                if (sinkType == SinkType.JAVA && sinkClass == SinkClass.DECOMPILED) {
+                    return Sink { value ->
+                        val item = value as SinkReturns.Decompiled
+                        val packagePath = item.packageName
+                            .split('.')
+                            .filter { it.isNotBlank() }
+                            .joinToString(File.separator) { safeSegment(it) }
+                        val className = safeSegment(item.className)
+                        val relativePath = listOf(packagePath, "$className.java")
+                            .filter { it.isNotBlank() }
+                            .joinToString(File.separator)
+                        val target = File(root, relativePath).canonicalFile
+                        check(target.path.startsWith(root.path + File.separator)) {
+                            "CFR returned an unsafe source path"
                         }
-                        sources += DecompiledSource(relative, target)
-                    } catch (_: Exception) {
-                        failed++
-                        target.delete()
+                        check(
+                            target.parentFile?.mkdirs() == true ||
+                                target.parentFile?.isDirectory == true,
+                        ) { "Could not create a package directory" }
+                        target.writeText(item.java, Charsets.UTF_8)
+                        sources += DecompiledSource(relativePath, target)
                     }
                 }
+
+                if (sinkType == SinkType.EXCEPTION && sinkClass == SinkClass.STRING) {
+                    return Sink { _ -> failed++ }
+                }
+                return Sink { _ -> }
             }
         }
+
+        CfrDriver.Builder()
+            .withOutputSink(sinkFactory)
+            .withOptions(mapOf("silent" to "true"))
+            .build()
+            .analyse(listOf(input.absolutePath))
 
         if (sources.isEmpty()) {
-            throw IllegalArgumentException("No classes could be decompiled from ${input.name} (skipped $skipped, failed $failed)")
+            throw IllegalStateException(
+                "CFR did not produce Java source from ${input.name} (failed: $failed)",
+            )
         }
-        return DecompilerResult(outputDirectory, sources.sortedBy { it.relativePath }, skipped, failed)
+
+        return DecompilerResult(
+            outputDirectory = outputDirectory,
+            sources = sources.sortedBy { it.relativePath },
+            skippedClasses = 0,
+            failedClasses = failed,
+        )
     }
 
-    fun outputDirectory(input: File, cacheDir: File): File {
-        val identity = Integer.toHexString(input.absolutePath.hashCode())
-        return File(cacheDir, "toolz-decompiled/${input.nameWithoutExtension}-$identity-${input.lastModified()}")
+    private fun validateArchive(input: File) {
+        JarFile(input).use { jar ->
+            val classEntries = jar.entries().asSequence().filter { entry ->
+                !entry.isDirectory &&
+                    entry.name.endsWith(".class", ignoreCase = true) &&
+                    !entry.name.startsWith("META-INF/versions/") &&
+                    entry.name != "module-info.class"
+            }.toList()
+
+            require(classEntries.size <= MAX_CLASSES) {
+                "This archive contains ${classEntries.size} classes; the current limit is $MAX_CLASSES"
+            }
+            require(classEntries.none { it.size > MAX_CLASS_BYTES }) {
+                "This archive contains a class larger than the 16 MiB safety limit"
+            }
+        }
     }
+
+    private fun safeSegment(value: String): String =
+        value.replace(Regex("[^A-Za-z0-9_$-]"), "_")
+            .takeIf { it.isNotBlank() && it != "." && it != ".." }
+            ?: "Unknown"
 }

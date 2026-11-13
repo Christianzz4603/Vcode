@@ -106,7 +106,7 @@ dependencies {
 
     coreLibraryDesugaring(libs.android.tools.desugaring)
 
-    implementation(libs.procyon.compilertools)
+    implementation("org.benf:cfr:0.152")
 
     implementation(libs.google.apksig)
     implementation(libs.bouncycastle.bcpkix)
