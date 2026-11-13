@@ -167,12 +167,96 @@ internal fun LibraryToolScreen(mode: ToolMode, path: String?) {
 private fun LibraryContent(mode: ToolMode, source: File) {
     val isLibrary = remember(source) { NativeLibraries.isLibrary(source) }
     val isArchive = remember(source) { FileOperations.isArchive(source) }
+    val sourceEngine = remember(source, mode) {
+        if (mode == ToolMode.Decompile) DecompilerRegistry.find(source) else null
+    }
     var picked by remember(source) { mutableStateOf<File?>(null) }
     val library = if (isLibrary) source else picked
     when {
+        sourceEngine != null -> SourceDecompilationBrowser(source, sourceEngine)
         library != null -> FunctionBrowser(mode, library)
         isArchive -> ArchiveLibraries(source) { picked = it }
-        else -> Message("This file is not a native library (.so) and not an APK.")
+        else -> Message("This file is not a supported native library, APK, JAR, or class file.")
+    }
+}
+
+@Composable
+private fun SourceDecompilationBrowser(source: File, engine: DecompilerEngine) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val result by produceState<Result<DecompilerResult>?>(null, source, engine) {
+        value = withContext(Dispatchers.IO) {
+            runCatching { engine.decompile(source, JavaDecompiler.outputDirectory(source, context.cacheDir)) }
+        }
+    }
+    var opened by remember(source) { mutableStateOf<TextSource?>(null) }
+    if (opened != null) {
+        BackHandler { opened = null }
+        TextViewer(opened!!) { opened = null }
+        return
+    }
+
+    val current = result
+    val colors = VcodeTheme.colors
+    val type = VcodeTheme.typography
+    Column(Modifier.fillMaxSize()) {
+        Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+            Text("Java source", style = type.header20Bold, color = colors.colorTextAndIconPrimary)
+            Text(
+                "${source.name}  ·  ${engine.displayName}",
+                style = type.text14Regular,
+                color = colors.colorTextAndIconSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        when {
+            current == null -> Progress()
+            current.isFailure -> Message(current.exceptionOrNull()?.message ?: "Java decompilation failed")
+            else -> {
+                val output = current.getOrThrow()
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "${output.sources.size} source files" +
+                            if (output.skippedClasses + output.failedClasses > 0) "  ·  ${output.skippedClasses + output.failedClasses} skipped/failed" else "",
+                        style = type.text12Regular,
+                        color = colors.colorTextAndIconSecondary,
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(onClick = {
+                        scope.launch {
+                            val message = withContext(Dispatchers.IO) {
+                                runCatching {
+                                    val parent = source.parentFile ?: context.cacheDir
+                                    val target = FileOperations.uniqueFile(parent, source.nameWithoutExtension + "-src")
+                                    output.outputDirectory.copyRecursively(target, overwrite = false)
+                                    target.absolutePath
+                                }.fold(
+                                    onSuccess = { "Sources exported to $it" },
+                                    onFailure = { "Export failed: ${it.message ?: "unknown error"}" },
+                                )
+                            }
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        }
+                    }) { Text("Export source", color = colors.colorPrimary) }
+                }
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(output.sources, key = { it.relativePath }) { item ->
+                        Column(
+                            Modifier.fillMaxWidth().clickable {
+                                opened = TextSource(item.relativePath) { item.file.readText(Charsets.UTF_8) }
+                            }.padding(horizontal = 16.dp, vertical = 11.dp),
+                        ) {
+                            Text(item.relativePath, style = type.text14Medium, color = colors.colorTextAndIconPrimary)
+                            Text("Java source", style = type.text12Regular, color = colors.colorTextAndIconSecondary)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

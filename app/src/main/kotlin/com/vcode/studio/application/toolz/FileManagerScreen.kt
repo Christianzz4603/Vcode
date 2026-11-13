@@ -121,7 +121,8 @@ private const val EDITOR_LIMIT = 8L * 1024 * 1024
 
 /** Files that have tools in the menu of the file: libraries, APKs and archives. */
 private fun isToolFile(file: File): Boolean =
-    NativeLibraries.isLibrary(file) || file.name.endsWith(".apk", ignoreCase = true) || FileOperations.isArchive(file)
+    NativeLibraries.isLibrary(file) || file.name.endsWith(".apk", ignoreCase = true) ||
+        FileOperations.isArchive(file) || JavaDecompiler.supports(file)
 
 private fun hasStorageAccess(context: Context): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -158,6 +159,7 @@ private fun iconFor(row: FileRow): Int {
         "apk", "xapk", "apks" -> R.drawable.toolz_ic_android
         "zip", "jar", "aar", "7z", "rar", "gz", "tar", "xz" -> R.drawable.toolz_ic_archive
         "so", "dex", "o", "a" -> R.drawable.toolz_ic_chip
+        "class" -> R.drawable.toolz_ic_doc
         else -> R.drawable.toolz_ic_file
     }
 }
@@ -444,6 +446,7 @@ internal fun FileManagerScreen(
                             when {
                                 selected.isNotEmpty() -> selected = if (path in selected) selected - path else selected + path
                                 row.isDir -> onDirectoryChange(path)
+                                JavaDecompiler.supports(row.file) -> onDecompile(row.file)
                                 // The editor loads the whole file, so big files are shown by the viewer, which does not
                                 FileOperations.isText(row.file) && row.size <= EDITOR_LIMIT -> onOpenInEditor(row.file)
                                 FileOperations.isText(row.file) -> onView(row.file)
@@ -470,6 +473,8 @@ internal fun FileManagerScreen(
             if (!tools.isDirectory) add(ToolAction("View (hex, text or picture)", R.drawable.toolz_ic_doc) { onView(tools) })
             if (isLibrary || isApk) {
                 add(ToolAction("Disassemble", R.drawable.toolz_ic_chip) { onDisassemble(tools) })
+            }
+            if (isLibrary || isApk || JavaDecompiler.supports(tools)) {
                 add(ToolAction("Decompile", R.drawable.toolz_ic_doc) { onDecompile(tools) })
             }
             if (isApk) {

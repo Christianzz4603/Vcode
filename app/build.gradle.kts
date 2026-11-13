@@ -106,6 +106,8 @@ dependencies {
 
     coreLibraryDesugaring(libs.android.tools.desugaring)
 
+    implementation(libs.procyon.compilertools)
+
     implementation(libs.google.apksig)
     implementation(libs.bouncycastle.bcpkix)
 

@@ -26,6 +26,7 @@ lifecycle = "2.10.0"
 mockk = "1.14.7"
 navigation = "1.0.0"
 profile-installer = "1.4.1"
+procyon = "0.6.0"
 reorderable = "3.0.0"
 retrofit = "3.0.0"
 room = "2.8.4"
@@ -62,6 +63,7 @@ smali-baksmali = { module = "com.android.tools.smali:smali-baksmali", version.re
 smali-dexlib2 = { module = "com.android.tools.smali:smali-dexlib2", version.ref = "smali" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+procyon-compilertools = { module = "org.bitbucket.mstrobel:procyon-compilertools", version.ref = "procyon" }
 
 android-tools-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
 android-tools-platform = { module = "com.google.android:android", version.ref = "android-platform" }
